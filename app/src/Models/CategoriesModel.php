@@ -56,4 +56,46 @@ class CategoriesModel extends BaseModel
         //? PAGINATE
         return $this->paginate($result['sqlPart'], $result[0]);
     }
+
+    public function getBrandsByCategory(array $filters): mixed
+    {
+        $category_id = $filters['category_id'];
+
+        // Use both of the category id from the parent and direct cat id
+        $filters_map = [
+            "direct_category_id" => $category_id,
+            "parent_category_id" => $category_id
+        ];
+
+        //* SQL query FROM brands, products and category
+        $sql = "SELECT DISTINCT b.*
+            FROM brands b
+            JOIN product p ON b.brand_id = p.brand_id
+            LEFT JOIN category c ON p.category_id = c.category_id
+            WHERE p.category_id = :direct_category_id
+               OR c.parent_category_id = :parent_category_id";
+
+        //Provide the fitlers that we can accept ... I am not sure if we need filters for sub-collection resource but I will add just in case
+        //? Erase the filters if we oont need it
+        $stringToFilter = ['brand_name', 'brand_country'];
+
+        // Loop through string filters and apply them w/ prepareStringSQL
+        foreach ($stringToFilter as $filterField) {
+            // Get filter SQL for this field
+            $filterResult = $this->prepareStringSQL($filters, $filterField, $filterField);
+
+            //  Add to query if there's a filter provided
+            if (!empty($filterResult['sqlPart'])) {
+                $filters_map[$filterField] = $filterResult['value'];
+                $sql .= $filterResult['sqlPart'];
+            }
+        }
+
+        //* Sorting
+        $approved_ordering = ['brand_name', 'brand_country'];
+        $sql = $this->sortAndOrder($filters, 'brand_id', $approved_ordering, $sql);
+
+        //* Pagination
+        return $this->paginate($sql, $filters_map);
+    }
 }

@@ -42,7 +42,7 @@ return static function (Slim\App $app): void {
 
     //!
     //* ROUTE: GET /categories/{categories_id}/brands
-    $app->get('/categories/{categories_id}/brands', [CategoriesController::class, 'handleGetProducts']);
+    $app->get('/categories/{category_id}/brands', [CategoriesController::class, 'handleGetBrandsByCategory']);
 
     //?---------ALLERGENS----------------------------------------------
     //!
