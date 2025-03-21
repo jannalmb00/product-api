@@ -55,7 +55,7 @@ return static function (Slim\App $app): void {
 
     //!
     //* ROUTE: GET /products/{product_id}/ingredients
-    $app->get('/allergens/{allergens_id}/ingredients', [AllergensController::class, 'handleGetProducts']);
+    $app->get('/allergens/{allergens_id}/ingredients', [AllergensController::class, 'handleGetIngredientsByAllergen']);
 
 
 
