@@ -297,6 +297,8 @@ abstract class BaseModel
                 $sql = " AND c.category_name LIKE CONCAT(:category_name, '%')";
             } else if ($filterKey == 'brand_name') {
                 $sql = " AND b.brand_name LIKE CONCAT(:brand_name, '%')";
+            } else if ($filterKey == 'parent_category') {
+                $sql = " AND pc.category_name LIKE CONCAT(:parent_category, '%')";
             } else {
                 $sql = " AND p.$toFilter LIKE CONCAT(:$toFilter, '%')";
             }

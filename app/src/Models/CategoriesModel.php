@@ -10,7 +10,12 @@ class CategoriesModel extends BaseModel
         // //? FOR FILTERING
         $filters_map = [];
 
-        $sql = "SELECT * FROM category WHERE 1";
+        $sql = "SELECT c.*, pc.category_name AS parent_category_name
+                FROM category c
+                LEFT JOIN category pc ON c.parent_category_id = pc.category_id
+                WHERE 1";
+
+        // JOIN category pc ON c.category_id = pc.parent_category_id, , pc.category_name as parent_category_name
 
         // //? 1: FILTERING - CHECK THE DATA TYPE
         //Define filters
@@ -21,6 +26,7 @@ class CategoriesModel extends BaseModel
 
             // Checks if there is filter param and ands the sql statement for the filter, returns it
             // Call the prepareStringSQL function for each field
+            //map of valid filters, current filter
             $filterResult = $this->prepareStringSQL($filters, $filterField, $filterField);
 
             // Check if sqlPart is not empty, meaning there is a filter for that
@@ -37,7 +43,7 @@ class CategoriesModel extends BaseModel
         //? Sorting
         $approved_ordering = ['category_name', 'category_type', 'parent_category'];
         $sql = $this->sortAndOrder($filters, 'category_id',  $approved_ordering, $sql);
-
+        //dd($sql);
         //? PAGINATE
         return $this->paginate($sql, $filters_map);
     }
