@@ -77,6 +77,12 @@ class AllergensModel extends BaseModel
             }
         }
 
+        // Add filter for GMO status
+        if (isset($filters['isGMO']) && ($filters['isGMO'] === '1' || $filters['isGMO'] === '0')) {
+            $sql .= " AND i.isGMO = :isGMO";
+            $filters_map['isGMO'] = (int)$filters['isGMO'];
+        }
+
         //* Sorting
         $approved_ordering = ['ingredient_name', 'processing_type', 'isGMO'];
         $sql = $this->sortAndOrder($filters, 'ingredient_id', $approved_ordering, $sql);

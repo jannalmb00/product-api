@@ -78,12 +78,13 @@ class AllergensController extends BaseController
 
     public function handleGetIngredientsByAllergen(Request $request, Response $response, array $uri_args): Response
     {
-        //* Get allergen ID from URI
-        $allergen_id = $uri_args['allergen_id'];
 
         if (!isset($uri_args['allergen_id'])) {
             throw new HttpInvalidInputException($request, "Allergen ID is required in the URL");
         }
+
+        //* Get allergen ID from URI
+        $allergen_id = $uri_args['allergen_id'];
 
         //* Get query parameters
         $filters = $request->getQueryParams();
@@ -96,6 +97,11 @@ class AllergensController extends BaseController
             if (!empty($filters[$validateString])) {
                 $this->validateString($filters, $validateString, $request);
             }
+        }
+
+        // Validate isGMO parameter
+        if (isset($filters['isGMO']) && !in_array($filters['isGMO'], ['0', '1'])) {
+            throw new HttpInvalidInputException($request, "isGMO parameter must be either 0 or 1.");
         }
 
         //* Get ingredients by allergen with pagination
