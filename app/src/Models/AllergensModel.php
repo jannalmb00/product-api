@@ -52,19 +52,20 @@ class AllergensModel extends BaseModel
 
     public function getIngredientsByAllergen(array $filters): mixed
     {
-        $allergen_id = $filters['allergen_id']; //? We get the allergen_id from the controller
+        //* Get the allergen id
+        $allergen_id = $filters['allergen_id'];
 
-        //?  Initialize filter map with allergen_id
+        // Allergen id will be initialized with the filters map
         $filters_map = ["allergen_id" => $allergen_id];
 
-        // SQL query to join ingredients with allergens
+        //* SQL query to join ingredients with allergens
         $sql = "SELECT DISTINCT i.*FROM ingredients i WHERE i.allergen_id = :allergen_id";
 
         // Provide the fitlers that we can accept ... I am not sure if we need filters for sub-collection resource but I will add just in case
         //? Erase the filters if we oont need it
         $stringToFilter = ['ingredient_name', 'processing_type'];
 
-        // Loop through string filters and apply them w/ prepareStringSQL
+        //* Loop through string filters and apply them w/ prepareStringSQL
         foreach ($stringToFilter as $filterField) {
             // Get filter SQL for this field
             $filterResult = $this->prepareStringSQL($filters, $filterField, $filterField);
