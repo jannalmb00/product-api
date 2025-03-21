@@ -7,7 +7,7 @@ class AllergensModel extends BaseModel
 
     public function getAllergens(array $filters): array
     {
-        // //? FOR FILTERING
+        //? FOR FILTERING
         $filters_map = [];
 
         $sql = "SELECT * FROM allergens WHERE 1";
@@ -48,5 +48,39 @@ class AllergensModel extends BaseModel
 
         //? PAGINATE
         return $this->paginate($result['sqlPart'], $result[0]);
+    }
+
+    public function getIngredientsByAllergen(array $filters): mixed
+    {
+        $allergen_id = $filters['allergen_id']; //? We get the allergen_id from the controller
+
+        //?  Initialize filter map with allergen_id
+        $filters_map = ["allergen_id" => $allergen_id];
+
+        // SQL query to join ingredients with allergens
+        $sql = "SELECT DISTINCT i.*FROM ingredients i WHERE i.allergen_id = :allergen_id";
+
+        // Provide the fitlers that we can accept ... I am not sure if we need filters for sub-collection resource but I will add just in case
+        //? Erase the filters if we oont need it
+        $stringToFilter = ['ingredient_name', 'processing_type'];
+
+        // Loop through string filters and apply them w/ prepareStringSQL
+        foreach ($stringToFilter as $filterField) {
+            // Get filter SQL for this field
+            $filterResult = $this->prepareStringSQL($filters, $filterField, $filterField);
+
+            // If filter was provided, we add it to the query
+            if (!empty($filterResult['sqlPart'])) {
+                $filters_map[$filterField] = $filterResult['value'];
+                $sql .= $filterResult['sqlPart'];
+            }
+        }
+
+        //* Sorting
+        $approved_ordering = ['ingredient_name', 'processing_type', 'isGMO'];
+        $sql = $this->sortAndOrder($filters, 'ingredient_id', $approved_ordering, $sql);
+
+        //* Pagination
+        return $this->paginate($sql, $filters_map);
     }
 }

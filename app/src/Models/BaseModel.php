@@ -297,8 +297,12 @@ abstract class BaseModel
                 $sql = " AND c.category_name LIKE CONCAT(:category_name, '%')";
             } else if ($filterKey == 'brand_name') {
                 $sql = " AND b.brand_name LIKE CONCAT(:brand_name, '%')";
+            } else if ($filterKey == 'brand_country') {
+                $sql = " AND b.brand_country LIKE CONCAT(:brand_country, '%')";
             } else if ($filterKey == 'parent_category') {
                 $sql = " AND pc.category_name LIKE CONCAT(:parent_category, '%')";
+            } else if ($filterKey == 'category_type') {
+                $sql = " AND c.category_type LIKE CONCAT(:category_type, '%')";
             } else {
                 $sql = " AND p.$toFilter LIKE CONCAT(:$toFilter, '%')";
             }
