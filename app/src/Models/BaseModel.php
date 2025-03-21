@@ -293,7 +293,13 @@ abstract class BaseModel
         if (isset($filters[$filterKey])) {
 
             // $filter = $filters $filterKey];
-            $sql = " AND $toFilter LIKE CONCAT(:$toFilter, '%')";
+            if ($filterKey == 'category_name') {
+                $sql = " AND c.category_name LIKE CONCAT(:category_name, '%')";
+            } else if ($filterKey == 'brand_name') {
+                $sql = " AND b.brand_name LIKE CONCAT(:brand_name, '%')";
+            } else {
+                $sql = " AND p.$toFilter LIKE CONCAT(:$toFilter, '%')";
+            }
             //$filters_map["given_name"] = $filters['given_name'];
             // dd($sql);
 
@@ -312,7 +318,7 @@ abstract class BaseModel
         if (!empty($id)) {
 
             $sql = "SELECT * FROM $table WHERE $column = :id";
-       
+
             return ['sqlPart' => $sql, ['id' => $id]];
         }
 

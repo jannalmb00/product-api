@@ -35,7 +35,7 @@ class ProductsController extends BaseController
         //!NOTE: Can't add a Name filter for product that filters if the product name is only letters (ex: 2% milk)  -- need ideas
 
         //* Validating if input are string
-        $stringValidateArray = ['product_name', 'product_origin', 'brand_name'];
+        $stringValidateArray = ['product_name', 'product_origin', 'brand_name', 'category_name'];
 
         foreach ($stringValidateArray as $validateString) {
 

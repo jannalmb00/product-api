@@ -10,12 +10,16 @@ class ProductsModel extends BaseModel
         // //? FOR FILTERING
         $filters_map = [];
 
-        $sql = "SELECT * FROM product WHERE 1";
+        $sql = "SELECT p.* , c.category_name, b.brand_name
+                FROM product p
+                JOIN category c ON p.category_id = c.category_id
+                JOIN brands b ON p.brand_id = b.brand_id
+                WHERE 1";
 
         // //? 1: FILTERING - CHECK THE DATA TYPE
         //Define string things to filter
         //! ADD brand_name & category_name to the array
-        $stringToFilter = ['product_name', 'product_origin'];
+        $stringToFilter = ['product_name', 'product_origin', 'category_name', 'brand_name'];
 
         // Loop: making string filters shorter
         foreach ($stringToFilter as $filterField) {
@@ -39,7 +43,7 @@ class ProductsModel extends BaseModel
         $approved_ordering = ['product_name', 'product_origin'];
         $sql = $this->sortAndOrder($filters, 'product_id',  $approved_ordering, $sql);
 
-
+        //dd($sql);
         //? PAGINATE
         return $this->paginate($sql, $filters_map);
     }
