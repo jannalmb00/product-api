@@ -3,6 +3,11 @@
 declare(strict_types=1);
 
 use App\Controllers\AboutController;
+use App\Controllers\ProductsController;
+use App\Controllers\CategoriesController;
+use App\Controllers\AllergensController;
+
+
 use App\Helpers\DateTimeHelper;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -10,11 +15,49 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 return static function (Slim\App $app): void {
 
-    // Routes without authentication check: /login, /token
-
     // Routes with authentication
     //* ROUTE: GET /
     $app->get('/', [AboutController::class, 'handleAboutWebService']);
+
+    //?---------PRODUCTS----------------------------------------------
+    //* ROUTE: GET /products
+    $app->get('/products', [ProductsController::class, 'handleGetProducts']);
+
+    //!
+    //* ROUTE: GET /products/{product_id}
+    $app->get('/products/{product_id}', [ProductsController::class, 'handleGetProductById']);
+
+    //!
+    //* ROUTE: GET /products/{product_id}/nutrition
+    $app->get('/products/{product_id}/nutrition', [ProductsController::class, 'handleGetProductNutrition']);
+
+    //?---------CATEGORIES----------------------------------------------
+    //!
+    //* ROUTE: GET /categories
+    $app->get('/categories', [CategoriesController::class, 'handleGetCategories']);
+
+    //!
+    //* ROUTE: GET /categories/{categories_id}
+    $app->get('/categories/{category_id}', [CategoriesController::class, 'handleGetCategoryById']);
+
+    //!
+    //* ROUTE: GET /categories/{categories_id}/brands
+    $app->get('/categories/{categories_id}/brands', [CategoriesController::class, 'handleGetProducts']);
+
+    //?---------ALLERGENS----------------------------------------------
+    //!
+    //* ROUTE: GET /allergens
+    $app->get('/allergens', [AllergensController::class, 'handleGetAllergens']);
+
+    //!
+    //* ROUTE: GET /allergens/{allergens_id}
+    $app->get('/allergens/{allergen_id}', [AllergensController::class, 'handleGetAllergenById']);
+
+    //!
+    //* ROUTE: GET /products/{product_id}/ingredients
+    $app->get('/allergens/{allergens_id}/ingredients', [AllergensController::class, 'handleGetProducts']);
+
+
 
     // $app->get('/test', [TestController::class, 'handleTest']);
 

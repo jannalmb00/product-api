@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Core\PDOService;
+use App\Helpers\PaginationHelper;
 use PDO;
 use Exception;
 
@@ -91,6 +92,8 @@ abstract class BaseModel
     {
         return (array) $this->run($sql, $args)->fetchAll($fetchMode);
     }
+
+
 
     /**
      * Fetches a single result from a SQL query.
@@ -247,5 +250,100 @@ abstract class BaseModel
     {
         $this->current_page = $current_page;
         $this->records_per_page = $records_per_page;
+    }
+
+
+    protected function paginate(string $sql, array $args = [], $fetchMode = PDO::FETCH_ASSOC): array
+    {
+        //? 1 - determine number of (total) number of records included in the result set
+        //* Hint: use the count()
+        $total_records = $this->count($sql, $args);
+        //dd($total_records);
+
+        //? 2 - Instantiate the pagination helper and pass to its constructor the required inputs (as parameters).
+        $phelper = new PaginationHelper(
+            $this->current_page,
+            $this->records_per_page,
+            $total_records
+        );
+
+        //? 3 - Get the offset value from pagination helper's instance
+        $offset = $phelper->getOffset();
+        //  dd($offset);
+
+        $sql .= " LIMIT $this->records_per_page OFFSET $offset";
+        // dd($sql);
+
+        //? 4 - Execute the constrained query
+        $data = $this->fetchAll($sql, $args);
+
+        //? 5 - Retrieve the pagination metadata from the pagination helper
+        $result = $phelper->getPaginationMetadata();
+
+        //? 6 - [COMBINE] Return the metadata and the data combined in the same array.
+        $result['data'] = $data;
+
+        return $result;
+    }
+
+    //! PREPARE SQL FOR STRING
+    public function prepareStringSQL(array $filters, string $filterKey, string $toFilter): array
+    {
+        //FIlter check here
+        if (isset($filters[$filterKey])) {
+
+            // $filter = $filters $filterKey];
+            $sql = " AND $toFilter LIKE CONCAT(:$toFilter, '%')";
+            //$filters_map["given_name"] = $filters['given_name'];
+            // dd($sql);
+
+            return ['value' => $filters[$filterKey], 'sqlPart' => $sql];
+        }
+
+
+        return [];
+        //return [$filters['given_name'], $sql];
+    }
+
+
+    public function prepareIdSQL(string $id, string $table, string $column): array
+    {
+        //FIlter check here
+        if (!empty($id)) {
+
+            $sql = "SELECT * FROM $table WHERE $column = :id";
+       
+            return ['sqlPart' => $sql, ['id' => $id]];
+        }
+
+
+        return [];
+        //return [$filters['given_name'], $sql];
+    }
+
+    //! SORTING
+    public function sortAndOrder(array $filters, string $orderDefault, array $approved_ordering, string $sql): string
+    {
+
+        $direction = "ASC"; // Default
+
+        if (isset($filters["sort"])) {
+
+            $direction = strtolower($filters["sort"]) == 'descending' ? 'DESC' : 'ASC'; // Default to ascending if not descending
+
+        }
+
+        //dd($filters["sort"]);
+
+        $order_by = $filters["order_by"] ?? $orderDefault; // Default to 'id' if 'order_by' not set
+
+        // Ensure only approved columns are used
+        if (!in_array($order_by, $approved_ordering)) {
+            $order_by = $orderDefault;
+        }
+
+        $sql .= " ORDER BY " . $order_by . " " . $direction;
+        //    }
+        return $sql;
     }
 }
