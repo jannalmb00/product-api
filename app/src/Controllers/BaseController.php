@@ -79,15 +79,14 @@ abstract class BaseController
     //! FILTER INPUT VALIDATION - REGEX FOR IDs
     public function validateFilterIds(array $filters, string $regex_id, string $column, string $errorMessage, Request $request)
     {
-
         if (isset($filters[$column])) {
             $filter = $filters[$column];
-
             //$regex_tour_id = '/^WC-\d{4}$/'; regex id
-
             if (preg_match($regex_id, $filter) === 0) {
                 throw new HttpInvalidInputException($request, $errorMessage);
             }
         }
     }
+
+    // TODO: VALIDATE PAGE PARAMS ()
 }

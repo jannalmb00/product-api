@@ -9,15 +9,50 @@ use App\Validation\ValidationHelper;
 use App\Exceptions\HttpNoContentException;
 use App\Models\AllergensModel;
 use App\Models\BaseModel;
+use App\Services\AllergensService;
 
 class AllergensController extends BaseController
 {
-    public function __construct(private AllergensModel $model)
+    public function __construct(private AllergensModel $allergens_model, private AllergensService $allergens_service) // replace the reference to a service, and the service will have a reference to the model
     {
         //To initialize the validator
         parent::__construct();
     }
 
+    //* ROUTE: POST /ALLERGENS
+    public function handleCreateAllergens(Request $request, Response $response): Response
+    {
+        echo 'HELLO';
+
+        //TODO: Handle case where the case where the body could be empty
+        $request->getBody();
+
+
+        // Write the new data
+        $allergens_data = $request->getParsedBody();
+
+
+        // dd($allergens_data);
+        $result = $this->allergens_service->createAllergens($allergens_data);
+
+        //* Dont forget to identify the outcome of the operations: success vs failure
+        if ($result->isSuccess()) {
+            // Operation success
+            $payload = [
+                'status' => 'success',
+                'code' => 201,
+                'message' => $result->getMessage(),
+            ];
+            // Operation sucessful
+            $this->renderJson($response, $payload, 201); // We write the status code that will be injected in the payload.
+        }
+
+        /*
+        Write the rules ;
+        */
+        // Return a failed operation.
+        return $response;
+    }
     public function handleGetAllergens(Request $request, Response $response): Response
     {
         //*Filters
@@ -38,7 +73,7 @@ class AllergensController extends BaseController
         }
 
         //* paginate -- function from base controller
-        $info = $this->pagination($filters, $this->model, [$this->model, 'getAllergens']);
+        $info = $this->pagination($filters, $this->allergens_model, [$this->allergens_model, 'getAllergens']);
 
         //! VALIDATION
         if ($info["data"] == false) {
@@ -61,12 +96,14 @@ class AllergensController extends BaseController
         //! REGEX - VALIDATION - EXCEPTIONS - ID
         $regex_id = '/^A\d{2,3}$/';
 
-        if (preg_match($regex_id, $id) === 0) {
-            throw new HttpInvalidInputException($request, "Provided product is invalid.");
-        }
+        // if (preg_match($regex_id, $id) === 0) {
+        //     throw new HttpInvalidInputException($request, "Provided product is invalid.");
+        // }
+
+        $id = $this->validateFilterIds($filters, $regex_id, 'id', "Invalid Allergen ID input!", $request);
 
         //* paginate -- function from base controller
-        $info = $this->pagination($filters, $this->model, [$this->model, 'getAllergenById']);
+        $info = $this->pagination($filters, $this->allergens_model, [$this->allergens_model, 'getAllergenById']);
 
         if ($info["data"] == false) {
             //! no matching record in the db
@@ -99,13 +136,17 @@ class AllergensController extends BaseController
             }
         }
 
+        $regex_id =  '/^A\d{2,3}$/';
+
+        $allergen_id = $this->validateFilterIds($filters, $regex_id, 'allergen_id', "Invalid Allergen ID Input.", $request);
+
         // Validate isGMO parameter
         if (isset($filters['isGMO']) && !in_array($filters['isGMO'], ['0', '1'])) {
             throw new HttpInvalidInputException($request, "isGMO parameter must be either 0 or 1.");
         }
 
         //* Get ingredients by allergen with pagination
-        $info = $this->pagination($filters, $this->model, [$this->model, 'getIngredientsByAllergen']);
+        $info = $this->pagination($filters, $this->allergens_model, [$this->allergens_model, 'getIngredientsByAllergen']);
 
         //* Check if any ingredients were found
         if ($info["data"] == false) {

@@ -18,6 +18,7 @@ use Psr\Http\Server\MiddlewareInterface;
  */
 class HelloMiddleware implements MiddlewareInterface
 {
+    // MIDDLEWARE TAKES CARE OF DECODE HTML WE DONT HAVE TO DECODE IN THE CONTROLLER METHODS
     /**
      * Process an incoming server request.
      *

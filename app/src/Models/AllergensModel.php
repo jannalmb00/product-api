@@ -59,7 +59,9 @@ class AllergensModel extends BaseModel
         $filters_map = ["allergen_id" => $allergen_id];
 
         //* SQL query to join ingredients with allergens
-        $sql = "SELECT DISTINCT i.*FROM ingredients i WHERE i.allergen_id = :allergen_id";
+        $sql = "SELECT DISTINCT i.* FROM ingredients i WHERE i.allergen_id = :allergen_id";
+
+        // $sql = " SELECT DISTINCT pi.* FROM ingredients product_ingredients pi WHERE i
 
         // Provide the fitlers that we can accept ... I am not sure if we need filters for sub-collection resource but I will add just in case
         //? Erase the filters if we oont need it
@@ -89,5 +91,12 @@ class AllergensModel extends BaseModel
 
         //* Pagination
         return $this->paginate($sql, $filters_map);
+    }
+
+    function insertAllergen($new_allergen): mixed
+    {
+        $last_id = $this->insert("allergens", $new_allergen);
+        // $last_id = $this->update("allergens", $new_allergen);
+        return $last_id;
     }
 }
