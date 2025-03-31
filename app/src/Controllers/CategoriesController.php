@@ -60,8 +60,14 @@ class CategoriesController extends BaseController
         $regex_id = '/^C-\d{4,5}$/';
 
         if (preg_match($regex_id, $id) === 0) {
-            throw new HttpInvalidInputException($request, "Provided product is invalid.");
+            throw new HttpInvalidInputException($request, "Provided category is invalid.");
         }
+
+        // if (preg_match($regex_id, $id) === 0) {
+        //     throw new HttpInvalidInputException($request, "Provided product is invalid.");
+        // }
+
+        $id = $this->validateFilterIds($filters, $regex_id, 'id', "Invalid Category ID input!", $request);
 
         //* paginate -- function from base controller
         $info = $this->pagination($filters, $this->model, [$this->model, 'getCategoryById']);
@@ -89,10 +95,13 @@ class CategoriesController extends BaseController
         $filters = $request->getQueryParams();
 
         // REGEX - VALIDATION - EXCEPTIONS - CATEGORY ID -> THIS IS THE INPUT VALIDATION if we needed have to double check
-        //  $regex_id = '/^C-\d{4,5}$/';
+        $regex_id = '/^C-\d{4,5}$/';
         // if (preg_match($regex_id, $category_id) === 0) {
         //     throw new HttpInvalidInputException($request, "Provided category ID is invalid.");
         // }
+
+        $category_id = $this->validateFilterIds($filters, $regex_id, 'id', "Invalid Category ID input!", $request);
+
 
         //* Validate string parameters if they are provided
         $stringValidateArray = ['brand_name', 'brand_country'];

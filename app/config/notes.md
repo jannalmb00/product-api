@@ -17,3 +17,4 @@ UPDATE - AFFECTED ROWS UPDATED
 DELETED - AFFECTED ROWS DELETED
 
 2nd assignment -> Another client 
+

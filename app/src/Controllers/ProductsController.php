@@ -45,8 +45,6 @@ class ProductsController extends BaseController
             }
         }
 
-
-
         // if (isset($filters['name'])) {
 
         //     $filter = $filters['name'];
@@ -97,6 +95,7 @@ class ProductsController extends BaseController
         // }
 
 
+
         //* paginate -- function from base controller
         $info = $this->pagination($filters, $this->model, [$this->model, 'getProducts']);
 
@@ -119,9 +118,12 @@ class ProductsController extends BaseController
 
         //! REGEX - VALIDATION - EXCEPTIONS - ID
         $regex_id = '/^P\d{5,6}$/';
+
         if (preg_match($regex_id, $id) === 0) {
             throw new HttpInvalidInputException($request, "Provided product is invalid.");
         }
+
+        $id = $this->validateFilterIds($filters, $regex_id, 'id', "Invalid Product ID input!", $request);
 
         //* paginate -- function from base controller
         $info = $this->pagination($filters, $this->model, [$this->model, 'getProductById']);
@@ -144,9 +146,13 @@ class ProductsController extends BaseController
 
         //? Graceful error handling
         $regex_id = '/^P\d{5,6}$/';
+
         if (preg_match($regex_id, $id) === 0) {
             throw new HttpInvalidInputException($request, "Provided product is invalid. Ingredients records cannot be retrieved.");
         }
+
+        $id = $this->validateFilterIds($filters, $regex_id, 'id', "Invalid Category ID input!", $request);
+
 
         // //? Validation & exception handling of filter parameters
         // $this->validateFilterIds($filters, $regex_id, '');
@@ -169,10 +175,9 @@ class ProductsController extends BaseController
         // }
 
 
-        $this->model->setPaginationOptions($filters["page"], $filters["page_size"]);
+        // $this->model->setPaginationOptions($filters["page"], $filters["page_size"]);
 
-
-        $info = $this->model->getProductNutrition($id, $filters);
+        $info = $this->pagination($filters, $this->model, [$this->model, 'getProductByNutrition']);
 
         if ($info["data"] == false) {
             //! no matching record in the db

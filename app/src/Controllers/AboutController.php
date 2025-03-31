@@ -10,7 +10,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class AboutController extends BaseController
 {
-    private const API_NAME = 'YOUR_PROJECT_NAME';
+    private const API_NAME = 'FOOD-API';
 
     private const API_VERSION = '1.0.0';
 
@@ -21,106 +21,87 @@ class AboutController extends BaseController
             'version' => self::API_VERSION,
             'about' => 'Welcome to our Product API where we introduce information about food products specifically. ',
             'authors' => 'Grechelle Uy, Janna Lomibao, Bridjette Nania Centro',
-            'pagination' => 'TBA',
-            'sorting' => 'TBA',
+            'pagination' => 'Pagination is true for all resources. With 5 result sets at a time by default as it is overrided.',
+            'sorting' => 'Sorting is true for all resources. Ascending by default with sorting options such as ASC and DESC.',
             'resources' => [
-
                 [
                     'resource_number' => 1,
                     'uri' => '/products',
-                    'description' => "",
-                    'filters_supported' => ['', '', '', '', ''],
-                    'sorting' =>  [
-
+                    'description' => "Lists of zero or more products that match the product's criteria.",
+                    'filters_supported' => ['product_name', 'product_origin', 'brand_name', 'category_name'],
+                    'sorting' => [
                         [
-                            '' => ['', '', '']
+                            'sortBy' => ['product_name', 'product_origin']
                         ],
-
-                        [
-                            '' => ['', '']
-                        ]
-                    ]
-                ],
-
-                [
-                    'resource_number' => 2,
-                    'uri' => '/players/{player_id}',
-                    'description' => "Gets the details of the specified player",
-                    'filters_supported' => "N/A"
-                ],
-
-                [
-                    'resource_number' => 3,
-                    'uri' => '/players/{player_id}/goals',
-                    'description' => "Gets a list of goals scored by the specified player",
-                    'filters_supported' => ['tournament_id', 'match_id']
-                ],
-
-                [
-                    'resource_number' => 4,
-                    'uri' => '/players/{player_id}/appearances',
-                    'description' => "Gets a list of the specified player’s appearances",
-                    'filters_supported' => "N/A"
-                ],
-
-                [
-                    'resource_number' => 5,
-                    'uri' => '/teams',
-                    'description' => "Gets a list of zero or more teams matching the specified filter.",
-                    'filters_supported' => ['region']
-                ],
-
-                [
-                    'resource_number' => 6,
-                    'uri' => '/teams/{team_id}/appearances',
-                    'description' => "Gets a list of zero or more appearances of the specified team.",
-                    'filters_supported' => ['match_result']
-                ],
-
-                [
-                    'resource_number' => 7,
-                    'uri' => '/tournaments',
-                    'description' => "Gets a list of zero or more World Cup tournaments",
-                    'filters_supported' => ['start_date', 'winner', 'host_country', 'tournament_type']
-                ],
-
-                [
-                    'resource_number' => 8,
-                    'uri' => '/tournaments/{tournament_id}/matches',
-                    'description' => "Gets the list of matches that took place in the specified tournament and match the request filter.",
-                    'filters_supported' => ['stage']
-                ],
-
-                [
-                    'resource_number' => 9,
-                    'uri' => '/matches/{match_id}/players ',
-                    'description' => "Gets the list of players who played in the specified match FROM 1970.",
-                    'filters_supported' => ['position']
-                ],
-
-                [
-                    'resource_number' => 10,
-                    'uri' => '/stadiums',
-                    'description' => "Gets the list of stadiums where World Cup matches took place.",
-                    'filters_supported' => ['country', 'city', 'capacity'],
-                    'sorting' =>  [
-
-                        [
-                            'sortBy' => ['stadium_id', 'stadium_name', 'country_name', 'stadium_capacity']
-                        ],
-
                         [
                             'orderBy' => ['ASC', 'DESC']
                         ]
                     ]
                 ],
-
                 [
-                    'resource_number' => 11,
-                    'uri' => '/stadiums/{stadium_id}/matches',
-                    'description' => "Gets List of matches that took place the specified stadium.",
-                    'filters_supported' => ['tournament', 'stage_name']
+                    'resource_number' => 2,
+                    'uri' => '/products/{product_id}',
+                    'description' => "Details of a specific product",
+                    'filters_supported' => "N/A"
                 ],
+                [
+                    'resource_number' => 3,
+                    'uri' => '/products/{product_id}/nutrition',
+                    'description' => "Gets nutrition information for the specified product",
+                    'filters_supported' => "N/A"
+                ],
+                [
+                    'resource_number' => 4,
+                    'uri' => '/allergens',
+                    'description' => "Gets a list of allergens matching the specified filters",
+                    'filters_supported' => ['allergen_name', 'food_group', 'food_type', 'food_origin', 'food_item'],
+                    'sorting' => [
+                        [
+                            'sortBy' => ['allergen_name', 'allergen_reaction_type', 'food_group', 'food_origin', 'food_type']
+                        ],
+                        [
+                            'orderBy' => ['ASC', 'DESC']
+                        ]
+                    ]
+                ],
+                [
+                    'resource_number' => 5,
+                    'uri' => '/allergens/{allergen_id}',
+                    'description' => "Gets details of a specific allergen",
+                    'filters_supported' => "N/A"
+                ],
+                [
+                    'resource_number' => 6,
+                    'uri' => '/allergens/{allergen_id}/ingredients',
+                    'description' => "Gets a list of ingredients associated with the specified allergen",
+                    'filters_supported' => ['ingredient_name', 'processing_type', 'isGMO']
+                ],
+                [
+                    'resource_number' => 7,
+                    'uri' => '/categories',
+                    'description' => "Gets a list of categories matching the specified filters",
+                    'filters_supported' => ['category_name', 'category_type', 'parent_category'],
+                    'sorting' => [
+                        [
+                            'sortBy' => ['category_name', 'category_type', 'parent_category']
+                        ],
+                        [
+                            'orderBy' => ['ASC', 'DESC']
+                        ]
+                    ]
+                ],
+                [
+                    'resource_number' => 8,
+                    'uri' => '/categories/{category_id}',
+                    'description' => "Gets details of a specific category",
+                    'filters_supported' => "N/A"
+                ],
+                [
+                    'resource_number' => 9,
+                    'uri' => '/categories/{category_id}/brands',
+                    'description' => "Gets a list of brands associated with the specified category",
+                    'filters_supported' => ['brand_name', 'brand_country']
+                ]
             ]
         );
 

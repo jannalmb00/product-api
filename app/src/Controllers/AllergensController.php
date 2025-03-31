@@ -22,15 +22,13 @@ class AllergensController extends BaseController
     //* ROUTE: POST /ALLERGENS
     public function handleCreateAllergens(Request $request, Response $response): Response
     {
+
         echo 'HELLO';
 
         //TODO: Handle case where the case where the body could be empty
         $request->getBody();
 
-
-        // Write the new data
         $allergens_data = $request->getParsedBody();
-
 
         // dd($allergens_data);
         $result = $this->allergens_service->createAllergens($allergens_data);
@@ -51,7 +49,16 @@ class AllergensController extends BaseController
         Write the rules ;
         */
         // Return a failed operation.
-        return $response;
+        // TODO: You need to prepare (structure the response as shown in class) the bad request: 400 BAD REQUEST and return the JSON response -> YOU SET THE CODE IN CONTROLLER (PREPARED PAYLOAD IN BASE CONTROLLER)
+
+        // 400 bad request
+        $payload = [
+            'status' => 'failure',
+            'code' => 400,
+            'message' => $result->getMessage(),
+            'details' => $result->getErrors(),
+        ];
+        return $this->renderJson($response, $payload, 400);
     }
     public function handleGetAllergens(Request $request, Response $response): Response
     {
@@ -119,6 +126,7 @@ class AllergensController extends BaseController
         if (!isset($uri_args['allergen_id'])) {
             throw new HttpInvalidInputException($request, "Allergen ID is required in the URL");
         }
+
 
         //* Get allergen ID from URI
         $allergen_id = $uri_args['allergen_id'];
