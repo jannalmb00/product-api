@@ -2,9 +2,19 @@
 
 namespace App\Models;
 
+/**
+ *
+ * Allergen model handles data related to allergns in the system
+ */
 class AllergensModel extends BaseModel
 {
-
+    /**
+     * GET: Retrieves the list of allergens from the databse with optional filtering, sorting and pagination
+     *
+     * @param array $filters The filtrs to apply: 'allergen_name', 'allergen_reaction_type ', 'food_group', 'food_origin', and 'food_type'
+     *
+     * @return array List of allergens after all the filters
+     */
     public function getAllergens(array $filters): array
     {
         //? FOR FILTERING
@@ -41,6 +51,14 @@ class AllergensModel extends BaseModel
         //? PAGINATE
         return $this->paginate($sql, $filters_map);
     }
+    /**
+     * GET: Retrives the details of the specified product
+     *
+     * @param array $filter The filters to apply the query:
+     *
+     * @return array List of fetails for the specified allergen
+     *
+     */
     public function getAllergenById(array $filter): mixed
     {
         //Sends the id, table name, column name
@@ -50,6 +68,13 @@ class AllergensModel extends BaseModel
         return $this->paginate($result['sqlPart'], $result[0]);
     }
 
+    /**
+     * GET: Retrives the ingredietns of the specified allergen
+     *
+     * @param array $filters The filters to apply the query:
+     *
+     * @return array List of ingredients of the specified allergen
+     */
     public function getIngredientsByAllergen(array $filters): mixed
     {
         //* Get the allergen id

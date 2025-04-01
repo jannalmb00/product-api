@@ -1,0 +1,11 @@
+POST
+- check format if it fits with what is needed
+        - type
+        - presense
+        - format
+        - length
+        - business rule : does it make sense in your domain
+
+give details on the errror
+- ex "age must be positive number"
+

@@ -10,13 +10,18 @@ use App\Exceptions\HttpNoContentException;
 use App\Models\ProductsModel;
 use App\Models\BaseModel;
 
-
+/**
+ * Controller responsible for handling methods related to products, such as retrieving list of products, specified products and retrieval of nutrition for a specified product
+ */
 
 class ProductsController extends BaseController
 {
 
     private ValidationHelper $validator;
-
+    /**
+     * Product Controller constructos sets up the controller with a model and service are used to get product data
+     * @param \App\Models\ProductsModel $model
+     */
     public function __construct(private ProductsModel $model)
     {
         //$this->validator = new ValidationHelper();
@@ -25,6 +30,15 @@ class ProductsController extends BaseController
         parent::__construct();
     }
 
+    /**
+     * GET: Handles the request  of retrieving the products based on the filter parameter
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request The request object containing the query parameter
+     * @param \Psr\Http\Message\ResponseInterface $response The response object to return
+     *
+     * @throws \App\Exceptions\HttpNoContentException Throw when data is not found after all the filters
+     * @return Response Response containing the list of allergens and its header
+     */
     public function handleGetProducts(Request $request, Response $response): Response
     {
         //*Filters
@@ -107,6 +121,17 @@ class ProductsController extends BaseController
         return $this->renderJson($response, $info);
     }
 
+    /**
+     *GET: Handles details of the specified product
+
+     * @param \Psr\Http\Message\ServerRequestInterface $request The request object containing query parameter
+     * @param \Psr\Http\Message\ResponseInterface $response The response object to return
+     * @param array $uri_args The URI arguments containing ID
+     *
+     * @throws \App\Exceptions\HttpInvalidInputException Throw when input is not valid
+     * @throws \App\Exceptions\HttpNoContentException Throw erroe when daa is empty after all the filters
+     * @return Response Response containing the details of specified product
+     */
     public function handleGetProductById(Request $request, Response $response, array $uri_args): Response
     {
         //*Get id from request
@@ -136,6 +161,17 @@ class ProductsController extends BaseController
         return $this->renderJson($response, $info);
     }
 
+    /**
+     * GET: Handles the retrieval of  nutritions for a specified product
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request The request containing all the query parameter
+     * @param \Psr\Http\Message\ResponseInterface $response The response object to return
+     * @param array $uri_args The URI arguments containing the ID
+     *
+     * @throws \App\Exceptions\HttpInvalidInputException Throw error when invalid input is used/entered.
+     * @throws \App\Exceptions\HttpNoContentException Throw error when data is empty
+     * @return Response Response containing the details of the specified product
+     */
     public function handleGetProductNutrition(Request $request, Response $response, array $uri_args): Response
     {
         //*Get id from request

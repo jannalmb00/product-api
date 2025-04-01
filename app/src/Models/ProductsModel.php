@@ -2,9 +2,21 @@
 
 namespace App\Models;
 
+/**
+ * Product models handles data related to products in the system
+ *
+ * It interacts with the database
+ */
 class ProductsModel extends BaseModel
 {
 
+    /**
+     * GET:  Retrieves a list of products from the database with optiional filtering, sorting, and pagination.
+     *
+     * @param array $filters The filters to apply the query: 'product_name', 'product_origin', 'category_name', and 'brand_name'
+     *
+     * @return array List of products after all the filter
+     */
     public function getProducts(array $filters): array
     {
         // //? FOR FILTERING
@@ -48,6 +60,13 @@ class ProductsModel extends BaseModel
         return $this->paginate($sql, $filters_map);
     }
 
+    /**
+     *GET: Retrieves the detals of the specified product
+
+     * @param array $filter The filters to apply the query:
+     *
+     * @return array List of details for the specified product
+     */
     public function getProductById(array $filter): mixed
     {
         //Sends the id, table name, column name
@@ -57,6 +76,14 @@ class ProductsModel extends BaseModel
         return $this->paginate($result['sqlPart'], $result[0]);
     }
 
+    /**
+     * GET: Retrieves the nutrition of the specified product
+     *
+     * @param string $id ID of the desired product
+     * @param array $filters The filters to apply to the query:
+     *
+     * @return array List of nutrition of the spcified product
+     */
     public function getProductNutrition(string $id, array $filters): mixed
     {
 
