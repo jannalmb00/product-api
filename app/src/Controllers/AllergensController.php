@@ -39,7 +39,7 @@ class AllergensController extends BaseController
     public function handleCreateAllergens(Request $request, Response $response): Response
     {
 
-        echo 'HELLO';
+        //echo 'HELLO';
 
         //TODO: Handle case where the case where the body could be empty
         $request->getBody();
@@ -58,7 +58,15 @@ class AllergensController extends BaseController
                 'message' => $result->getMessage(),
             ];
             // Operation sucessful
-            $this->renderJson($response, $payload, 201); // We write the status code that will be injected in the payload.
+            return $this->renderJson($response, $payload, 201); // We write the status code that will be injected in the payload.
+        } else {
+            $payload = [
+                'status' => 'failure',
+                'code' => 400,
+                'message' => $result->getMessage(),
+                'details' => $result->getErrors(),
+            ];
+            return $this->renderJson($response, $payload, 400);
         }
 
         /*
@@ -68,13 +76,8 @@ class AllergensController extends BaseController
         // TODO: You need to prepare (structure the response as shown in class) the bad request: 400 BAD REQUEST and return the JSON response -> YOU SET THE CODE IN CONTROLLER (PREPARED PAYLOAD IN BASE CONTROLLER)
 
         // 400 bad request
-        $payload = [
-            'status' => 'failure',
-            'code' => 400,
-            'message' => $result->getMessage(),
-            'details' => $result->getErrors(),
-        ];
-        return $this->renderJson($response, $payload, 400);
+
+
     }
 
     /**
