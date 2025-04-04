@@ -28,58 +28,6 @@ class AllergensController extends BaseController
         parent::__construct();
     }
 
-    //* ROUTE: POST /ALLERGENS
-    /**
-     * POST:
-     *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param \Psr\Http\Message\ResponseInterface $response
-     * @return Response
-     */
-    public function handleCreateAllergens(Request $request, Response $response): Response
-    {
-
-        //echo 'HELLO';
-
-        //TODO: Handle case where the case where the body could be empty
-        $request->getBody();
-
-        $allergens_data = $request->getParsedBody();
-
-        // dd($allergens_data);
-        $result = $this->allergens_service->createAllergens($allergens_data);
-
-        //* Dont forget to identify the outcome of the operations: success vs failure
-        if ($result->isSuccess()) {
-            // Operation success
-            $payload = [
-                'status' => 'success',
-                'code' => 201,
-                'message' => $result->getMessage(),
-            ];
-            // Operation sucessful
-            return $this->renderJson($response, $payload, 201); // We write the status code that will be injected in the payload.
-        } else {
-            $payload = [
-                'status' => 'failure',
-                'code' => 400,
-                'message' => $result->getMessage(),
-                'details' => $result->getErrors(),
-            ];
-            return $this->renderJson($response, $payload, 400);
-        }
-
-        /*
-        Write the rules ;
-        */
-        // Return a failed operation.
-        // TODO: You need to prepare (structure the response as shown in class) the bad request: 400 BAD REQUEST and return the JSON response -> YOU SET THE CODE IN CONTROLLER (PREPARED PAYLOAD IN BASE CONTROLLER)
-
-        // 400 bad request
-
-
-    }
-
     /**
      * GET: Handles the request of retrieving allergens based on the filter parameter
      *
@@ -211,5 +159,63 @@ class AllergensController extends BaseController
         }
 
         return $this->renderJson($response, $info);
+    }
+
+
+    //* ROUTE: POST /ALLERGENS
+    /**
+     * POST:
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param \Psr\Http\Message\ResponseInterface $response
+     * @return Response
+     */
+    public function handleCreateAllergens(Request $request, Response $response): Response
+    {
+
+        //echo 'HELLO';
+
+        //TODO: Handle case where the case where the body could be empty
+        $request->getBody();
+
+        $allergens_data = $request->getParsedBody();
+
+        // dd($allergens_data);
+        $result = $this->allergens_service->createAllergens($allergens_data);
+
+        //* Dont forget to identify the outcome of the operations: success vs failure
+        if ($result->isSuccess()) {
+            // Operation success
+            $payload = [
+                'status' => 'success',
+                'code' => 201,
+                'message' => $result->getMessage(),
+            ];
+            // Operation sucessful
+            return $this->renderJson($response, $payload, 201); // We write the status code that will be injected in the payload.
+        } else {
+            $payload = [
+                'status' => 'failure',
+                'code' => 400,
+                'message' => $result->getMessage(),
+                'details' => $result->getErrors(),
+            ];
+            return $this->renderJson($response, $payload, 400);
+        }
+
+        /*
+        Write the rules ;
+        */
+        // Return a failed operation.
+        // TODO: You need to prepare (structure the response as shown in class) the bad request: 400 BAD REQUEST and return the JSON response -> YOU SET THE CODE IN CONTROLLER (PREPARED PAYLOAD IN BASE CONTROLLER)
+
+        // 400 bad request
+
+
+    }
+
+    public function handleDeleteAllergenById (Request $request, Response $response, array $uri_args): Response
+    {
+
     }
 }

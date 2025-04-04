@@ -60,6 +60,9 @@ return static function (Slim\App $app): void {
     //* ROUTE: POST /allergens
     $app->post('/allergens', [AllergensController::class, 'handleCreateAllergens']);
 
+    //* ROUTE: DELETE /allergens
+    $app->delete('/allergens/{allergen_id}', [AllergensController::class, 'handleDeleteAllergenById']);
+
 
     // Validation Helper
     // $app->get('/test', [TestController::class, 'handleTest']);
