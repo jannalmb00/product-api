@@ -16,6 +16,11 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 return static function (Slim\App $app): void {
 
     // Routes with authentication
+
+    //* ROUTE: GET /
+    $app->post('/products', [ProductsController::class, 'handleCreateProducts']);
+
+
     //* ROUTE: GET /
     $app->get('/', [AboutController::class, 'handleAboutWebService']);
 
