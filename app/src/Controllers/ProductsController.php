@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Services\ProductsService;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Exceptions\HttpInvalidInputException;
@@ -18,16 +19,76 @@ class ProductsController extends BaseController
 {
 
     private ValidationHelper $validator;
+<<<<<<< Updated upstream
     /**
      * Product Controller constructos sets up the controller with a model and service are used to get product data
      * @param \App\Models\ProductsModel $model
      */
     public function __construct(private ProductsModel $model)
+=======
+
+    public function __construct(private ProductsModel $model, private ProductsService $service)
+>>>>>>> Stashed changes
     {
         //$this->validator = new ValidationHelper();
 
         //To initialize the validator
         parent::__construct();
+    }
+    // public function __construct(private ProductsModel $model)
+    // {
+    //     //$this->validator = new ValidationHelper();
+
+    //     //To initialize the validator
+    //     parent::__construct();
+    // }
+
+    public function handleCreateProducts(Request $request, Response $response): Response
+    {
+
+        echo ' blet';
+
+        //POST - in json
+        // TODO: the body could be empty. handle case where body is empty ,,, when request is returned null or invalid
+        $new_product = $request->getParsedBody();
+
+
+
+
+        // dd($new_product);
+
+        //? CALL SERVICE
+        $result = $this->service->createProducts($new_product);
+        if ($new_product != NULL) {
+            dd($new_product);
+
+            //!NOte verify he outcome of the opertion: sucess vs filure
+            if ($result->isSuccess()) {
+                //OPeration succeeded.
+                // create an array that will contain -- make this array reusable
+                $payload = [
+                    'status' => 'Success',
+                    'code' => 200,
+                    'message' => $result->getMessage(),
+                ];
+
+                //pverride the default 200 satus code to 201
+                return  $this->renderJson($response, $payload, 201);
+            }
+        }
+
+        // DO FAILED OPERATION
+        //Return a failed operation
+
+        //TODO prepare and return a response containing the "status, message, code, details"
+        //TODO structure repsonse as shown in class and return as JSON response
+        $payload = [
+            'status' => 'error',
+            'code' => 400,
+            'message' => $result->getMessage(),
+            'details' => $result->getErrors()
+        ];
+        return  $this->renderJson($response, $payload, 400);
     }
 
     /**

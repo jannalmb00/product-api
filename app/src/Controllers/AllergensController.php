@@ -180,6 +180,16 @@ class AllergensController extends BaseController
 
         $allergens_data = $request->getParsedBody();
 
+        if (empty($allergens_data)) {
+            $payload = [
+                'status' => 'failure',
+                'code' => 400,
+                'message' => 'Request body is empty',
+                'details' => 'The body is empty',
+            ];
+            return $this->renderJson($response, $payload, 400);
+        }
+
         // dd($allergens_data);
         $result = $this->allergens_service->createAllergens($allergens_data);
 
@@ -214,8 +224,76 @@ class AllergensController extends BaseController
 
     }
 
-    public function handleDeleteAllergenById (Request $request, Response $response, array $uri_args): Response
+    public function handleDeleteAllergenById(Request $request, Response $response, array $uri_args): Response
     {
+        $id = $uri_args['allergen_id'];
 
+        if (empty($id)) {
+            $payload = [
+                'status' => 'failure',
+                'code' => 400,
+                'message' => 'Allergen ID is reuired',
+                'details' => 'Allergen ID is missing',
+            ];
+            return $this->renderJson($response, $payload, 400);
+        }
+
+        $result = $this->allergens_service->deleteAllergens($uri_args);
+
+        if ($result->isSuccess()) {
+            $payload = [
+                'status' => 'success',
+                'code' => 201,
+                'message' => $result->getMessage(),
+            ];
+            // Operation sucessful
+            return $this->renderJson($response, $payload, 201);
+        } else {
+            $payload = [
+                'status' => 'failure',
+                'code' => 400,
+                'message' => $result->getMessage(),
+                'details' => $result->getErrors(),
+            ];
+            return $this->renderJson($response, $payload, 400);
+        }
+    }
+
+    public function handleUpdateAllergenById(Request $request, Response $response, array $uri_args): Response
+    {
+        $id = $uri_args['allergen_id'];
+
+        if (empty($id)) {
+            $payload = [
+                'status' => 'failure',
+                'code' => 400,
+                'message' => 'Allergen ID is reuired',
+                'details' => 'Allergen ID is missing',
+            ];
+            return $this->renderJson($response, $payload, 400);
+        }
+        $data = $request->getParsedBody();
+        $condition = ["allergen_id" => $id];
+
+        $result = $this->allergens_service->updateAllergen($data, $condition);
+
+        if ($result->isSuccess()) {
+            // Operation success
+            $payload = [
+                'status' => 'success',
+                'code' => 201,
+                'message' => $result->getMessage(),
+            ];
+            // Operation sucessful
+            return $this->renderJson($response, $payload, 201); // We write the status code that will be injected in the payload.
+        } else {
+            $payload = [
+                'status' => 'failure',
+                'code' => 400,
+                'message' => $result->getMessage(),
+                'details' => $result->getErrors(),
+            ];
+            return $this->renderJson($response, $payload, 400);
+        }
     }
 }

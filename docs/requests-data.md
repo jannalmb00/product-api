@@ -1,19 +1,40 @@
-# POST Examples
+# POST examples
 
-Example of payload containing invalid inputs
-
-
+Example of VALID payload
+ [
     {
-      "alergen_id": "A01",
-      "allergen_name": "Soy Allergy",
-      "allergen_reaction_type": "Hives, anaphylaxis",
-      "food_group": "Pulse",
-      "food_type": "Cereal grain and pulse",
-      "food_origin": "Plant origin",
-      "food_item": "Soybean"
+      "product_id": "P00002",
+      "product_name": "Oat Drink Barista Edition",
+      "product_barcode": "2147483647",
+      "product_origin": "Sweden",
+      "product_serving_size": 240,
+      "product_image": "https://m.media-amazon.com/images/I/51eulMv-7HL.jpg",
+      "nutrition_id": "N00002",
+      "diet_id": "DA0002",
+      "brand_id": "B0002",
+      "category_id": "C-0005",
+      "environmental_id": "E00002"
     }
+  ]
 
+  INVALID Payload
+------ EDIT THIS
+   [
+    {
+      "product_id": "P00002",
+      "product_name": "Oat Drink Barista Edition",
+      "product_barcode": "2147483647",
+      "product_origin": "Sweden",
+      "product_serving_size": 240,
+      "product_image": "https://m.media-amazon.com/images/I/51eulMv-7HL.jpg",
+      "nutrition_id": "N00002",
+      "diet_id": "DA0002",
+      "brand_id": "B0002",
+      "category_id": "C-0005",
+      "environmental_id": "E00002"
+    }
+  ]
 
-# EXAMPLE of PUT Request
+# PUT examples
 
-# EXAMPLE of DELETE Request
+# DELETE examples
