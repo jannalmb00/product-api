@@ -10,15 +10,6 @@ namespace App\Models;
 class ProductsModel extends BaseModel
 {
 
-<<<<<<< Updated upstream
-    /**
-     * GET:  Retrieves a list of products from the database with optiional filtering, sorting, and pagination.
-     *
-     * @param array $filters The filters to apply the query: 'product_name', 'product_origin', 'category_name', and 'brand_name'
-     *
-     * @return array List of products after all the filter
-     */
-=======
     public function insertNewProduct(array $new_product): mixed
     {
         // From base model , pass table name, array conatining key value pairs
@@ -31,7 +22,6 @@ class ProductsModel extends BaseModel
         return $last_id;
     }
 
->>>>>>> Stashed changes
     public function getProducts(array $filters): array
     {
         // //? FOR FILTERING
