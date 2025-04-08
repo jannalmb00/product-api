@@ -10,7 +10,7 @@ use App\Validation\Validator;
 
 class ProductsService
 {
-    public function __construct(private ProductsModel $model, private Validator $validator) {}
+    public function __construct(private ProductsModel $product_model, private Validator $validator) {}
 
     function createProducts(array $new_player_info): Result
     { // returns Result class
@@ -25,13 +25,32 @@ class ProductsService
         //if list, drop in for loop and each item inthat list call insert
         //* Just process the first collection / first element in the array, if there are any errors just do that
         $new_product = $new_player_info[0];
-        $this->model->insertNewProduct($new_product);
-
+        $this->product_model->insertNewProduct($new_product);
 
         // Pass the last inserted id --> this is what you retrun
 
         $last_insert_id = '100';
         // return successful result
         return Result::success("Product has been created.", $last_insert_id);
+    }
+
+    function updateProduct(array $data, array $condition): Result
+    {
+        $rowsUpdate = $this->product_model->updateProduct($data, $condition);
+
+        if ($rowsUpdate <= 0) {
+            return Result::failure("No row has been updated");
+        }
+        return Result::success("Updted successfully");
+    }
+
+    function deleteProduct(array $condition): Result
+    {
+        $rowsDeleted = $this->product_model->deleteProduct($condition);
+
+        if ($rowsDeleted <= 0) {
+            return Result::failure("No data has been deleted");
+        }
+        return Result::success("The allergen has been deleted");
     }
 }

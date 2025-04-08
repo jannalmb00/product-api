@@ -10,17 +10,6 @@ namespace App\Models;
 class ProductsModel extends BaseModel
 {
 
-    public function insertNewProduct(array $new_product): mixed
-    {
-        // From base model , pass table name, array conatining key value pairs
-        $last_id = $this->insert('product', $new_product);
-
-        //for update
-        //$last_id = $this->update('products', $new_product, ["product_id" => ]);
-
-
-        return $last_id;
-    }
 
     public function getProducts(array $filters): array
     {
@@ -114,5 +103,21 @@ class ProductsModel extends BaseModel
         }
 
         return $this->paginate($sql, $filters_map);
+    }
+
+    function insertNewProduct($new_product): mixed
+    {
+        $last_id = $this->insert("product", $new_product);
+        return $last_id;
+    }
+
+    function updateProduct(array $data, array $condition)
+    {
+        return $this->update('product', $data, $condition);
+    }
+
+    function deleteProduct(array $conditions): int
+    {
+        return $this->delete('product', $conditions);
     }
 }
