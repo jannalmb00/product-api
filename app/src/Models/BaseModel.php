@@ -57,14 +57,17 @@ abstract class BaseModel
      */
     private function run(string $sql, array $args = [])
     {
+        echo $sql;
         if (empty($args)) {
             return $this->db->query($sql);
         }
         $stmt = $this->db->prepare($sql);
         //check if args is associative or sequential?
         $is_assoc = (array() === $args) ? false : array_keys($args) !== range(0, count($args) - 1);
+        //dd($is_assoc);
         if ($is_assoc) {
             foreach ($args as $key => $value) {
+                //    dd($value);
                 if (is_int($value)) {
                     $stmt->bindValue(":$key", $value, PDO::PARAM_INT);
                 } else {
@@ -191,6 +194,7 @@ abstract class BaseModel
         foreach ($data as $key => $value) {
             $field_details .= "$key = ?,";
         }
+        //dd($field_details);
         $field_details = rtrim($field_details, ',');
 
         //setup where
@@ -200,7 +204,7 @@ abstract class BaseModel
             $where_details .= $i == 0 ? "$key = ?" : " AND $key = ?";
             $i++;
         }
-
+        //dd($where_details);
         $stmt = $this->run("UPDATE $table SET $field_details WHERE $where_details", $values);
 
         return $stmt->rowCount();

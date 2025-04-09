@@ -19,16 +19,8 @@ class ProductsController extends BaseController
 {
 
     private ValidationHelper $validator;
-<<<<<<< Updated upstream
-    /**
-     * Product Controller constructos sets up the controller with a model and service are used to get product data
-     * @param \App\Models\ProductsModel $model
-     */
-    public function __construct(private ProductsModel $model)
-=======
 
     public function __construct(private ProductsModel $model, private ProductsService $service)
->>>>>>> Stashed changes
     {
         //$this->validator = new ValidationHelper();
 

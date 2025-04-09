@@ -36,20 +36,19 @@ class AllergensService
     {
         $rowsDeleted = $this->allergens_model->deleteAllergen($condition);
 
-        if($rowsDeleted <= 0){
+        if ($rowsDeleted <= 0) {
             return Result::failure("No data has been deleted");
         }
         return Result::success("The allergen has been deleted");
     }
 
-    function updateAllergen(array $data, array $condition): Result {
-        $rowsUpdate = $this->allergens_model->updateAllergen($data,$condition);
-        if($rowsUpdate <= 0){
+    function updateAllergen(array $data, array $condition): Result
+    {
+        // echo $data;
+        $rowsUpdate = $this->allergens_model->updateAllergen($data, $condition);
+        if ($rowsUpdate <= 0) {
             return Result::failure("No row has been updated");
         }
         return Result::success("Updted successfully");
-
-
-
     }
 }

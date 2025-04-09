@@ -267,7 +267,7 @@ class AllergensController extends BaseController
             $payload = [
                 'status' => 'failure',
                 'code' => 400,
-                'message' => 'Allergen ID is reuired',
+                'message' => 'Allergen ID is required',
                 'details' => 'Allergen ID is missing',
             ];
             return $this->renderJson($response, $payload, 400);
@@ -275,7 +275,7 @@ class AllergensController extends BaseController
         $data = $request->getParsedBody();
         $condition = ["allergen_id" => $id];
 
-        $result = $this->allergens_service->updateAllergen($data, $condition);
+        $result = $this->allergens_service->updateAllergen($data[0], $condition);
 
         if ($result->isSuccess()) {
             // Operation success
