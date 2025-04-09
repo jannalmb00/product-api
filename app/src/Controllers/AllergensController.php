@@ -173,8 +173,6 @@ class AllergensController extends BaseController
     public function handleCreateAllergens(Request $request, Response $response): Response
     {
 
-        //echo 'HELLO';
-
         //TODO: Handle case where the case where the body could be empty
         $request->getBody();
 

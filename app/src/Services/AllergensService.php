@@ -30,7 +30,6 @@ class AllergensService
         // $last_insert_id = 29;
         // Return a successful result
         return Result::success("The allergen has been created successfully!", $last_inserted_id);
-        return Result::success("The allergen has been created successfully!", $last_inserted_id);
     }
 
     function deleteAllergens(array $condition): Result
@@ -50,6 +49,6 @@ class AllergensService
         if ($rowsUpdate <= 0) {
             return Result::failure("No row has been updated");
         }
-        return Result::success("Updted successfully");
+        return Result::success("Updated successfully");
     }
 }

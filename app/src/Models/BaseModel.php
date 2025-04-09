@@ -57,7 +57,7 @@ abstract class BaseModel
      */
     private function run(string $sql, array $args = [])
     {
-        echo $sql;
+
         if (empty($args)) {
             return $this->db->query($sql);
         }
