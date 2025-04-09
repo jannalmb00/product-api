@@ -2,9 +2,19 @@
 
 namespace App\Models;
 
+/**
+ *
+ * Allergen model handles data related to allergns in the system
+ */
 class AllergensModel extends BaseModel
 {
-
+    /**
+     * GET: Retrieves the list of allergens from the databse with optional filtering, sorting and pagination
+     *
+     * @param array $filters The filtrs to apply: 'allergen_name', 'allergen_reaction_type ', 'food_group', 'food_origin', and 'food_type'
+     *
+     * @return array List of allergens after all the filters
+     */
     public function getAllergens(array $filters): array
     {
         //? FOR FILTERING
@@ -41,6 +51,14 @@ class AllergensModel extends BaseModel
         //? PAGINATE
         return $this->paginate($sql, $filters_map);
     }
+    /**
+     * GET: Retrives the details of the specified product
+     *
+     * @param array $filter The filters to apply the query:
+     *
+     * @return array List of fetails for the specified allergen
+     *
+     */
     public function getAllergenById(array $filter): mixed
     {
         //Sends the id, table name, column name
@@ -50,6 +68,13 @@ class AllergensModel extends BaseModel
         return $this->paginate($result['sqlPart'], $result[0]);
     }
 
+    /**
+     * GET: Retrives the ingredietns of the specified allergen
+     *
+     * @param array $filters The filters to apply the query:
+     *
+     * @return array List of ingredients of the specified allergen
+     */
     public function getIngredientsByAllergen(array $filters): mixed
     {
         //* Get the allergen id
@@ -59,7 +84,9 @@ class AllergensModel extends BaseModel
         $filters_map = ["allergen_id" => $allergen_id];
 
         //* SQL query to join ingredients with allergens
-        $sql = "SELECT DISTINCT i.*FROM ingredients i WHERE i.allergen_id = :allergen_id";
+        $sql = "SELECT DISTINCT i.* FROM ingredients i WHERE i.allergen_id = :allergen_id";
+
+        // $sql = " SELECT DISTINCT pi.* FROM ingredients product_ingredients pi WHERE i
 
         // Provide the fitlers that we can accept ... I am not sure if we need filters for sub-collection resource but I will add just in case
         //? Erase the filters if we oont need it
@@ -89,5 +116,19 @@ class AllergensModel extends BaseModel
 
         //* Pagination
         return $this->paginate($sql, $filters_map);
+    }
+
+    function insertAllergen($new_allergen): mixed
+    {
+        $last_id = $this->insert("allergens", $new_allergen);
+        // $last_id = $this->update("allergens", $new_allergen);
+        return $last_id;
+    }
+    function deleteAllergen ( array $conditions):int{
+        return $this->delete('allergens', $conditions);
+    }
+
+    function updateAllergen(array $data, array $condition){
+        return $this->update('allergens',$data, $condition);
     }
 }

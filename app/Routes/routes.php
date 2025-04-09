@@ -16,6 +16,11 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 return static function (Slim\App $app): void {
 
     // Routes with authentication
+
+    //* ROUTE: GET /
+    $app->post('/products', [ProductsController::class, 'handleCreateProducts']);
+
+
     //* ROUTE: GET /
     $app->get('/', [AboutController::class, 'handleAboutWebService']);
 
@@ -57,8 +62,17 @@ return static function (Slim\App $app): void {
     //* ROUTE: GET /products/{product_id}/ingredients
     $app->get('/allergens/{allergens_id}/ingredients', [AllergensController::class, 'handleGetIngredientsByAllergen']);
 
+    //* ROUTE: POST /allergens
+    $app->post('/allergens', [AllergensController::class, 'handleCreateAllergens']);
+
+    //* ROUTE: PUT /allergens
+    $app->put('/allergens/{allergen_id}', [AllergensController::class, 'handleUpdateAllergenById']);
+
+    //* ROUTE: DELETE /allergens
+    $app->delete('/allergens/{allergen_id}', [AllergensController::class, 'handleDeleteAllergenById']);
 
 
+    // Validation Helper
     // $app->get('/test', [TestController::class, 'handleTest']);
 
     //* ROUTE: GET /ping

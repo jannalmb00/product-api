@@ -1,10 +1,21 @@
 <?php
 
 namespace App\Models;
-
+/**
+ * Categories model handles data related to categories in the system
+ *
+ * It interacts with the database
+ */
 class CategoriesModel extends BaseModel
 {
 
+    /**
+     * GET: Retriveds the list of categories from the database with optional filtering, sorting and pagination
+     *
+     * @param array $filters The filters to apply to the query: 'category_name', 'category_type', 'parent_category'
+     *
+     * @return array List of categories after all the filter
+     */
     public function getCategories(array $filters): array
     {
         // //? FOR FILTERING
@@ -48,6 +59,14 @@ class CategoriesModel extends BaseModel
         return $this->paginate($sql, $filters_map);
     }
 
+
+    /**
+     * GET: Retrieves the details of the specified category
+     *
+     * @param array $filter The filters to apply to the query:
+     *
+     * @return array List of details for the specified category
+     */
     public function getCategoryById(array $filter): mixed
     {
         //Sends the id, table name, column name
@@ -57,6 +76,12 @@ class CategoriesModel extends BaseModel
         return $this->paginate($result['sqlPart'], $result[0]);
     }
 
+    /**
+     * GET: Retrievs the brand of specified category in the system
+     *
+     * @param array $filters The filters to apply to the query:  'brand_name', 'brand_country'
+     * @return array
+     */
     public function getBrandsByCategory(array $filters): mixed
     {
         $category_id = $filters['category_id'];

@@ -2,8 +2,25 @@
 
 namespace App\Models;
 
+/**
+ * Product models handles data related to products in the system
+ *
+ * It interacts with the database
+ */
 class ProductsModel extends BaseModel
 {
+
+    public function insertNewProduct(array $new_product): mixed
+    {
+        // From base model , pass table name, array conatining key value pairs
+        $last_id = $this->insert('product', $new_product);
+
+        //for update
+        //$last_id = $this->update('products', $new_product, ["product_id" => ]);
+
+
+        return $last_id;
+    }
 
     public function getProducts(array $filters): array
     {
@@ -48,6 +65,13 @@ class ProductsModel extends BaseModel
         return $this->paginate($sql, $filters_map);
     }
 
+    /**
+     *GET: Retrieves the detals of the specified product
+
+     * @param array $filter The filters to apply the query:
+     *
+     * @return array List of details for the specified product
+     */
     public function getProductById(array $filter): mixed
     {
         //Sends the id, table name, column name
@@ -57,6 +81,14 @@ class ProductsModel extends BaseModel
         return $this->paginate($result['sqlPart'], $result[0]);
     }
 
+    /**
+     * GET: Retrieves the nutrition of the specified product
+     *
+     * @param string $id ID of the desired product
+     * @param array $filters The filters to apply to the query:
+     *
+     * @return array List of nutrition of the spcified product
+     */
     public function getProductNutrition(string $id, array $filters): mixed
     {
 
