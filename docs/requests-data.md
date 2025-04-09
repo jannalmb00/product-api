@@ -1,7 +1,14 @@
+<<<<<<< Updated upstream
 # POST examples
 
 Example of VALID payload
  [
+=======
+# POST Examples
+
+Example of payload containing invalid inputs
+
+>>>>>>> Stashed changes
     {
       "product_id": "P00002",
       "product_name": "Oat Drink Barista Edition",

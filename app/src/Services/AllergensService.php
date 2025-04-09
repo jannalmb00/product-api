@@ -16,7 +16,7 @@ class AllergensService
         //* VALIDATE USING VALITRON
         //! RETRURN RIGHT AWAY AS SOON AS YOU DETECT ANY INVALID INPUTS
         if (1 == 0) {
-            return Result::failure("teRROR!", [
+            return Result::failure("Error!", [
                 "allergen_name"  => "The following allergen name is invalid",
                 "allergen_type" => "The allergen type is invalid",
             ]);
@@ -29,6 +29,7 @@ class AllergensService
         // Result pattern is implemented
         // $last_insert_id = 29;
         // Return a successful result
+        return Result::success("The allergen has been created successfully!", $last_inserted_id);
         return Result::success("The allergen has been created successfully!", $last_inserted_id);
     }
 

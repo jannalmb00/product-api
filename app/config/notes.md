@@ -8,6 +8,14 @@ Client (POST, PUT, DELETE) -> WE CAN SEND DATA FROM CLIENTsend a request -> Cont
 (FOR INVALID INPUTS)
 
 
+You can pass multiple resources in the JSON content body in the thunder client.
+we can use a for loop to handle multiple resources 
+[{}, {}, ]
+
+In the response, it should accept or not the response if inputs, etc are not valid/invalid.
+
+FOR POST AND PUT, WE NEED VALIDATOR
+
         // TODO:
 
         BODY FROM THUNDERCLIENT
@@ -18,3 +26,4 @@ DELETED - AFFECTED ROWS DELETED
 
 2nd assignment -> Another client 
 
+2ND ITERATION
