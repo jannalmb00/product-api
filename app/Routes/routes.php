@@ -69,7 +69,7 @@ return static function (Slim\App $app): void {
     $app->put('/allergens/{allergen_id}', [AllergensController::class, 'handleUpdateAllergenById']);
 
     //* ROUTE: DELETE /allergens
-    $app->delete('/allergens/{allergen_id}', [AllergensController::class, 'handleDeleteAllergenById']);
+    $app->delete('/allergens', [AllergensController::class, 'handleDeleteAllergenById']);
 
 
     // Validation Helper

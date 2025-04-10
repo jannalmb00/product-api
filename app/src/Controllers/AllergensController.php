@@ -213,13 +213,17 @@ class AllergensController extends BaseController
 
     public function handleDeleteAllergenById(Request $request, Response $response, array $uri_args): Response
     {
-        $id = $uri_args['allergen_id'];
+        ///$id = $uri_args['allergen_id'];
+        $allergen_ids = $request->getParsedBody();
+        // NOTE: removes an element from an array: by its index or by its key.
+        //unset($allergen_ids[0]);
+        //dd($allergen_ids);
 
-        if (empty($id)) {
+        if (empty($allergen_ids)) {
             throw new HttpBadRequestException($request, "Allergen ID is required");
         }
 
-        $result = $this->allergens_service->deleteAllergens($uri_args);
+        $result = $this->allergens_service->deleteAllergens($allergen_ids);
 
         if ($result->isSuccess()) {
             $payload = [
