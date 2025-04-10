@@ -10,6 +10,7 @@ use App\Exceptions\HttpNoContentException;
 use App\Models\AllergensModel;
 use App\Models\BaseModel;
 use App\Services\AllergensService;
+use Slim\Exception\HttpBadRequestException;
 
 /**
  * Controller responsible for handling methods related to allergens, such as retrieving list of allergens' detals, specified allergen, and  retrieval of ingredients for a specified allergen..
@@ -179,13 +180,7 @@ class AllergensController extends BaseController
         $allergens_data = $request->getParsedBody();
 
         if (empty($allergens_data)) {
-            $payload = [
-                'status' => 'failure',
-                'code' => 400,
-                'message' => 'Request body is empty',
-                'details' => 'The body is empty',
-            ];
-            return $this->renderJson($response, $payload, 400);
+            throw new HttpBadRequestException($request, "Data passed is empty");
         }
 
         // dd($allergens_data);
@@ -202,13 +197,7 @@ class AllergensController extends BaseController
             // Operation sucessful
             return $this->renderJson($response, $payload, 201); // We write the status code that will be injected in the payload.
         } else {
-            $payload = [
-                'status' => 'failure',
-                'code' => 400,
-                'message' => $result->getMessage(),
-                'details' => $result->getErrors(),
-            ];
-            return $this->renderJson($response, $payload, 400);
+            throw new HttpBadRequestException($request, $result->getMessage(), $result->getErrors());
         }
 
         /*
@@ -227,13 +216,7 @@ class AllergensController extends BaseController
         $id = $uri_args['allergen_id'];
 
         if (empty($id)) {
-            $payload = [
-                'status' => 'failure',
-                'code' => 400,
-                'message' => 'Allergen ID is reuired',
-                'details' => 'Allergen ID is missing',
-            ];
-            return $this->renderJson($response, $payload, 400);
+            throw new HttpBadRequestException($request, "Allergen ID is required");
         }
 
         $result = $this->allergens_service->deleteAllergens($uri_args);
@@ -247,13 +230,7 @@ class AllergensController extends BaseController
             // Operation sucessful
             return $this->renderJson($response, $payload, 201);
         } else {
-            $payload = [
-                'status' => 'failure',
-                'code' => 400,
-                'message' => $result->getMessage(),
-                'details' => $result->getErrors(),
-            ];
-            return $this->renderJson($response, $payload, 400);
+            throw new HttpBadRequestException($request, $result->getMessage(), $result->getErrors());
         }
     }
 
@@ -262,13 +239,7 @@ class AllergensController extends BaseController
         $id = $uri_args['allergen_id'];
 
         if (empty($id)) {
-            $payload = [
-                'status' => 'failure',
-                'code' => 400,
-                'message' => 'Allergen ID is required',
-                'details' => 'Allergen ID is missing',
-            ];
-            return $this->renderJson($response, $payload, 400);
+            throw new HttpBadRequestException($request, "Allergen ID is required");
         }
         $data = $request->getParsedBody();
         $condition = ["allergen_id" => $id];
@@ -285,13 +256,7 @@ class AllergensController extends BaseController
             // Operation sucessful
             return $this->renderJson($response, $payload, 201); // We write the status code that will be injected in the payload.
         } else {
-            $payload = [
-                'status' => 'failure',
-                'code' => 400,
-                'message' => $result->getMessage(),
-                'details' => $result->getErrors(),
-            ];
-            return $this->renderJson($response, $payload, 400);
+            throw new HttpBadRequestException($request, $result->getMessage(), $result->getErrors());
         }
     }
 }
