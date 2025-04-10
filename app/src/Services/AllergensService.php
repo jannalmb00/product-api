@@ -73,9 +73,8 @@ class AllergensService
     {
         $validation_errors = []; // if array has element then there's error
         //TODO: loop through the received list of allergen IDs.
-
         foreach ($allergen_ids as $key => $allergen_id) {
-            //echo $allergen_id;
+            //echo "QUACK!!! ". $allergen_id;
             //dd($allergen_id);
             //TODO: And validate them one by one while you are looping over them.
             $validator = new Validator(['allergen_id' => $allergen_id]);
@@ -85,51 +84,21 @@ class AllergensService
                 ]
             );
             $validator->mapFieldsRules($rules);
-            $isValid = $validator->validate();
-            //   echo $isValid;
-
             //Check if allergen_id is valid
-            if ($isValid == 1) {
-                echo "WRONG";
-                //    // echo '<br>';
-                // echo $validator->errorsToJson();
-                //  return Result::failure("Allergen ID is not valid");
+            if (!$validator->validate()) {
+                // Accumulate the error messages to be returned to the client.
+                $validation_errors[] = [
+                    "allergen_id" => $allergen_id,
+                    "error" => $validator->errorsToString()
+                ];
+            } {
+                $rowsDeleted = $this->allergens_model->deleteAllergen($allergen_id);
             }
-
-            //$rowsDeleted = $this->allergens_model->deleteAllergen($allergen_id);
         }
-
-        // if (!isset($condition['allergen_id'])) {
-        //     return Result::failure("Allergen ID is required");
-        // }
-        //TODO: validate the id
-        echo "Service";
-        //dd($condition["allergen_id"]);
-        // $validator = new Validator(['regex', '/^[A-Z][0-9]{2}$/']);
-        // $validator->rule('allergen_id', 'regex', '/^[A-Z][0-9]{2}$/');
-        $validator = new Validator(['regex' => '/^[A-Z][0-9]{2}$/']);
-        // $validator->rules([
-        //     'regex' => [['/^[A-Z][0-9]{2}$/']]
-        // ]);
-        // $validator->mapFieldRules($condition["allergen_id"],  $validator->rules([
-        //     'regex' => [['/^[A-Z][0-9]{2}$/']]
-        // ]));
-
-        //     echo (!$validator->validate());
-
-        if (!$validator->validate()) {
-            //     echo $validator->errorsToString();
-            //    // echo '<br>';
-            echo $validator->errorsToJson();
-            return Result::failure("Allergen ID is not valid");
+        if (count($validation_errors) > 0) {
+            return Result::failure("Some of the allergen IDs are not valid", $validation_errors);
         }
-
-
-
-        // if ($rowsDeleted <= 0) {
-        //     return Result::failure("No data has been deleted");
-        // }
-        return Result::success("The allergen has been deleted");
+        return Result::success("The allergen have been deleted successfully!");
     }
 
     function updateAllergen(array $data, array $condition): Result

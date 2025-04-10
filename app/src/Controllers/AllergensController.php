@@ -218,11 +218,9 @@ class AllergensController extends BaseController
         // NOTE: removes an element from an array: by its index or by its key.
         //unset($allergen_ids[0]);
         //dd($allergen_ids);
-
         if (empty($allergen_ids)) {
             throw new HttpBadRequestException($request, "Allergen ID is required");
         }
-
         $result = $this->allergens_service->deleteAllergens($allergen_ids);
 
         if ($result->isSuccess()) {
@@ -231,11 +229,17 @@ class AllergensController extends BaseController
                 'code' => 201,
                 'message' => $result->getMessage(),
             ];
-            // Operation sucessful
+            // Operation successful
             return $this->renderJson($response, $payload, 201);
-        } else {
-            throw new HttpBadRequestException($request, $result->getMessage(), $result->getErrors());
         }
+        //! Operation failed.
+        $payload = [
+            'status' => 'error',
+            'code' => 404,
+            'message' => $result->getMessage(),
+            'details' => $result->getErrors(),
+        ];
+        return $this->renderJson($response, $payload, 400);
     }
 
     public function handleUpdateAllergenById(Request $request, Response $response, array $uri_args): Response
