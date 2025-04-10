@@ -25,11 +25,16 @@ class ProductsService
         //if list, drop in for loop and each item inthat list call insert
         //* Just process the first collection / first element in the array, if there are any errors just do that
         $new_product = $new_player_info[0];
+
+        //? 3- We can call the validation class in order to test input validation
+        $new_product->validateCreateProducts();
+
+        //? 4- Call the product model POST method which is insertNewProduct();
         $this->product_model->insertNewProduct($new_product);
 
-        // Pass the last inserted id --> this is what you retrun
-
+        //! Pass the last inserted id --> this is what you retrun
         $last_insert_id = '100';
+
         // return successful result
         return Result::success("Product has been created.", $last_insert_id);
     }
