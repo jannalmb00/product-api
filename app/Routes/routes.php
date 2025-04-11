@@ -12,7 +12,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 return static function (Slim\App $app): void {
     // Routes with authentication
-    //* ROUTE: GET /
+
+    //* ROUTE: POST /
     $app->post('/products', [ProductsController::class, 'handleCreateProducts']);
 
     //* ROUTE: GET /
@@ -42,6 +43,17 @@ return static function (Slim\App $app): void {
     //!
     //* ROUTE: GET /categories/{categories_id}/brands
     $app->get('/categories/{category_id}/brands', [CategoriesController::class, 'handleGetBrandsByCategory']);
+
+    //* ROUTE: POST /
+    $app->post('/categories', [CategoriesController::class, 'handleCreateCategories']);
+
+    //* ROUTE: PUT /
+    $app->put('/categories', [CategoriesController::class, 'handleUpdateCategories']);
+
+    //* ROUTE: DELETE /
+    $app->DELETE('/categories', [CategoriesController::class, 'handleDeleteCategories']);
+
+
 
     //?---------ALLERGENS----------------------------------------------
     //!

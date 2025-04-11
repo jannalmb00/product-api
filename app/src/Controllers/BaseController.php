@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\Models\BaseModel;
 use App\Validation\ValidationHelper;
+use App\Validation\Validator;
 use App\Exceptions\HttpInvalidInputException;
 use App\Exceptions\HttpNoContentException;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -40,6 +41,7 @@ abstract class BaseController
     public function pagination(array $filters, BaseModel $model, callable $method): mixed
     {
 
+        // validate_pages =  new Validator($filters,  );
         //Add a default if no page and page size set
         $page = isset($filters["page"]) ? (int) $filters["page"] : 1;
         $size = isset($filters["page_size"]) ? (int) $filters["page_size"] : 10;
@@ -90,4 +92,3 @@ abstract class BaseController
 
     // TODO: VALIDATE PAGE PARAMS ()
 }
-

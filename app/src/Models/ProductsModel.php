@@ -16,7 +16,7 @@ class ProductsModel extends BaseModel
         $last_id = $this->insert('product', $new_product);
 
         //for update
-        //$last_id = $this->update('products', $new_product, ["product_id" => ]);
+        //   $last_id = $this->update('products', $new_product, ["product_id" => ]);
 
 
         return $last_id;

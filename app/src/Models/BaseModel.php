@@ -183,11 +183,14 @@ abstract class BaseModel
      */
     protected function update(string $table, array $data, array $where_conditions): int
     {
+
+
         //merge data and where together
         $collection = array_merge($data, $where_conditions);
 
         //collect the values from collection
         $values = array_values($collection);
+
 
         //setup fields
         $field_details = null;
@@ -204,7 +207,7 @@ abstract class BaseModel
             $where_details .= $i == 0 ? "$key = ?" : " AND $key = ?";
             $i++;
         }
-        //dd($where_details);
+        // dd($field_details);
         $stmt = $this->run("UPDATE $table SET $field_details WHERE $where_details", $values);
 
         return $stmt->rowCount();
