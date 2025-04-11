@@ -6,20 +6,14 @@ use App\Controllers\AboutController;
 use App\Controllers\ProductsController;
 use App\Controllers\CategoriesController;
 use App\Controllers\AllergensController;
-
-
 use App\Helpers\DateTimeHelper;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-
 return static function (Slim\App $app): void {
-
     // Routes with authentication
-
     //* ROUTE: GET /
     $app->post('/products', [ProductsController::class, 'handleCreateProducts']);
-
 
     //* ROUTE: GET /
     $app->get('/', [AboutController::class, 'handleAboutWebService']);
@@ -69,15 +63,12 @@ return static function (Slim\App $app): void {
     $app->put('/allergens/{allergen_id}', [AllergensController::class, 'handleUpdateAllergenById']);
 
     //* ROUTE: DELETE /allergens
-    $app->delete('/allergens/{allergen_id}', [AllergensController::class, 'handleDeleteAllergenById']);
-
+    $app->delete('/allergens', [AllergensController::class, 'handleDeleteAllergenById']);
 
     // Validation Helper
     // $app->get('/test', [TestController::class, 'handleTest']);
-
     //* ROUTE: GET /ping
     $app->get('/ping', function (Request $request, Response $response, $args) {
-
         $payload = [
             "greetings" => "Reporting! Hello there!",
             "now" => DateTimeHelper::now(DateTimeHelper::Y_M_D_H_M),

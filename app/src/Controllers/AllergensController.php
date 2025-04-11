@@ -10,6 +10,7 @@ use App\Exceptions\HttpNoContentException;
 use App\Models\AllergensModel;
 use App\Models\BaseModel;
 use App\Services\AllergensService;
+use Slim\Exception\HttpBadRequestException;
 
 /**
  * Controller responsible for handling methods related to allergens, such as retrieving list of allergens' detals, specified allergen, and  retrieval of ingredients for a specified allergen..
@@ -173,21 +174,13 @@ class AllergensController extends BaseController
     public function handleCreateAllergens(Request $request, Response $response): Response
     {
 
-        //echo 'HELLO';
-
         //TODO: Handle case where the case where the body could be empty
         $request->getBody();
 
         $allergens_data = $request->getParsedBody();
 
         if (empty($allergens_data)) {
-            $payload = [
-                'status' => 'failure',
-                'code' => 400,
-                'message' => 'Request body is empty',
-                'details' => 'The body is empty',
-            ];
-            return $this->renderJson($response, $payload, 400);
+            throw new HttpBadRequestException($request, "Data passed is empty");
         }
 
         // dd($allergens_data);
@@ -204,13 +197,7 @@ class AllergensController extends BaseController
             // Operation sucessful
             return $this->renderJson($response, $payload, 201); // We write the status code that will be injected in the payload.
         } else {
-            $payload = [
-                'status' => 'failure',
-                'code' => 400,
-                'message' => $result->getMessage(),
-                'details' => $result->getErrors(),
-            ];
-            return $this->renderJson($response, $payload, 400);
+            throw new HttpBadRequestException($request, $result->getMessage(), $result->getErrors());
         }
 
         /*
@@ -226,19 +213,15 @@ class AllergensController extends BaseController
 
     public function handleDeleteAllergenById(Request $request, Response $response, array $uri_args): Response
     {
-        $id = $uri_args['allergen_id'];
-
-        if (empty($id)) {
-            $payload = [
-                'status' => 'failure',
-                'code' => 400,
-                'message' => 'Allergen ID is reuired',
-                'details' => 'Allergen ID is missing',
-            ];
-            return $this->renderJson($response, $payload, 400);
+        ///$id = $uri_args['allergen_id'];
+        $allergen_ids = $request->getParsedBody();
+        // NOTE: removes an element from an array: by its index or by its key.
+        //unset($allergen_ids[0]);
+        //dd($allergen_ids);
+        if (empty($allergen_ids)) {
+            throw new HttpBadRequestException($request, "Allergen ID is required");
         }
-
-        $result = $this->allergens_service->deleteAllergens($uri_args);
+        $result = $this->allergens_service->deleteAllergens($allergen_ids);
 
         if ($result->isSuccess()) {
             $payload = [
@@ -246,17 +229,17 @@ class AllergensController extends BaseController
                 'code' => 201,
                 'message' => $result->getMessage(),
             ];
-            // Operation sucessful
+            // Operation successful
             return $this->renderJson($response, $payload, 201);
-        } else {
-            $payload = [
-                'status' => 'failure',
-                'code' => 400,
-                'message' => $result->getMessage(),
-                'details' => $result->getErrors(),
-            ];
-            return $this->renderJson($response, $payload, 400);
         }
+        //! Operation failed.
+        $payload = [
+            'status' => 'error',
+            'code' => 404,
+            'message' => $result->getMessage(),
+            'details' => $result->getErrors(),
+        ];
+        return $this->renderJson($response, $payload, 400);
     }
 
     public function handleUpdateAllergenById(Request $request, Response $response, array $uri_args): Response
@@ -264,18 +247,12 @@ class AllergensController extends BaseController
         $id = $uri_args['allergen_id'];
 
         if (empty($id)) {
-            $payload = [
-                'status' => 'failure',
-                'code' => 400,
-                'message' => 'Allergen ID is reuired',
-                'details' => 'Allergen ID is missing',
-            ];
-            return $this->renderJson($response, $payload, 400);
+            throw new HttpBadRequestException($request, "Allergen ID is required");
         }
         $data = $request->getParsedBody();
         $condition = ["allergen_id" => $id];
 
-        $result = $this->allergens_service->updateAllergen($data, $condition);
+        $result = $this->allergens_service->updateAllergen($data[0], $condition);
 
         if ($result->isSuccess()) {
             // Operation success
@@ -287,13 +264,7 @@ class AllergensController extends BaseController
             // Operation sucessful
             return $this->renderJson($response, $payload, 201); // We write the status code that will be injected in the payload.
         } else {
-            $payload = [
-                'status' => 'failure',
-                'code' => 400,
-                'message' => $result->getMessage(),
-                'details' => $result->getErrors(),
-            ];
-            return $this->renderJson($response, $payload, 400);
+            throw new HttpBadRequestException($request, $result->getMessage(), $result->getErrors());
         }
     }
 }

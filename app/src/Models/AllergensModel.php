@@ -124,11 +124,13 @@ class AllergensModel extends BaseModel
         // $last_id = $this->update("allergens", $new_allergen);
         return $last_id;
     }
-    function deleteAllergen ( array $conditions):int{
-        return $this->delete('allergens', $conditions);
+    function deleteAllergen(string $allergen_id): int
+    {
+        return $this->delete('allergens', ["allergen_id" => $allergen_id]);
     }
 
-    function updateAllergen(array $data, array $condition){
-        return $this->update('allergens',$data, $condition);
+    function updateAllergen(array $data, array $condition)
+    {
+        return $this->update('allergens', $data, $condition);
     }
 }
