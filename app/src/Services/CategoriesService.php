@@ -118,19 +118,19 @@ class CategoriesService
     }
 
 
-    function deleteCategories(array $allergen_ids): Result
+    function deleteCategories(array $category_ids): Result
     {
         $validation_errors = []; // if array has element then there's error
 
         //TODO: loop through the received list of allergen IDs.
-        foreach ($allergen_ids as $key => $allergen_id) {
+        foreach ($category_ids as $key => $category_id) {
             //echo "QUACK!!! ". $allergen_id;
             //dd($allergen_id);
             //TODO: And validate them one by one while you are looping over them.
-            $validator = new Validator(['allergen_id' => $allergen_id]);
+            $validator = new Validator(['category_id' => $category_id]);
             $rules = array(
-                'allergen_id' => [
-                    ['regex', '/^[A-Z][0-9]{2}$/']
+                'category_id' => [
+                    ['regex', '/^[A-Z]-[0-9]{4}$/']
                 ]
             );
             $validator->mapFieldsRules($rules);
@@ -138,7 +138,7 @@ class CategoriesService
             if (!$validator->validate()) {
                 // Accumulate the error messages to be returned to the client.
                 $validation_errors[] = [
-                    "allergen_id" => $allergen_id,
+                    "category_id" => $category_id,
                     "error" => $validator->errorsToString()
                 ];
             } {
@@ -146,8 +146,8 @@ class CategoriesService
             }
         }
         if (count($validation_errors) > 0) {
-            return Result::failure("Some of the allergen IDs are not valid", $validation_errors);
+            return Result::failure("Some of the category IDs are not valid", $validation_errors);
         }
-        return Result::success("The allergen have been deleted successfully!");
+        return Result::success("The category have been deleted successfully!");
     }
 }

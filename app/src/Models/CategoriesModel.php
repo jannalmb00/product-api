@@ -15,10 +15,6 @@ class CategoriesModel extends BaseModel
         // From base model , pass table name, array conatining key value pairs
         $last_id = $this->insert('category', $new_category);
 
-        //for update
-        //$last_id = $this->update('products', $new_product, ["product_id" => ]);
-
-
         return $last_id;
     }
 
@@ -39,6 +35,11 @@ class CategoriesModel extends BaseModel
         // dd($last_id);
 
         return $last_id;
+    }
+
+    function deleteCategory(string $category_id): int
+    {
+        return $this->delete('category', ["category_id" => $category_id]);
     }
 
     /**
