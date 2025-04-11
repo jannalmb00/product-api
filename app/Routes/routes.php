@@ -72,10 +72,10 @@ return static function (Slim\App $app): void {
     $app->post('/allergens', [AllergensController::class, 'handleCreateAllergens']);
 
     //* ROUTE: PUT /allergens
-    $app->put('/allergens/{allergen_id}', [AllergensController::class, 'handleUpdateAllergenById']);
+    $app->put('/allergens/{allergen_id}', [AllergensController::class, 'handleUpdateAllergen']);
 
     //* ROUTE: DELETE /allergens
-    $app->delete('/allergens', [AllergensController::class, 'handleDeleteAllergenById']);
+    $app->delete('/allergens', [AllergensController::class, 'handleDeleteAllergen']);
 
     // Validation Helper
     // $app->get('/test', [TestController::class, 'handleTest']);
