@@ -244,15 +244,13 @@ class AllergensController extends BaseController
 
     public function handleUpdateAllergen(Request $request, Response $response, array $uri_args): Response
     {
-        $id = $uri_args['allergen_id'];
+        $update_allergen = $request->getParsedBody();
 
-        if (empty($id)) {
-            throw new HttpBadRequestException($request, "Allergen ID is required");
+        if (empty($update_allergen)) {
+            throw new HttpBadRequestException($request, "Data passed is empty");
         }
-        $data = $request->getParsedBody();
-        $condition = ["allergen_id" => $id];
 
-        $result = $this->allergens_service->updateAllergen($data[0], $condition);
+        $result = $this->allergens_service->updateAllergen($update_allergen);
 
         if ($result->isSuccess()) {
             // Operation success

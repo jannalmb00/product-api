@@ -129,8 +129,11 @@ class AllergensModel extends BaseModel
         return $this->delete('allergens', ["allergen_id" => $allergen_id]);
     }
 
-    function updateAllergen(array $data, array $condition)
+    function updateAllergen(array $update_categroy_data)
     {
-        return $this->update('allergens', $data, $condition);
+        $allergen_id = $update_categroy_data["allergen_id"];
+        unset($update_categroy_data["allergen_id"]);
+
+        return $this->update('allergens', $update_categroy_data, ["allergen_id" =>  $allergen_id]);
     }
 }

@@ -101,7 +101,7 @@ class AllergensService
         return Result::success("The allergen have been deleted successfully!");
     }
 
-    function updateAllergen(array $data, array $condition): Result
+    function updateAllergen(array $update_allergen_data): Result
     {
         $rules = array(
             'allergen_id' => [
@@ -136,8 +136,8 @@ class AllergensService
             ]
         );
 
-        $validator = new Validator($data, [], 'en');
-        $validator->mapFieldRules($data, $rules);
+        $validator = new Validator($update_allergen_data);
+        $validator->mapFieldsRules($rules);
 
         if (!$validator->validate()) {
             //     echo $validator->errorsToString();
@@ -146,7 +146,7 @@ class AllergensService
             return Result::failure("Data is not valid");
         }
 
-        $rowsUpdate = $this->allergens_model->updateAllergen($data, $condition);
+        $rowsUpdate = $this->allergens_model->updateAllergen($update_allergen_data);
         if ($rowsUpdate <= 0) {
             return Result::failure("No row has been updated");
         }
