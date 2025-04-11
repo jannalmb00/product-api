@@ -211,7 +211,7 @@ class AllergensController extends BaseController
 
     }
 
-    public function handleDeleteAllergenById(Request $request, Response $response, array $uri_args): Response
+    public function handleDeleteAllergen(Request $request, Response $response, array $uri_args): Response
     {
         ///$id = $uri_args['allergen_id'];
         $allergen_ids = $request->getParsedBody();
@@ -242,7 +242,7 @@ class AllergensController extends BaseController
         return $this->renderJson($response, $payload, 400);
     }
 
-    public function handleUpdateAllergenById(Request $request, Response $response, array $uri_args): Response
+    public function handleUpdateAllergen(Request $request, Response $response, array $uri_args): Response
     {
         $id = $uri_args['allergen_id'];
 
