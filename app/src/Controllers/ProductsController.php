@@ -10,6 +10,7 @@ use App\Validation\ValidationHelper;
 use App\Exceptions\HttpNoContentException;
 use App\Models\ProductsModel;
 use App\Models\BaseModel;
+use Slim\Exception\HttpBadRequestException;
 
 /**
  * Controller responsible for handling methods related to products, such as retrieving list of products, specified products and retrieval of nutrition for a specified product
@@ -26,61 +27,6 @@ class ProductsController extends BaseController
 
         //To initialize the validator
         parent::__construct();
-    }
-    // public function __construct(private ProductsModel $model)
-    // {
-    //     //$this->validator = new ValidationHelper();
-
-    //     //To initialize the validator
-    //     parent::__construct();
-    // }
-
-    public function handleCreateProducts(Request $request, Response $response): Response
-    {
-
-        echo ' blet';
-
-        //POST - in json
-        // TODO: the body could be empty. handle case where body is empty ,,, when request is returned null or invalid
-        $new_product = $request->getParsedBody();
-
-
-
-
-        // dd($new_product);
-
-        //? CALL SERVICE
-        $result = $this->product_service->createProducts($new_product);
-        if ($new_product != NULL) {
-            dd($new_product);
-
-            //!NOte verify he outcome of the opertion: sucess vs filure
-            if ($result->isSuccess()) {
-                //OPeration succeeded.
-                // create an array that will contain -- make this array reusable
-                $payload = [
-                    'status' => 'Success',
-                    'code' => 200,
-                    'message' => $result->getMessage(),
-                ];
-
-                //pverride the default 200 satus code to 201
-                return  $this->renderJson($response, $payload, 201);
-            }
-        }
-
-        // DO FAILED OPERATION
-        //Return a failed operation
-
-        //TODO prepare and return a response containing the "status, message, code, details"
-        //TODO structure repsonse as shown in class and return as JSON response
-        $payload = [
-            'status' => 'error',
-            'code' => 400,
-            'message' => $result->getMessage(),
-            'details' => $result->getErrors()
-        ];
-        return  $this->renderJson($response, $payload, 400);
     }
 
     /**
@@ -111,57 +57,6 @@ class ProductsController extends BaseController
                 $this->validateString($filters, $validateString, $request);
             }
         }
-
-        // if (isset($filters['name'])) {
-
-        //     $filter = $filters['name'];
-        //     $string_valid = $this->validator->isAlpha($filter);
-
-        //     if (!$string_valid) {
-        //         throw new HttpInvalidInputException($request, "Invalid input. No numbers allowed");
-        //     }
-        // }
-
-        // if (isset($filters['last_name'])) {
-
-        //     $filter = $filters['last_name'];
-
-        //     //Checks if string is just letters and no numbers
-        //     $string_valid = $this->validator->isAlpha($filter);
-
-        //     if (!$string_valid) {
-        //         throw new HttpInvalidInputException($request, "Invalid input. No numbers allowed.");
-        //     }
-        // }
-        // }
-
-
-        // if (isset($filters['position'])) {
-
-        //     $filter = $filters['position'];
-
-        //     $string_valid = $this->validator->isAlpha($filter);
-
-        //     $valid_positions = ["goal keeper", "forward", "defender", "midfielder"];
-
-        //     if (!$string_valid && (!in_array($filters['position'], $valid_positions))) {
-        //         throw new HttpInvalidInputException($request, "Invalid input. Position are only defender, midfielder, goal keeper or forward.");
-        //     }
-        // }
-        // if (isset($filters['gender'])) {
-
-        //     $filter = $filters['gender'];
-
-        //     $string_valid = $this->validator->isAlpha($filter);
-
-        //     $valid_positions = ["male", "female"];
-
-        //     if (!$string_valid || !in_array($filter, $valid_positions)) {
-        //         throw new HttpNoContentException($request, "Invalid input. Gender is only female or male.");
-        //     }
-        // }
-
-
 
         //* paginate -- function from base controller
         $info = $this->pagination($filters, $this->model, [$this->model, 'getProducts']);
@@ -242,28 +137,6 @@ class ProductsController extends BaseController
 
         $id = $this->validateFilterIds($filters, $regex_id, 'id', "Invalid Category ID input!", $request);
 
-
-        // //? Validation & exception handling of filter parameters
-        // $this->validateFilterIds($filters, $regex_id, '');
-
-        // // if (isset($filters['tournament_id'])) {
-        // //     $filter = $filters['tournament_id'];
-        // //     $regex_tour_id = '/^WC-\d{4}$/';
-        // //     if (preg_match($regex_tour_id, $filter) === 0) {
-        // //         throw new HttpInvalidInputException($request, "Invalid input. Provided tournament id is invalid.");
-        // //     }
-        // // }
-        // if (isset($filters['match_id'])) {
-
-        //     $filter = $filters['match_id'];
-        //     $regex_tour_id = '/^M-\d{4}-\d{2}$/';
-
-        //     if (preg_match($regex_tour_id, $filter) === 0) {
-        //         throw new HttpInvalidInputException($request, "Invalid input. Provided match id is invalid.");
-        //     }
-        // }
-
-
         // $this->model->setPaginationOptions($filters["page"], $filters["page_size"]);
 
         $info = $this->pagination($filters, $this->model, [$this->model, 'getProductByNutrition']);
@@ -276,39 +149,128 @@ class ProductsController extends BaseController
         return $this->renderJson($response, $info);
     }
 
-    function handleUpdateProduct(Request $request, Response $response, array $uri_args)
+    /**
+     * POST: Creates a product
+     * Handles creation of a product
+     * @param \Psr\Http\Message\ServerRequestInterface $request refers to the request object
+     * @param \Psr\Http\Message\ResponseInterface $response refers to the response object
+     * @throws \Slim\Exception\HttpBadRequestException refers to the bad request if body is empty
+     * @return Response refers to the result
+     */
+    public function handleCreateProducts(Request $request, Response $response): Response
     {
-        $id = $uri_args['product_id'];
+        //? Step 1) GET the parsed BODY
+        $product_data = $request->getParsedBody();
 
-        if (empty($id)) {
-            $payload = [
-                'status' => 'failure',
-                'code' => 400,
-                'message' => 'Allergen ID is reuired',
-                'details' => 'Allergen ID is missing',
-            ];
-            return $this->renderJson($response, $payload, 400);
+        //? Step 2) HANDLE the error if the body if its empty
+        if (empty($product_data)) {
+            throw new HttpBadRequestException($request, "Data passed is empty");
         }
-        $data = $request->getParsedBody();
-        $condition = ["product_id" => $id];
 
-        $result = $this->product_service->updateProduct($data, $condition);
+        //? Step 3) CALL the service
+        $result = $this->product_service->createProducts($product_data);
 
+        //! Note verify the outcome of the opertion: success vs failure
         if ($result->isSuccess()) {
-            // Operation success
+
             $payload = [
                 'status' => 'success',
                 'code' => 201,
                 'message' => $result->getMessage(),
+                'data' => $result->getData()
             ];
-            // Operation sucessful
-            return $this->renderJson($response, $payload, 201); // We write the status code that will be injected in the payload.
+
+            //? Step 3) Return the response payload
+            return $this->renderJson($response, $payload, 201);
         } else {
+
             $payload = [
-                'status' => 'failure',
+                'status' => 'error',
                 'code' => 400,
                 'message' => $result->getMessage(),
-                'details' => $result->getErrors(),
+                'details' => $result->getErrors()
+            ];
+
+            //? Step 3) Return the response payload
+            return $this->renderJson($response, $payload, 400);
+        }
+    }
+
+    /**
+     *  PUT: Updates an existing product
+     * Handles updates on an existing product
+     * @param \Psr\Http\Message\ServerRequestInterface $request refers to the request object
+     * @param \Psr\Http\Message\ResponseInterface $response refers to the response object
+     * @param array $uri_args based on the URI args
+     * @throws \Slim\Exception\HttpBadRequestException refers to the bad request if parsed body is empty
+     * @return Response refers to the result
+     */
+    public function handleUpdateProduct(Request $request, Response $response, array $uri_args)
+    {
+        $product_data = $request->getParsedBody();
+
+        if (empty($product_data)) {
+            throw new HttpBadRequestException($request, "Data passed is empty");
+        }
+
+        $result = $this->product_service->updateProduct($product_data);
+
+        if ($result->isSuccess()) {
+
+            $payload = [
+                'status' => 'success',
+                'code' => 200,
+                'message' => $result->getMessage()
+            ];
+
+            return $this->renderJson($response, $payload, 200);
+        } else {
+
+            $payload = [
+                'status' => 'error',
+                'code' => 400,
+                'message' => $result->getMessage(),
+                'details' => $result->getErrors()
+            ];
+
+            return $this->renderJson($response, $payload, 400);
+        }
+    }
+
+
+    /**
+     * DELETE: Deletes a product
+     * Handles the deletion of an existing product
+     * @param \Psr\Http\Message\ServerRequestInterface $request refers to the request object
+     * @param \Psr\Http\Message\ResponseInterface $response refers to the response object
+     * @param array $uri_args refers to the URI arguments
+     * @throws \Slim\Exception\HttpBadRequestException refers to the bad request if the request body is empty
+     * @return Response refers to the result
+     */
+    public function handleDeleteProduct(Request $request, Response $response, array $uri_args): Response
+    {
+
+        $product_ids = $request->getParsedBody();
+
+        if (empty($product_ids)) {
+            throw new HttpBadRequestException($request, "Product ID is required");
+        }
+
+        $result = $this->product_service->deleteProduct($product_ids);
+
+        if ($result->isSuccess()) {
+            $payload = [
+                'status' => 'success',
+                'code' => 201,
+                'message' => $result->getMessage()
+            ];
+            return $this->renderJson($response, $payload, 201);
+        } else {
+            $payload = [
+                'status' => 'error',
+                'code' => 400,
+                'message' => $result->getMessage(),
+                'details' => $result->getErrors()
             ];
             return $this->renderJson($response, $payload, 400);
         }

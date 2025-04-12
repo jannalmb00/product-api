@@ -10,18 +10,6 @@ namespace App\Models;
 class ProductsModel extends BaseModel
 {
 
-    public function insertNewProduct(array $new_product): mixed
-    {
-        // From base model , pass table name, array conatining key value pairs
-        $last_id = $this->insert('product', $new_product);
-
-        //for update
-        //   $last_id = $this->update('products', $new_product, ["product_id" => ]);
-
-
-        return $last_id;
-    }
-
     public function getProducts(array $filters): array
     {
         // //? FOR FILTERING
@@ -93,7 +81,6 @@ class ProductsModel extends BaseModel
     {
 
         $filters_map = [];
-
         //add player_id to map
         $filters_map["id"] = $id;
 
@@ -116,19 +103,39 @@ class ProductsModel extends BaseModel
         return $this->paginate($sql, $filters_map);
     }
 
-    function insertNewProduct($new_product): mixed
+    /**
+     * Insert a new product
+     *
+     * @param array $new_product \refers to the new product data
+     * @return mixed refers to te ID of inserted product
+     */
+    function insertProduct(array $new_product): mixed
     {
         $last_id = $this->insert("product", $new_product);
         return $last_id;
     }
 
-    function updateProduct(array $data, array $condition)
+    /**
+     *  Update an existing product
+     *
+     * @param array $update_product refers to the updated product
+     * @return int refers to the mumber of rows affected
+     */
+    function updateProduct(array $update_product)
     {
-        return $this->update('product', $data, $condition);
+        $product_id = $update_product["product_id"];
+        unset($product_id["product_id"]);
+        return $this->update('product', $update_product, ["product_id" => $product_id]);
     }
 
-    function deleteProduct(array $conditions): int
+    /**
+     * Delete a product
+     *
+     * @param string $product_id
+     * @return int
+     */
+    function deleteProduct(string $product_id): int
     {
-        return $this->delete('product', $conditions);
+        return $this->delete('product', ["product_id" => $product_id]);
     }
 }

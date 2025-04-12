@@ -18,7 +18,7 @@ class AllergensService
 
         $rules = array(
             'allergen_id' => [
-                ['regex', '/^[A-Z][0-9]{2}$/']
+                ['regex', '/^A\d{1,2}$/']
             ],
             'allergen_name' => [
                 'required',
@@ -80,7 +80,7 @@ class AllergensService
             $validator = new Validator(['allergen_id' => $allergen_id]);
             $rules = array(
                 'allergen_id' => [
-                    ['regex', '/^[A-Z][0-9]{2}$/']
+                    ['regex', '/^A\d{2}$/']
                 ]
             );
             $validator->mapFieldsRules($rules);
@@ -105,7 +105,7 @@ class AllergensService
     {
         $rules = array(
             'allergen_id' => [
-                ['regex', '/^[A-Z][0-9]{2}$/']
+                ['regex', '/^A\d{1,2}$/']
             ],
             'allergen_name' => [
                 'required',

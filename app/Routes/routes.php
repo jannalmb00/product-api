@@ -31,6 +31,15 @@ return static function (Slim\App $app): void {
     //* ROUTE: GET /products/{product_id}/nutrition
     $app->get('/products/{product_id}/nutrition', [ProductsController::class, 'handleGetProductNutrition']);
 
+    //* ROUTE: POST /products
+    $app->post('/products', [ProductsController::class, 'handleCreateProducts']);
+
+    //* ROUTE: PUT /products
+    $app->put('/products}', [ProductsController::class, 'handleUpdateProduct']);
+
+    //* ROUTE: DELETE /products
+    $app->delete('/products', [ProductsController::class, 'handleDeleteProduct']);
+
     //?---------CATEGORIES----------------------------------------------
     //!
     //* ROUTE: GET /categories

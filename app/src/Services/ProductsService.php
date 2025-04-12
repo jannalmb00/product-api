@@ -4,58 +4,200 @@ namespace App\Services;
 
 use App\Core\Result;
 use App\Models\ProductsModel;
-
 use App\Validation\Validator;
 
 
 class ProductsService
 {
-    public function __construct(private ProductsModel $product_model, private Validator $validator) {}
+    public function __construct(private ProductsModel $products_model) {}
 
-    function createProducts(array $new_player_info): Result
-    { // returns Result class
-        // TODO: 1- Validate the recieved data about the new resource to be created.
 
-        //--- here is where you do the checklist
-        //* Using Valitron -- use VALIDATOR class (this uses Valitron already)
-        //! Return as soon as you detect any invalid inputs -- use early return technique. continue if valid.  ---> RETURN Result::failure (set the code in the controller not here)
-        // Return Result::failure("Error!", ["username"=>"wrong username"] );
+    /**
+     * Create a new product
+     * @param array $product_data refers to the new product info to be added
+     * @return Result refers to the result of the operation whether it is success or failure
+     */
+    public function createProducts(array $product_data): Result
+    {
+        $rules = array(
 
-        // ? 2- Insert new resource into the DB table
-        //if list, drop in for loop and each item inthat list call insert
-        //* Just process the first collection / first element in the array, if there are any errors just do that
-        $new_product = $new_player_info[0];
+            'product_id' => [
+                ['regex', '/^P\d{5,6}$/'],
+                'required'
+            ],
 
-        //? 3- We can call the validation class in order to test input validation
-        $new_product->validateCreateProducts();
+            'product_name' => [
+                ['lengthMin', 4],
+                'required'
+            ],
 
-        //? 4- Call the product model POST method which is insertNewProduct();
-        $this->product_model->insertNewProduct($new_product);
+            'product_barcode' => [
+                'numeric',
+                'required'
+            ],
 
-        //! Pass the last inserted id --> this is what you retrun
-        $last_insert_id = '100';
+            'product_origin' => [
+                ['lengthMin', 4],
+                'required',
+            ],
 
-        // return successful result
-        return Result::success("Product has been created.", $last_insert_id);
+            'product_serving_size' => [
+                'numeric',
+                'required',
+            ],
+
+            'brand_id' => [
+                ['regex', '/^B\d{4}$/'],
+                'required',
+            ],
+
+            'category_id' => [
+                ['regex', '/^C-\d{4}$/'],
+                'required',
+            ],
+
+            'nutrition_id' => [
+                ['regex', '/^N\d{5}$/'],
+                'optional'
+            ],
+
+            'diet_id' => [
+                ['regex', '/^DA\d{4}$/'],
+                'optional'
+            ],
+
+            'environmental_id' => [
+                ['regex', '/^E\d{5}$/'],
+                'optional'
+            ],
+
+        );
+
+        $new_product = $product_data[0];
+
+        $validator = new Validator($new_product, [], 'en');
+
+        $validator->mapFieldsRules($rules);
+
+        if (!$validator->validate()) {
+            $errorJSON =  $validator->errorsToJson();
+            print($errorJSON);
+            return Result::failure("Product data validation failed", $validator->errors());
+        }
+
+        $last_inserted_id = $this->products_model->insertProduct($product_data);
+
+        return Result::success("Product has been created successfully!", $last_inserted_id);
     }
 
-    function updateProduct(array $data, array $condition): Result
+    /**
+     * Update an existing product
+     *
+     * @param array $data refers to the updated product data
+     * @return Result refers to the result of the operation whether it is success or failure
+     */
+    public function updateProduct(array $product_data): Result
     {
-        $rowsUpdate = $this->product_model->updateProduct($data, $condition);
+        //  Rules less strict for updates
+        $rules = array(
 
-        if ($rowsUpdate <= 0) {
+
+            'product_name' => [
+                ['lengthMin', 4],
+                'optional'
+            ],
+
+            'product_origin' => [
+                ['lengthMin', 4],
+                'optional'
+            ],
+
+            'product_barcode' => [
+                'numeric',
+                'optional'
+            ],
+
+            'product_serving_size' => [
+                'numeric',
+                'optional'
+            ],
+
+            'brand_id' => [
+                ['regex', '/^B\d{4}$/'],
+                'optional'
+            ],
+            'category_id' => [
+                ['regex', '/^C-\d{4}$/'],
+                'optional'
+            ],
+
+            'nutrition_id' => [
+                ['regex', '/^N\d{5}$/'],
+                'optional'
+            ],
+
+            'diet_id' => [
+                ['regex', '/^DA\d{4}$/'],
+                'optional'
+            ],
+
+            'environmental_id' => [
+                ['regex', '/^E\d{5}$/'],
+                'optional'
+            ],
+
+        );
+
+        $validator = new Validator($product_data, [], 'en');
+        $validator->mapFieldsRules($rules);
+
+        if (!$validator->validate()) {
+            return Result::failure("Data is not valid");
+        }
+
+        $rowsUpdated = $this->products_model->updateProduct($product_data);
+
+        if ($rowsUpdated <= 0) {
             return Result::failure("No row has been updated");
         }
-        return Result::success("Updted successfully");
+        return Result::success("Updated successfully");
     }
 
-    function deleteProduct(array $condition): Result
+    /**
+     * Delete a product
+     *
+     * @param array $condition The condition to identify the product to delete
+     * @return Result refers to the result of the operation whether it is success or failure
+     */
+    public function deleteProduct(array $product_ids): Result
     {
-        $rowsDeleted = $this->product_model->deleteProduct($condition);
+        $validation_errors = [];
 
-        if ($rowsDeleted <= 0) {
-            return Result::failure("No data has been deleted");
+        foreach ($product_ids as $key => $product_id) {
+            $validator = new Validator(['product_id' => $product_id]);
+
+            $rules = array(
+                'product_id' => [
+                    ['regex', '/^P\d{5,6}$/']
+                ]
+            );
+
+            $validator->mapFieldsRules($rules);
+
+            if (!$validator->validate()) {
+                $validation_errors[] = [
+                    "product_id" => $product_id,
+                    "error" => $validator->errorsToString()
+                ];
+            }
+
+            $rowsDeleted = $this->products_model->deleteProduct($product_id);
         }
-        return Result::success("The allergen has been deleted");
+
+        if (count($validation_errors) > 0) {
+            return Result::failure("Some of the product IDs are not valid", $validation_errors);
+        }
+
+        return Result::success("The product(s) have been deleted successfully!");
     }
 }
