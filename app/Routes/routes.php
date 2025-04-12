@@ -12,7 +12,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 return static function (Slim\App $app): void {
     // Routes with authentication
-    //* ROUTE: GET /
+
+    //* ROUTE: POST /
     $app->post('/products', [ProductsController::class, 'handleCreateProducts']);
 
     //* ROUTE: GET /
@@ -43,6 +44,17 @@ return static function (Slim\App $app): void {
     //* ROUTE: GET /categories/{categories_id}/brands
     $app->get('/categories/{category_id}/brands', [CategoriesController::class, 'handleGetBrandsByCategory']);
 
+    //* ROUTE: POST /
+    $app->post('/categories', [CategoriesController::class, 'handleCreateCategories']);
+
+    //* ROUTE: PUT /
+    $app->put('/categories', [CategoriesController::class, 'handleUpdateCategories']);
+
+    //* ROUTE: DELETE /
+    $app->DELETE('/categories', [CategoriesController::class, 'handleDeleteCategories']);
+
+
+
     //?---------ALLERGENS----------------------------------------------
     //!
     //* ROUTE: GET /allergens
@@ -60,10 +72,10 @@ return static function (Slim\App $app): void {
     $app->post('/allergens', [AllergensController::class, 'handleCreateAllergens']);
 
     //* ROUTE: PUT /allergens
-    $app->put('/allergens/{allergen_id}', [AllergensController::class, 'handleUpdateAllergenById']);
+    $app->put('/allergens/{allergen_id}', [AllergensController::class, 'handleUpdateAllergen']);
 
     //* ROUTE: DELETE /allergens
-    $app->delete('/allergens', [AllergensController::class, 'handleDeleteAllergenById']);
+    $app->delete('/allergens', [AllergensController::class, 'handleDeleteAllergen']);
 
     // Validation Helper
     // $app->get('/test', [TestController::class, 'handleTest']);

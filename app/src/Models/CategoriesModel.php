@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 /**
  * Categories model handles data related to categories in the system
  *
@@ -8,6 +9,38 @@ namespace App\Models;
  */
 class CategoriesModel extends BaseModel
 {
+
+    public function insertNewCategory(array $new_category): mixed
+    {
+        // From base model , pass table name, array conatining key value pairs
+        $last_id = $this->insert('category', $new_category);
+
+        return $last_id;
+    }
+
+
+    public function updateCategory(array $update_category_data): mixed
+    {
+        // From base model , pass table name, array conatining key value pairs
+        //    $last_id = $this->update('category', ["data" => $update_category_data[1]], ["category_id" => $update_category_data[0]]);
+
+        //dd(is_array($update_category_data));
+
+        $category_id_data = $update_category_data["category_id"];
+
+        unset($update_category_data["category_id"]);
+
+        //for update
+        $last_id = $this->update('category', $update_category_data, ["category_id" => $category_id_data]);
+        // dd($last_id);
+
+        return $last_id;
+    }
+
+    function deleteCategory(string $category_id): int
+    {
+        return $this->delete('category', ["category_id" => $category_id]);
+    }
 
     /**
      * GET: Retriveds the list of categories from the database with optional filtering, sorting and pagination

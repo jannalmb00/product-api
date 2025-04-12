@@ -1,14 +1,8 @@
-<<<<<<< Updated upstream
 # POST examples
 
+PRODUCTS
 Example of VALID payload
  [
-=======
-# POST Examples
-
-Example of payload containing invalid inputs
-
->>>>>>> Stashed changes
     {
       "product_id": "P00002",
       "product_name": "Oat Drink Barista Edition",
@@ -42,6 +36,20 @@ Example of payload containing invalid inputs
     }
   ]
 
+CATEGORIES
+  [
+    {
+      "category_id": "C-0007",
+      "category_name": "Milk-2",
+      "category_description": "Milk product",
+      "parent_category_id": "",
+      "category_type": "Beverage",
+      "category_level": "parent",
+      "category_tags": "Milk, plant-based, vegan, dairy, animal-derived"
+    }
+  ]
+
 # PUT examples
 
 # DELETE examples
+

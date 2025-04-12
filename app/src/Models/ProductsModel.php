@@ -10,6 +10,17 @@ namespace App\Models;
 class ProductsModel extends BaseModel
 {
 
+    public function insertNewProduct(array $new_product): mixed
+    {
+        // From base model , pass table name, array conatining key value pairs
+        $last_id = $this->insert('product', $new_product);
+
+        //for update
+        //   $last_id = $this->update('products', $new_product, ["product_id" => ]);
+
+
+        return $last_id;
+    }
 
     public function getProducts(array $filters): array
     {
