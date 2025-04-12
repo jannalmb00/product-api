@@ -165,11 +165,11 @@ class AllergensController extends BaseController
 
     //* ROUTE: POST /ALLERGENS
     /**
-     * POST:
+     * POST: Handle the creation of allergens
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param \Psr\Http\Message\ResponseInterface $response
-     * @return Response
+     * @param \Psr\Http\Message\ServerRequestInterface $request refers to the request object
+     * @param \Psr\Http\Message\ResponseInterface $response refers to the response object
+     * @return Response refers to the result
      */
     public function handleCreateAllergens(Request $request, Response $response): Response
     {
@@ -211,6 +211,15 @@ class AllergensController extends BaseController
 
     }
 
+    /**
+     * DELETE: Handles the deletion of an allergen
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request  refers to the request object
+     * @param \Psr\Http\Message\ResponseInterface $response refers to the response object
+     * @param array $uri_args refers to the URI argument
+     * @throws \Slim\Exception\HttpBadRequestException refers to the bad request if the request body is empty
+     * @return Response refers to the result
+     */
     public function handleDeleteAllergen(Request $request, Response $response, array $uri_args): Response
     {
         ///$id = $uri_args['allergen_id'];
@@ -242,6 +251,14 @@ class AllergensController extends BaseController
         return $this->renderJson($response, $payload, 400);
     }
 
+    /**
+     * Handles the update of an allergen
+     * @param \Psr\Http\Message\ServerRequestInterface $request refers to the request object
+     * @param \Psr\Http\Message\ResponseInterface $response  refers to the response object
+     * @param array $uri_args refers to the URI arguments
+     * @throws \Slim\Exception\HttpBadRequestException refers to the bad request if the request body is empty
+     * @return Response refers to the resul
+     */
     public function handleUpdateAllergen(Request $request, Response $response, array $uri_args): Response
     {
         $update_allergen = $request->getParsedBody();

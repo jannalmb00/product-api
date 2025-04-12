@@ -118,22 +118,39 @@ class AllergensModel extends BaseModel
         return $this->paginate($sql, $filters_map);
     }
 
+    /**
+     * Insert a new allergen
+     * @param mixed $new_allergen refers to the new allergen info
+     * @return mixed returns the id of the inserted allergen
+     */
     function insertAllergen($new_allergen): mixed
     {
         $last_id = $this->insert("allergens", $new_allergen);
         // $last_id = $this->update("allergens", $new_allergen);
         return $last_id;
     }
+
+    /**
+     * Updates an existing allergen
+     * @param array $update_allergen_data refers to the updated allergen data
+     * @return int refers to the number of rows affected
+     */
+    function updateAllergen(array $update_allergen_data)
+    {
+        $allergen_id = $update_allergen_data["allergen_id"];
+        unset($update_categroy_data["allergen_id"]);
+
+        return $this->update('allergens', $update_allergen_data, ["allergen_id" =>  $allergen_id]);
+    }
+
+
+    /**
+     * Delete an allergen
+     * @param string $allergen_id refers to the ID of the allergen
+     * @return int refers to the number of rows affected
+     */
     function deleteAllergen(string $allergen_id): int
     {
         return $this->delete('allergens', ["allergen_id" => $allergen_id]);
-    }
-
-    function updateAllergen(array $update_categroy_data)
-    {
-        $allergen_id = $update_categroy_data["allergen_id"];
-        unset($update_categroy_data["allergen_id"]);
-
-        return $this->update('allergens', $update_categroy_data, ["allergen_id" =>  $allergen_id]);
     }
 }

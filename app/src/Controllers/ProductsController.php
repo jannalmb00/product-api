@@ -150,8 +150,8 @@ class ProductsController extends BaseController
     }
 
     /**
-     * POST: Creates a product
-     * Handles creation of a product
+     * POST: Handles creation of a product
+     *
      * @param \Psr\Http\Message\ServerRequestInterface $request refers to the request object
      * @param \Psr\Http\Message\ResponseInterface $response refers to the response object
      * @throws \Slim\Exception\HttpBadRequestException refers to the bad request if body is empty
@@ -197,8 +197,8 @@ class ProductsController extends BaseController
     }
 
     /**
-     *  PUT: Updates an existing product
-     * Handles updates on an existing product
+     * PUT: Handles updates on an existing product
+     *
      * @param \Psr\Http\Message\ServerRequestInterface $request refers to the request object
      * @param \Psr\Http\Message\ResponseInterface $response refers to the response object
      * @param array $uri_args based on the URI args
@@ -239,8 +239,8 @@ class ProductsController extends BaseController
 
 
     /**
-     * DELETE: Deletes a product
-     * Handles the deletion of an existing product
+     * DELETE: Handles the deletion of an existing product
+     *
      * @param \Psr\Http\Message\ServerRequestInterface $request refers to the request object
      * @param \Psr\Http\Message\ResponseInterface $response refers to the response object
      * @param array $uri_args refers to the URI arguments

@@ -93,7 +93,7 @@ class ProductsService
     /**
      * Update an existing product
      *
-     * @param array $data refers to the updated product data
+     * @param array $data refers to the product data to update
      * @return Result refers to the result of the operation whether it is success or failure
      */
     public function updateProduct(array $product_data): Result
@@ -166,7 +166,7 @@ class ProductsService
     /**
      * Delete a product
      *
-     * @param array $condition The condition to identify the product to delete
+     * @param array $product_ids refers to the ID(s) to delete
      * @return Result refers to the result of the operation whether it is success or failure
      */
     public function deleteProduct(array $product_ids): Result

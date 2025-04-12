@@ -10,6 +10,12 @@ namespace App\Models;
 class ProductsModel extends BaseModel
 {
 
+    /**
+     * Retrieves the products
+     *
+     * @param array $filters refers to the filter query parameters
+     * @return array refers to the result of the product information
+     */
     public function getProducts(array $filters): array
     {
         // //? FOR FILTERING
@@ -54,10 +60,9 @@ class ProductsModel extends BaseModel
     }
 
     /**
-     *GET: Retrieves the detals of the specified product
+     * GET: Retrieves the detals of the specified product
 
-     * @param array $filter The filters to apply the query:
-     *
+     * @param array $filter The filters to apply the query
      * @return array List of details for the specified product
      */
     public function getProductById(array $filter): mixed
@@ -74,7 +79,6 @@ class ProductsModel extends BaseModel
      *
      * @param string $id ID of the desired product
      * @param array $filters The filters to apply to the query:
-     *
      * @return array List of nutrition of the spcified product
      */
     public function getProductNutrition(string $id, array $filters): mixed
@@ -106,8 +110,8 @@ class ProductsModel extends BaseModel
     /**
      * Insert a new product
      *
-     * @param array $new_product \refers to the new product data
-     * @return mixed refers to te ID of inserted product
+     * @param array $new_product refers to the new product data
+     * @return mixed refers to the ID of inserted product
      */
     function insertProduct(array $new_product): mixed
     {
@@ -118,21 +122,21 @@ class ProductsModel extends BaseModel
     /**
      *  Update an existing product
      *
-     * @param array $update_product refers to the updated product
+     * @param array $update_product_data refers to the updated product data
      * @return int refers to the mumber of rows affected
      */
-    function updateProduct(array $update_product)
+    function updateProduct(array $update_product_date)
     {
-        $product_id = $update_product["product_id"];
+        $product_id = $update_product_date["product_id"];
         unset($product_id["product_id"]);
-        return $this->update('product', $update_product, ["product_id" => $product_id]);
+        return $this->update('product', $update_product_date, ["product_id" => $product_id]);
     }
 
     /**
      * Delete a product
      *
-     * @param string $product_id
-     * @return int
+     * @param string $product_id refers tpo the id to be deleted
+     * @return int refers to the number of rows affected
      */
     function deleteProduct(string $product_id): int
     {

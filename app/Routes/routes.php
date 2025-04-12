@@ -35,7 +35,7 @@ return static function (Slim\App $app): void {
     $app->post('/products', [ProductsController::class, 'handleCreateProducts']);
 
     //* ROUTE: PUT /products
-    $app->put('/products}', [ProductsController::class, 'handleUpdateProduct']);
+    $app->put('/products', [ProductsController::class, 'handleUpdateProduct']);
 
     //* ROUTE: DELETE /products
     $app->delete('/products', [ProductsController::class, 'handleDeleteProduct']);
@@ -81,7 +81,7 @@ return static function (Slim\App $app): void {
     $app->post('/allergens', [AllergensController::class, 'handleCreateAllergens']);
 
     //* ROUTE: PUT /allergens
-    $app->put('/allergens/{allergen_id}', [AllergensController::class, 'handleUpdateAllergen']);
+    $app->put('/allergens', [AllergensController::class, 'handleUpdateAllergen']);
 
     //* ROUTE: DELETE /allergens
     $app->delete('/allergens', [AllergensController::class, 'handleDeleteAllergen']);
