@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Core\PasswordTrait;
+
 /**
  * Product models handles data related to products in the system
  *
@@ -10,6 +12,7 @@ namespace App\Models;
 class ProductsModel extends BaseModel
 {
 
+    use PasswordTrait;
     /**
      * Retrieves the products
      *
@@ -18,7 +21,11 @@ class ProductsModel extends BaseModel
      */
     public function getProducts(array $filters): array
     {
+
+        // $this->cryptPassword();
+
         // //? FOR FILTERING
+
         $filters_map = [];
 
         $sql = "SELECT p.* , c.category_name, b.brand_name

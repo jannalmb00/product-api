@@ -8,6 +8,7 @@ use RuntimeException;
 
 trait PasswordTrait
 {
+    use PasswordTrait;
     private $cost = 12;
 
     /**
