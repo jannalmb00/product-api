@@ -35,7 +35,7 @@ class ContentNegotiationMiddleware implements MiddlewareInterface
         }
 
         $contentType = $request->getHeaderLine('Accept');
-        if (!str_contains('application/json', $contentType) && !str_contains('*/*', $contentType)) {
+        if (!str_contains($contentType, 'application/json') && !str_contains($contentType, '*/*')) {
             throw new HttpNotAcceptableException($request);
         }
 

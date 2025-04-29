@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Controllers\AboutController;
+use App\Controllers\AccountController;
 use App\Controllers\ProductsController;
 use App\Controllers\CategoriesController;
 use App\Controllers\AllergensController;
@@ -12,9 +13,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 return static function (Slim\App $app): void {
     // Routes with authentication
-
-    //* ROUTE: POST /
-    $app->post('/products', [ProductsController::class, 'handleCreateProducts']);
 
     //* ROUTE: GET /
     $app->get('/', [AboutController::class, 'handleAboutWebService']);
@@ -97,6 +95,13 @@ return static function (Slim\App $app): void {
         $response->getBody()->write(json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_PARTIAL_OUTPUT_ON_ERROR));
         return $response;
     });
+
+    //* ================ AA B ============= REGISTER AND LOGIN ==========================
+
+    $app->post("/login", [AccountController::class, 'handleUserLogin']);
+    $app->post("/register", [AccountController::class, 'handleRegistration']);
+
+
     // Example route to test error handling
     $app->get('/error', function (Request $request, Response $response, $args) {
         throw new \Slim\Exception\HttpNotFoundException($request, "Something went wrong");

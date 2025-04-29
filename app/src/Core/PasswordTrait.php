@@ -8,8 +8,8 @@ use RuntimeException;
 
 trait PasswordTrait
 {
-    use PasswordTrait;
-    private $cost = 12;
+    // use PasswordTrait;
+    // private $cost = 12;
 
     /**
      * Returns a hashed password.
