@@ -13,10 +13,10 @@ class ProductsModel extends BaseModel
     public function insertNewProduct(array $new_product): mixed
     {
         // From base model , pass table name, array conatining key value pairs
-        $last_id = $this->insert('product', $new_product);
+        $last_id = $this->insert('products', $new_product);
 
         //for update
-        //   $last_id = $this->update('products', $new_product, ["product_id" => ]);
+        //$last_id = $this->update('products', $new_product, ["product_id" => ]);
 
 
         return $last_id;
@@ -28,8 +28,8 @@ class ProductsModel extends BaseModel
         $filters_map = [];
 
         $sql = "SELECT p.* , c.category_name, b.brand_name
-                FROM product p
-                JOIN category c ON p.category_id = c.category_id
+                FROM products p
+                JOIN categories c ON p.category_id = c.category_id
                 JOIN brands b ON p.brand_id = b.brand_id
                 WHERE 1";
 
@@ -75,7 +75,7 @@ class ProductsModel extends BaseModel
     public function getProductById(array $filter): mixed
     {
         //Sends the id, table name, column name
-        $result = $this->prepareIdSQL($filter['id'], 'product', 'product_id');
+        $result = $this->prepareIdSQL($filter['id'], 'products', 'product_id');
 
         //? PAGINATE
         return $this->paginate($result['sqlPart'], $result[0]);
