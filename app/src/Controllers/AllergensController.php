@@ -165,11 +165,11 @@ class AllergensController extends BaseController
 
     //* ROUTE: POST /ALLERGENS
     /**
-     * POST:
+     * POST: Handle the creation of allergens
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param \Psr\Http\Message\ResponseInterface $response
-     * @return Response
+     * @param \Psr\Http\Message\ServerRequestInterface $request refers to the request object
+     * @param \Psr\Http\Message\ResponseInterface $response refers to the response object
+     * @return Response refers to the result
      */
     public function handleCreateAllergens(Request $request, Response $response): Response
     {
@@ -211,7 +211,16 @@ class AllergensController extends BaseController
 
     }
 
-    public function handleDeleteAllergenById(Request $request, Response $response, array $uri_args): Response
+    /**
+     * DELETE: Handles the deletion of an allergen
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request  refers to the request object
+     * @param \Psr\Http\Message\ResponseInterface $response refers to the response object
+     * @param array $uri_args refers to the URI argument
+     * @throws \Slim\Exception\HttpBadRequestException refers to the bad request if the request body is empty
+     * @return Response refers to the result
+     */
+    public function handleDeleteAllergen(Request $request, Response $response, array $uri_args): Response
     {
         ///$id = $uri_args['allergen_id'];
         $allergen_ids = $request->getParsedBody();
@@ -242,17 +251,23 @@ class AllergensController extends BaseController
         return $this->renderJson($response, $payload, 400);
     }
 
-    public function handleUpdateAllergenById(Request $request, Response $response, array $uri_args): Response
+    /**
+     * Handles the update of an allergen
+     * @param \Psr\Http\Message\ServerRequestInterface $request refers to the request object
+     * @param \Psr\Http\Message\ResponseInterface $response  refers to the response object
+     * @param array $uri_args refers to the URI arguments
+     * @throws \Slim\Exception\HttpBadRequestException refers to the bad request if the request body is empty
+     * @return Response refers to the resul
+     */
+    public function handleUpdateAllergen(Request $request, Response $response, array $uri_args): Response
     {
-        $id = $uri_args['allergen_id'];
+        $update_allergen = $request->getParsedBody();
 
-        if (empty($id)) {
-            throw new HttpBadRequestException($request, "Allergen ID is required");
+        if (empty($update_allergen)) {
+            throw new HttpBadRequestException($request, "Data passed is empty");
         }
-        $data = $request->getParsedBody();
-        $condition = ["allergen_id" => $id];
 
-        $result = $this->allergens_service->updateAllergen($data[0], $condition);
+        $result = $this->allergens_service->updateAllergen($update_allergen);
 
         if ($result->isSuccess()) {
             // Operation success

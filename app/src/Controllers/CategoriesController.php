@@ -30,10 +30,11 @@ class CategoriesController extends BaseController
     }
 
     /**
-     * POST
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param \Psr\Http\Message\ResponseInterface $response
-     * @return Response
+     * POST: Handles the creation of new categories
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request refers to the request object
+     * @param \Psr\Http\Message\ResponseInterface $response refers to the response object
+     * @return Response refers to the result
      */
     public function handleCreateCategories(Request $request, Response $response): Response
     {
@@ -79,6 +80,14 @@ class CategoriesController extends BaseController
         // return  $this->renderJson($response, $payload, 400);
     }
 
+    /**
+     * PUT: Handles the existing update of a category
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request refers to the request object
+     * @param \Psr\Http\Message\ResponseInterface $response refers to the response object
+     * @throws \Slim\Exception\HttpBadRequestException refers to the bad request if the request body is empty
+     * @return Response refers to the result
+     */
     public function handleUpdateCategories(Request $request, Response $response): Response
     {
         // category to update
@@ -126,6 +135,14 @@ class CategoriesController extends BaseController
     }
 
 
+    /**
+     * DELETE: Handles the deletion of an existing category
+     * 
+     * @param \Psr\Http\Message\ServerRequestInterface $request refers to the request object
+     * @param \Psr\Http\Message\ResponseInterface $response refers to the response object
+     * @throws \Slim\Exception\HttpBadRequestException refers to the bad request if the request body is empty
+     * @return Response refers to the result
+     */
     public function handleDeleteCategories(Request $request, Response $response): Response
     {
         ///$id = $uri_args['allergen_id'];

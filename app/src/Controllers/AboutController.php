@@ -28,6 +28,7 @@ class AboutController extends BaseController
                     'resource_number' => 1,
                     'uri' => '/products',
                     'description' => "Lists of zero or more products that match the product's criteria.",
+                    'methods' => ['GET', 'POST', 'DELETE'],
                     'filters_supported' => ['product_name', 'product_origin', 'brand_name', 'category_name'],
                     'sorting' => [
                         [
@@ -42,18 +43,21 @@ class AboutController extends BaseController
                     'resource_number' => 2,
                     'uri' => '/products/{product_id}',
                     'description' => "Details of a specific product",
+                    'methods' => ['GET', 'PUT'],
                     'filters_supported' => "N/A"
                 ],
                 [
                     'resource_number' => 3,
                     'uri' => '/products/{product_id}/nutrition',
                     'description' => "Gets nutrition information for the specified product",
+                    'methods' => ['GET'],
                     'filters_supported' => "N/A"
                 ],
                 [
                     'resource_number' => 4,
                     'uri' => '/allergens',
                     'description' => "Gets a list of allergens matching the specified filters",
+                    'methods' => ['GET', 'POST', 'DELETE'],
                     'filters_supported' => ['allergen_name', 'food_group', 'food_type', 'food_origin', 'food_item'],
                     'sorting' => [
                         [
@@ -67,6 +71,7 @@ class AboutController extends BaseController
                 [
                     'resource_number' => 5,
                     'uri' => '/allergens/{allergen_id}',
+                    'methods' => ['GET', 'PUT'],
                     'description' => "Gets details of a specific allergen",
                     'filters_supported' => "N/A"
                 ],
@@ -81,6 +86,7 @@ class AboutController extends BaseController
                     'uri' => '/categories',
                     'description' => "Gets a list of categories matching the specified filters",
                     'filters_supported' => ['category_name', 'category_type', 'parent_category'],
+                    'methods' => ['GET', 'POST', 'DELETE'],
                     'sorting' => [
                         [
                             'sortBy' => ['category_name', 'category_type', 'parent_category']
@@ -94,12 +100,14 @@ class AboutController extends BaseController
                     'resource_number' => 8,
                     'uri' => '/categories/{category_id}',
                     'description' => "Gets details of a specific category",
+                    'methods' => ['GET', 'PUT'],
                     'filters_supported' => "N/A"
                 ],
                 [
                     'resource_number' => 9,
                     'uri' => '/categories/{category_id}/brands',
                     'description' => "Gets a list of brands associated with the specified category",
+                    'methods' => ['GET'],
                     'filters_supported' => ['brand_name', 'brand_country']
                 ]
             ]

@@ -31,6 +31,15 @@ return static function (Slim\App $app): void {
     //* ROUTE: GET /products/{product_id}/nutrition
     $app->get('/products/{product_id}/nutrition', [ProductsController::class, 'handleGetProductNutrition']);
 
+    //* ROUTE: POST /products
+    $app->post('/products', [ProductsController::class, 'handleCreateProducts']);
+
+    //* ROUTE: PUT /products
+    $app->put('/products/{product_id}', [ProductsController::class, 'handleUpdateProduct']);
+
+    //* ROUTE: DELETE /products
+    $app->delete('/products', [ProductsController::class, 'handleDeleteProduct']);
+
     //?---------CATEGORIES----------------------------------------------
     //!
     //* ROUTE: GET /categories
@@ -44,13 +53,13 @@ return static function (Slim\App $app): void {
     //* ROUTE: GET /categories/{categories_id}/brands
     $app->get('/categories/{category_id}/brands', [CategoriesController::class, 'handleGetBrandsByCategory']);
 
-    //* ROUTE: POST /
+    //* ROUTE: POST /categories
     $app->post('/categories', [CategoriesController::class, 'handleCreateCategories']);
 
-    //* ROUTE: PUT /
-    $app->put('/categories', [CategoriesController::class, 'handleUpdateCategories']);
+    //* ROUTE: PUT /categories/{category_id}
+    $app->put('/categories/{category_id}', [CategoriesController::class, 'handleUpdateCategories']);
 
-    //* ROUTE: DELETE /
+    //* ROUTE: DELETE /categories
     $app->DELETE('/categories', [CategoriesController::class, 'handleDeleteCategories']);
 
 
@@ -72,10 +81,10 @@ return static function (Slim\App $app): void {
     $app->post('/allergens', [AllergensController::class, 'handleCreateAllergens']);
 
     //* ROUTE: PUT /allergens
-    $app->put('/allergens/{allergen_id}', [AllergensController::class, 'handleUpdateAllergenById']);
+    $app->put('/allergens/{allergen_id}', [AllergensController::class, 'handleUpdateAllergen']);
 
     //* ROUTE: DELETE /allergens
-    $app->delete('/allergens', [AllergensController::class, 'handleDeleteAllergenById']);
+    $app->delete('/allergens', [AllergensController::class, 'handleDeleteAllergen']);
 
     // Validation Helper
     // $app->get('/test', [TestController::class, 'handleTest']);

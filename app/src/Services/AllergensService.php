@@ -9,8 +9,17 @@ use App\Validation\Validator;
 
 class AllergensService
 {
+    /**
+     * Summary of __construct
+     * @param \App\Models\AllergensModel $allergens_model
+     */
     public function __construct(private AllergensModel $allergens_model) {}
 
+    /**
+     * Create a new allergen
+     * @param array $new_allergens_info refers to the new allergen info to be added
+     * @return Result refers to the result of the operation whether it is success or failure
+     */
     function createAllergens(array $new_allergens_info): Result
     {
         //TODO: 1) Validate the received resource data about the new resource to be created.
@@ -18,7 +27,7 @@ class AllergensService
 
         $rules = array(
             'allergen_id' => [
-                ['regex', '/^[A-Z][0-9]{2}$/']
+                ['regex', '/^A\d{1,2}$/']
             ],
             'allergen_name' => [
                 'required',
@@ -69,6 +78,11 @@ class AllergensService
         return Result::success("The allergen has been created successfully!", $last_inserted_id);
     }
 
+    /**
+     * Delete an allergen
+     * @param array $allergen_ids refers to the ID(s) to delete
+     * @return Result refers to the result of the operation whether it is success or failure
+     */
     function deleteAllergens(array $allergen_ids): Result
     {
         $validation_errors = []; // if array has element then there's error
@@ -80,7 +94,7 @@ class AllergensService
             $validator = new Validator(['allergen_id' => $allergen_id]);
             $rules = array(
                 'allergen_id' => [
-                    ['regex', '/^[A-Z][0-9]{2}$/']
+                    ['regex', '/^A\d{2}$/']
                 ]
             );
             $validator->mapFieldsRules($rules);
@@ -101,11 +115,16 @@ class AllergensService
         return Result::success("The allergen have been deleted successfully!");
     }
 
-    function updateAllergen(array $data, array $condition): Result
+    /**
+     * Update an allergen
+     * @param array $update_allergen_data refers to the allergen data to update
+     * @return Result refers to the result of the operation whether it is success or failure
+     */
+    function updateAllergen(array $update_allergen_data): Result
     {
         $rules = array(
             'allergen_id' => [
-                ['regex', '/^[A-Z][0-9]{2}$/']
+                ['regex', '/^A\d{1,2}$/']
             ],
             'allergen_name' => [
                 'required',
@@ -136,8 +155,8 @@ class AllergensService
             ]
         );
 
-        $validator = new Validator($data, [], 'en');
-        $validator->mapFieldRules($data, $rules);
+        $validator = new Validator($update_allergen_data);
+        $validator->mapFieldsRules($rules);
 
         if (!$validator->validate()) {
             //     echo $validator->errorsToString();
@@ -146,7 +165,7 @@ class AllergensService
             return Result::failure("Data is not valid");
         }
 
-        $rowsUpdate = $this->allergens_model->updateAllergen($data, $condition);
+        $rowsUpdate = $this->allergens_model->updateAllergen($update_allergen_data);
         if ($rowsUpdate <= 0) {
             return Result::failure("No row has been updated");
         }

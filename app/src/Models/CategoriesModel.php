@@ -10,6 +10,12 @@ namespace App\Models;
 class CategoriesModel extends BaseModel
 {
 
+    /**
+     * Insert a new category from the base model insert method
+     *
+     * @param array $new_category refers to the new category data
+     * @return mixed refers to the id of the inserted category
+     */
     public function insertNewCategory(array $new_category): mixed
     {
         // From base model , pass table name, array conatining key value pairs
@@ -18,7 +24,12 @@ class CategoriesModel extends BaseModel
         return $last_id;
     }
 
-
+    /**
+     * Update a new category
+     *
+     * @param array $update_category_data refers to the new category data
+     * @return int refers to the number of rows affected
+     */
     public function updateCategory(array $update_category_data): mixed
     {
         // From base model , pass table name, array conatining key value pairs
@@ -38,6 +49,12 @@ class CategoriesModel extends BaseModel
         return $last_id;
     }
 
+    /**
+     * Deletes a category
+     *
+     * @param string $category_id refers to the deleted category data
+     * @return int refers to the number of rows affected
+     */
     function deleteCategory(string $category_id): int
     {
         return $this->delete('categories', ["category_id" => $category_id]);
