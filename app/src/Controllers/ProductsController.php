@@ -44,9 +44,6 @@ class ProductsController extends BaseController
         // TODO: the body could be empty. handle case where body is empty ,,, when request is returned null or invalid
         $new_product = $request->getParsedBody();
 
-
-
-
         // dd($new_product);
 
         //? CALL SERVICE
@@ -64,7 +61,7 @@ class ProductsController extends BaseController
                     'message' => $result->getMessage(),
                 ];
 
-                //pverride the default 200 satus code to 201
+                //override the default 200 satus code to 201
                 return  $this->renderJson($response, $payload, 201);
             }
         }
@@ -111,56 +108,6 @@ class ProductsController extends BaseController
                 $this->validateString($filters, $validateString, $request);
             }
         }
-
-        // if (isset($filters['name'])) {
-
-        //     $filter = $filters['name'];
-        //     $string_valid = $this->validator->isAlpha($filter);
-
-        //     if (!$string_valid) {
-        //         throw new HttpInvalidInputException($request, "Invalid input. No numbers allowed");
-        //     }
-        // }
-
-        // if (isset($filters['last_name'])) {
-
-        //     $filter = $filters['last_name'];
-
-        //     //Checks if string is just letters and no numbers
-        //     $string_valid = $this->validator->isAlpha($filter);
-
-        //     if (!$string_valid) {
-        //         throw new HttpInvalidInputException($request, "Invalid input. No numbers allowed.");
-        //     }
-        // }
-        // }
-
-
-        // if (isset($filters['position'])) {
-
-        //     $filter = $filters['position'];
-
-        //     $string_valid = $this->validator->isAlpha($filter);
-
-        //     $valid_positions = ["goal keeper", "forward", "defender", "midfielder"];
-
-        //     if (!$string_valid && (!in_array($filters['position'], $valid_positions))) {
-        //         throw new HttpInvalidInputException($request, "Invalid input. Position are only defender, midfielder, goal keeper or forward.");
-        //     }
-        // }
-        // if (isset($filters['gender'])) {
-
-        //     $filter = $filters['gender'];
-
-        //     $string_valid = $this->validator->isAlpha($filter);
-
-        //     $valid_positions = ["male", "female"];
-
-        //     if (!$string_valid || !in_array($filter, $valid_positions)) {
-        //         throw new HttpNoContentException($request, "Invalid input. Gender is only female or male.");
-        //     }
-        // }
-
 
 
         //* paginate -- function from base controller

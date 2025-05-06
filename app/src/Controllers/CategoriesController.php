@@ -137,7 +137,7 @@ class CategoriesController extends BaseController
         if (empty($allergen_ids)) {
             throw new HttpBadRequestException($request, "Allergen ID is required");
         }
-        $result = $this->service->deleteCategory($allergen_ids);
+        $result = $this->service->deleteCategories($allergen_ids);
 
         if ($result->isSuccess()) {
             $payload = [
@@ -174,7 +174,8 @@ class CategoriesController extends BaseController
 
         // //? Validation & exception handling of filter parameters
         //* Validating if filter input are string
-        $stringValidateArray = ['category_name', 'category_type', 'parent_category'];
+        // ! removed category_name and parent_category in validate array
+        $stringValidateArray = ['category_type'];
 
         foreach ($stringValidateArray as $validateString) {
             //If filter array value is not empty
