@@ -9,6 +9,7 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use App\Core\PasswordTrait;
 
 class AccountController extends BaseController
 {
@@ -23,17 +24,24 @@ class AccountController extends BaseController
         // Code that generates a JWT token.
 
         $iat = time() + 60;
+        $exp = time() + 60 * 60;
         $user_id = '2';
+        $role = 'admin';
+
         // 1) Prepare the payload.
         $key = 'example_key';
         $payload = [
             'iss' => 'http://localhost/product-api',
             'aud' => 'http://localhost/product-api',
             'iat' => $iat,
+            'exp' => $exp,
             'email' => 'me@me.com',
-            'user_id' => $user_id
+            'user_id' => $user_id,
+            'role' => $role,
             ///'nbf' => 1357000000
         ];
+
+        dd($payload);
 
         $key = $this->appSettings->get("jwt_key");
         /**
@@ -42,8 +50,8 @@ class AccountController extends BaseController
          * https://tools.ietf.org/html/draft-ietf-jose-json-web-algorithms-40
          * for a list of spec-compliant algorithms.
          */
-        $jwt = JWT::encode($payload, $key, 'HS256');
-        // $decoded = JWT::decode($jwt, new Key($key, 'HS256'));
+        $jwt = JWT::encode($payload, $key, 'HS256'); // -> sha-126
+       // $decoded = JWT::decode($jwt, new Key($key, 'HS256'));
 
         // print_r($jwt);
         $response_payload = [

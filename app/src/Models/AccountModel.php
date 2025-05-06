@@ -11,7 +11,7 @@ class AccountModel extends BaseModel
     {
         // TODO: do not use the Result pattern. Just throw an exception.
 
-        // $last_userID = $this->insert('wc_users', $new_account);
+       // $last_userID = $this->insert('wc_users', $account_info);
 
         return 1;
         //return $last_userID;

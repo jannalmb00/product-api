@@ -8,8 +8,10 @@ use App\Controllers\ProductsController;
 use App\Controllers\CategoriesController;
 use App\Controllers\AllergensController;
 use App\Helpers\DateTimeHelper;
+use App\Middleware\AuthMiddleware;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Routing\RouteCollectorProxy;
 
 return static function (Slim\App $app): void {
     // Routes with authentication
@@ -101,9 +103,18 @@ return static function (Slim\App $app): void {
     $app->post("/login", [AccountController::class, 'handleUserLogin']);
     $app->post("/register", [AccountController::class, 'handleRegistration']);
 
+    $app->group('', function (RouteCollectorProxy $group)) {
+        $group->get('');
+
+        // ADD MIDDLEWARE THAT CHECKS THE TOKEN FOR US
+
+
+    })->add(AuthMiddleware::class);
+
 
     // Example route to test error handling
     $app->get('/error', function (Request $request, Response $response, $args) {
         throw new \Slim\Exception\HttpNotFoundException($request, "Something went wrong");
     });
+
 };
