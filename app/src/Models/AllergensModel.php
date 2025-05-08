@@ -89,26 +89,26 @@ class AllergensModel extends BaseModel
         // $sql = " SELECT DISTINCT pi.* FROM ingredients product_ingredients pi WHERE i
 
         // Provide the fitlers that we can accept ... I am not sure if we need filters for sub-collection resource but I will add just in case
-        //? Erase the filters if we dont need it
-        $stringToFilter = ['ingredient_name', 'processing_type'];
+        // //? Erase the filters if we dont need it
+        // $stringToFilter = ['ingredient_name', 'processing_type'];
 
-        //* Loop through string filters and apply them w/ prepareStringSQL
-        foreach ($stringToFilter as $filterField) {
-            // Get filter SQL for this field
-            $filterResult = $this->prepareStringSQL($filters, $filterField, $filterField);
+        // //* Loop through string filters and apply them w/ prepareStringSQL
+        // foreach ($stringToFilter as $filterField) {
+        //     // Get filter SQL for this field
+        //     $filterResult = $this->prepareStringSQL($filters, $filterField, $filterField);
 
-            // If filter was provided, we add it to the query
-            if (!empty($filterResult['sqlPart'])) {
-                $filters_map[$filterField] = $filterResult['value'];
-                $sql .= $filterResult['sqlPart'];
-            }
-        }
+        //     // If filter was provided, we add it to the query
+        //     if (!empty($filterResult['sqlPart'])) {
+        //         $filters_map[$filterField] = $filterResult['value'];
+        //         $sql .= $filterResult['sqlPart'];
+        //     }
+        // }
 
-        // Add filter for GMO status
-        if (isset($filters['isGMO']) && ($filters['isGMO'] === '1' || $filters['isGMO'] === '0')) {
-            $sql .= " AND i.isGMO = :isGMO";
-            $filters_map['isGMO'] = (int)$filters['isGMO'];
-        }
+        // // Add filter for GMO status
+        // if (isset($filters['isGMO']) && ($filters['isGMO'] === '1' || $filters['isGMO'] === '0')) {
+        //     $sql .= " AND i.isGMO = :isGMO";
+        //     $filters_map['isGMO'] = (int)$filters['isGMO'];
+        // }
 
         //* Sorting
         $approved_ordering = ['ingredient_name', 'processing_type', 'isGMO'];
