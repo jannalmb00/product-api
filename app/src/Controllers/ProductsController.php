@@ -176,19 +176,25 @@ class ProductsController extends BaseController
     public function handleGetProductNutrition(Request $request, Response $response, array $uri_args): Response
     {
         //*Get id from request
-        $id = $uri_args['product_id'];
+        if (!isset($uri_args['product_id'])) {
+            throw new HttpInvalidInputException($request, "Product ID is required in the URL");
+        }
 
-        $filters = $request->getQueryParams();    // GET QUERY PARAMETERS
-        $filters['id'] = $id;
+        //* Get allergen ID from URI
+        $product_id = $uri_args['product_id'];
+
+        //* Get query parameters
+        $filters = $request->getQueryParams();
+        $filters['product_id'] = $product_id;
 
         //? Graceful error handling
         $regex_id = '/^P\d{5,6}$/';
 
-        if (preg_match($regex_id, $id) === 0) {
+        if (preg_match($regex_id, $product_id) === 0) {
             throw new HttpInvalidInputException($request, "Provided product is invalid. Ingredients records cannot be retrieved.");
         }
 
-        $id = $this->validateFilterIds($filters, $regex_id, 'id', "Invalid Category ID input!", $request);
+        $this->validateFilterIds($filters, $regex_id, 'id', "Invalid Category ID input!", $request);
 
         // $this->model->setPaginationOptions($filters["page"], $filters["page_size"]);
 

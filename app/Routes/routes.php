@@ -13,8 +13,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 return static function (Slim\App $app): void {
     // Routes with authentication
 
-    //* ROUTE: POST /
-    $app->post('/products', [ProductsController::class, 'handleCreateProducts']);
 
     //* ROUTE: GET /
     $app->get('/', [AboutController::class, 'handleAboutWebService']);
@@ -46,11 +44,11 @@ return static function (Slim\App $app): void {
     $app->get('/categories', [CategoriesController::class, 'handleGetCategories']);
 
     //!
-    //* ROUTE: GET /categories/{categories_id}
+    //* ROUTE: GET /categories/{category_id}
     $app->get('/categories/{category_id}', [CategoriesController::class, 'handleGetCategoryById']);
 
     //!
-    //* ROUTE: GET /categories/{categories_id}/brands
+    //* ROUTE: GET /categories/{category_id}/brands
     $app->get('/categories/{category_id}/brands', [CategoriesController::class, 'handleGetBrandsByCategory']);
 
     //* ROUTE: POST /categories
@@ -74,8 +72,8 @@ return static function (Slim\App $app): void {
     $app->get('/allergens/{allergen_id}', [AllergensController::class, 'handleGetAllergenById']);
 
     //!
-    //* ROUTE: GET /products/{product_id}/ingredients
-    $app->get('/allergens/{allergens_id}/ingredients', [AllergensController::class, 'handleGetIngredientsByAllergen']);
+    //* ROUTE: GET /allergens/{allergens_id}/ingredients
+    $app->get('/allergens/{allergen_id}/ingredients', [AllergensController::class, 'handleGetIngredientsByAllergen']);
 
     //* ROUTE: POST /allergens
     $app->post('/allergens', [AllergensController::class, 'handleCreateAllergens']);

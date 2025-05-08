@@ -89,7 +89,7 @@ class AllergensModel extends BaseModel
         // $sql = " SELECT DISTINCT pi.* FROM ingredients product_ingredients pi WHERE i
 
         // Provide the fitlers that we can accept ... I am not sure if we need filters for sub-collection resource but I will add just in case
-        //? Erase the filters if we oont need it
+        //? Erase the filters if we dont need it
         $stringToFilter = ['ingredient_name', 'processing_type'];
 
         //* Loop through string filters and apply them w/ prepareStringSQL
