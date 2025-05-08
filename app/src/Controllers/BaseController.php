@@ -70,7 +70,9 @@ abstract class BaseController
 
             //! VALIDATION
             //Checks if input/string has numbers
-            $string_valid = $this->validator->isAlpha($filter);
+            $string_valid = $this->validator->isAlphaWithSpaces($filter);
+
+
 
             if (!$string_valid) {
                 throw new HttpInvalidInputException($request, "Invalid input. Special charaters and number are not valid");

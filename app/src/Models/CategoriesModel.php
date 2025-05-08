@@ -19,7 +19,7 @@ class CategoriesModel extends BaseModel
     public function insertNewCategory(array $new_category): mixed
     {
         // From base model , pass table name, array conatining key value pairs
-        $last_id = $this->insert('category', $new_category);
+        $last_id = $this->insert('categories', $new_category);
 
         return $last_id;
     }
@@ -40,9 +40,10 @@ class CategoriesModel extends BaseModel
         $category_id_data = $update_category_data["category_id"];
 
         unset($update_category_data["category_id"]);
+        // dd($update_category_data);
 
         //for update
-        $last_id = $this->update('category', $update_category_data, ["category_id" => $category_id_data]);
+        $last_id = $this->update('categories', $update_category_data, ["category_id" => $category_id_data]);
         // dd($last_id);
 
         return $last_id;
@@ -56,7 +57,7 @@ class CategoriesModel extends BaseModel
      */
     function deleteCategory(string $category_id): int
     {
-        return $this->delete('category', ["category_id" => $category_id]);
+        return $this->delete('categories', ["category_id" => $category_id]);
     }
 
     /**
@@ -72,8 +73,8 @@ class CategoriesModel extends BaseModel
         $filters_map = [];
 
         $sql = "SELECT c.*, pc.category_name AS parent_category_name
-                FROM category c
-                LEFT JOIN category pc ON c.parent_category_id = pc.category_id
+                FROM categories c
+                LEFT JOIN categories pc ON c.parent_category_id = pc.category_id
                 WHERE 1";
 
         // JOIN category pc ON c.category_id = pc.parent_category_id, , pc.category_name as parent_category_name
@@ -89,6 +90,7 @@ class CategoriesModel extends BaseModel
             // Call the prepareStringSQL function for each field
             //map of valid filters, current filter
             $filterResult = $this->prepareStringSQL($filters, $filterField, $filterField);
+
 
             // Check if sqlPart is not empty, meaning there is a filter for that
             if (!empty($filterResult['sqlPart'])) {
@@ -120,7 +122,7 @@ class CategoriesModel extends BaseModel
     public function getCategoryById(array $filter): mixed
     {
         //Sends the id, table name, column name
-        $result = $this->prepareIdSQL($filter['id'], 'category', 'category_id');
+        $result = $this->prepareIdSQL($filter['id'], 'categories', 'category_id');
 
         //? PAGINATE
         return $this->paginate($result['sqlPart'], $result[0]);
@@ -145,12 +147,12 @@ class CategoriesModel extends BaseModel
         //* SQL query FROM brands, products and category
         $sql = "SELECT DISTINCT b.*
             FROM brands b
-            JOIN product p ON b.brand_id = p.brand_id
-            LEFT JOIN category c ON p.category_id = c.category_id
+            JOIN products p ON b.brand_id = p.brand_id
+            LEFT JOIN categories c ON p.category_id = c.category_id
             WHERE p.category_id = :direct_category_id
                OR c.parent_category_id = :parent_category_id";
 
-        //Provide the fitlers that we can accept ... I am not sure if we need filters for sub-collection resource but I will add just in case
+        //Provide the filters that we can accept ... I am not sure if we need filters for sub-collection resource but I will add just in case
         //? Erase the filters if we oont need it
         $stringToFilter = ['brand_name', 'brand_country'];
 

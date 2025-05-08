@@ -12,6 +12,18 @@ use App\Core\PasswordTrait;
 class ProductsModel extends BaseModel
 {
 
+    public function insertNewProduct(array $new_product): mixed
+    {
+        // From base model , pass table name, array conatining key value pairs
+        $last_id = $this->insert('products', $new_product);
+
+        //for update
+        //$last_id = $this->update('products', $new_product, ["product_id" => ]);
+
+
+        return $last_id;
+    }
+
     use PasswordTrait;
     /**
      * Retrieves the products
@@ -29,8 +41,8 @@ class ProductsModel extends BaseModel
         $filters_map = [];
 
         $sql = "SELECT p.* , c.category_name, b.brand_name
-                FROM product p
-                JOIN category c ON p.category_id = c.category_id
+                FROM products p
+                JOIN categories c ON p.category_id = c.category_id
                 JOIN brands b ON p.brand_id = b.brand_id
                 WHERE 1";
 
@@ -75,7 +87,7 @@ class ProductsModel extends BaseModel
     public function getProductById(array $filter): mixed
     {
         //Sends the id, table name, column name
-        $result = $this->prepareIdSQL($filter['id'], 'product', 'product_id');
+        $result = $this->prepareIdSQL($filter['id'], 'products', 'product_id');
 
         //? PAGINATE
         return $this->paginate($result['sqlPart'], $result[0]);
@@ -86,30 +98,33 @@ class ProductsModel extends BaseModel
      *
      * @param string $id ID of the desired product
      * @param array $filters The filters to apply to the query:
-     * @return array List of nutrition of the spcified product
+     * @return array List of nutrition of the specified product
      */
-    public function getProductNutrition(string $id, array $filters): mixed
+    public function getProductByNutrition(array $filters): mixed
     {
 
-        $filters_map = [];
-        //add player_id to map
-        $filters_map["id"] = $id;
 
-        $sql = "SELECT p.*, g.*
-        FROM goals g
-        INNER JOIN players p
-        ON p.player_id = g.player_id
-        WHERE p.player_id = :id";
+        //* Get the product id
+        $product_id = $filters['product_id'];
 
-        //? FILTERING
-        if (isset($filters["tournament_id"])) {
-            $sql .= " AND tournament_id = :tournament_id";
-            $filters_map["tournament_id"] = $filters['tournament_id'];
-        }
-        if (isset($filters["match_id"])) {
-            $sql .= " AND match_id = :match_id";
-            $filters_map["match_id"] = $filters['match_id'];
-        }
+        // Product id will be initialized with the filters map
+        $filters_map = ["product_id" => $product_id];
+
+        //* SQL query to join nutrition with products
+        $sql = " SELECT n.*, p.product_id, p.product_name, p.product_barcode, p.product_origin, p.product_serving_size, p.product_image, b.brand_name,
+        c.category_name
+        FROM nutritions n
+        JOIN products p
+        ON n.nutritional_id = p.nutrition_id
+        JOIN products pc
+        ON p.product_id = pc.product_id
+        LEFT JOIN brands b
+        ON b.brand_id = p.brand_id
+        LEFT JOIN categories c
+        ON c.category_id = p.category_id
+        WHERE pc.product_id = :product_id
+        ";
+
 
         return $this->paginate($sql, $filters_map);
     }

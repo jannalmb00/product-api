@@ -28,6 +28,58 @@ class ProductsController extends BaseController
         //To initialize the validator
         parent::__construct();
     }
+    // public function __construct(private ProductsModel $model)
+    // {
+    //     //$this->validator = new ValidationHelper();
+
+    //     //To initialize the validator
+    //     parent::__construct();
+    // }
+
+    // public function handleCreateProducts(Request $request, Response $response): Response
+    // {
+
+    //     echo ' blet';
+
+    //     //POST - in json
+    //     // TODO: the body could be empty. handle case where body is empty ,,, when request is returned null or invalid
+    //     $new_product = $request->getParsedBody();
+
+    //     // dd($new_product);
+
+    //     //? CALL SERVICE
+    //     $result = $this->service->createProducts($new_product);
+    //     if ($new_product != NULL) {
+    //         dd($new_product);
+
+    //         //!NOte verify he outcome of the opertion: sucess vs filure
+    //         if ($result->isSuccess()) {
+    //             //OPeration succeeded.
+    //             // create an array that will contain -- make this array reusable
+    //             $payload = [
+    //                 'status' => 'Success',
+    //                 'code' => 200,
+    //                 'message' => $result->getMessage(),
+    //             ];
+
+    //             //override the default 200 satus code to 201
+    //             return  $this->renderJson($response, $payload, 201);
+    //         }
+    //     }
+
+    //     // DO FAILED OPERATION
+    //     //Return a failed operation
+
+    //     //TODO prepare and return a response containing the "status, message, code, details"
+    //     //TODO structure repsonse as shown in class and return as JSON response
+    //     $payload = [
+    //         'status' => 'error',
+    //         'code' => 400,
+    //         'message' => $result->getMessage(),
+    //         'details' => $result->getErrors()
+    //     ];
+    //     return  $this->renderJson($response, $payload, 400);
+    // }
 
     /**
      * GET: Handles the request  of retrieving the products based on the filter parameter
@@ -57,6 +109,7 @@ class ProductsController extends BaseController
                 $this->validateString($filters, $validateString, $request);
             }
         }
+
 
         //* paginate -- function from base controller
         $info = $this->pagination($filters, $this->model, [$this->model, 'getProducts']);
@@ -123,19 +176,25 @@ class ProductsController extends BaseController
     public function handleGetProductNutrition(Request $request, Response $response, array $uri_args): Response
     {
         //*Get id from request
-        $id = $uri_args['product_id'];
+        if (!isset($uri_args['product_id'])) {
+            throw new HttpInvalidInputException($request, "Product ID is required in the URL");
+        }
 
-        $filters = $request->getQueryParams();    // GET QUERY PARAMETERS
-        $filters['id'] = $id;
+        //* Get allergen ID from URI
+        $product_id = $uri_args['product_id'];
+
+        //* Get query parameters
+        $filters = $request->getQueryParams();
+        $filters['product_id'] = $product_id;
 
         //? Graceful error handling
         $regex_id = '/^P\d{5,6}$/';
 
-        if (preg_match($regex_id, $id) === 0) {
+        if (preg_match($regex_id, $product_id) === 0) {
             throw new HttpInvalidInputException($request, "Provided product is invalid. Ingredients records cannot be retrieved.");
         }
 
-        $id = $this->validateFilterIds($filters, $regex_id, 'id', "Invalid Category ID input!", $request);
+        $this->validateFilterIds($filters, $regex_id, 'id', "Invalid Category ID input!", $request);
 
         // $this->model->setPaginationOptions($filters["page"], $filters["page_size"]);
 

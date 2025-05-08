@@ -191,7 +191,8 @@ class CategoriesController extends BaseController
 
         // //? Validation & exception handling of filter parameters
         //* Validating if filter input are string
-        $stringValidateArray = ['category_name', 'category_type', 'parent_category'];
+        // ! removed category_name and parent_category in validate array
+        $stringValidateArray = ['category_type'];
 
         foreach ($stringValidateArray as $validateString) {
             //If filter array value is not empty

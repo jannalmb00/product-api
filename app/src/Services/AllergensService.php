@@ -31,12 +31,12 @@ class AllergensService
             ],
             'allergen_name' => [
                 'required',
-                'ascii',
-                array('lengthMin', 4)
+                'alpha',
+                array('lengthMin', 3)
             ],
             "allergen_reaction_type" => [
-                'required',
-                array('lengthMin', 4)
+                'alpha',
+                array('lengthMin', 3)
             ],
             "food_group" => [
                 'required',
@@ -44,17 +44,17 @@ class AllergensService
             ],
             "food_type" => [
                 'required',
-                array('lengthMin', 4)
+                array('lengthMin', 3)
             ],
             "food_origin" => [
-                'ascii',
-                array('lengthMin', 4)
+                'alpha',
+                array('lengthMin', 2)
 
             ],
             "food_item" => [
                 'required',
-                'ascii',
-                array('lengthMin', 4)
+                'alpha',
+                array('lengthMin', 3)
             ]
 
         );

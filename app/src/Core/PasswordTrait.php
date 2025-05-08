@@ -10,6 +10,7 @@ trait PasswordTrait
 {
     // use PasswordTrait;
     // private $cost = 12;
+    private $cost = 12;
 
     /**
      * Returns a hashed password.

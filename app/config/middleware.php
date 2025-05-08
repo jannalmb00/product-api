@@ -3,14 +3,20 @@
 declare(strict_types=1);
 
 use App\Middleware\HelloMiddleware;
+use App\Middleware\LoggingMiddleware;
+
 use App\Middleware\ContentNegotiationMiddleware;
 use Slim\App;
 
 return function (App $app) {
     //TODO: Add your middleware here.
-    $app->add(ContentNegotiationMiddleware::class);
+    //  $app->add(ContentNegotiationMiddleware::class);
     $app->addBodyParsingMiddleware();
     $app->addRoutingMiddleware();
+
+    //* Logging middleware
+    //$app->add(LoggingMiddleware::class);
+
 
     //!NOTE: the error handling middleware MUST be added last.
     $errorMiddleware = $app->addErrorMiddleware(true, true, true);

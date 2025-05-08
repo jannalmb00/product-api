@@ -31,7 +31,7 @@ class CategoriesService
             ],
             'category_name' => [
                 'required',
-                'ascii',
+                'alpha',
                 array('lengthMin', 3)
             ],
             "category_description" => [
@@ -42,11 +42,11 @@ class CategoriesService
                 ['regex', '/^[A-Z]-[0-9]{4}$/']
             ],
             "category_type" => [
-                'required',
+                'alpha',
                 array('lengthMin', 4)
             ],
             "category_level" => [
-                'required',
+                'alpha',
                 array('in', ["parent", "child"])
             ],
             "category_tags" => [
@@ -121,7 +121,10 @@ class CategoriesService
             return Result::failure("Error updating category", $validator->errorsToJson());
         }
 
-        $this->model->updateCategory($update_category_data);
+        //   unset($update_category_data[0]);
+
+        //
+        $this->model->updateCategory($update_category_data[0]);
 
         // return successful result
         return Result::success("Category has been updated successfully!");
@@ -157,7 +160,7 @@ class CategoriesService
                     "error" => $validator->errorsToString()
                 ];
             } {
-                //$rowsDeleted = $this->model->deleteAllergen($allergen_id);
+                $rowsDeleted = $this->model->deleteCategory($category_id);
             }
         }
         if (count($validation_errors) > 0) {

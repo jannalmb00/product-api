@@ -27,6 +27,22 @@ class ValidationHelper
     }
 
     /**
+     * Checks whether a string contains only alphabetic characters.
+     * @param mixed $value the string to be validated
+     * @return mixed false if the value is invalid. Otherwise, the sanitized string will be returned.
+     */
+    public static function isAlphaWithSpaces($value): mixed
+    {
+        $value = filter_var(trim($value), FILTER_SANITIZE_ADD_SLASHES);
+
+        // Accepts spaces
+        if (preg_match('/^[A-Za-z ]+$/', $value)) {
+            return $value;
+        }
+
+        return false;
+    }
+    /**
      * Checks whether a value is an integer and is within a range.
      * @param mixed $value an input value to be validated
      * @param int $min the lower bound of the range of allowed values
