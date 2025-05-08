@@ -16,4 +16,12 @@ class AccountModel extends BaseModel
         return 1;
         //return $last_userID;
     }
+
+    public function getUserEmail(string $email): mixed
+    {
+        $sql = "SELECT * FROM ws_users WHERE email = :email";
+        return $this->fetchSingle($sql, ['email' => $email]);
+    }
+
+    
 }
