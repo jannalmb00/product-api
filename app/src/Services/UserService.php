@@ -74,4 +74,33 @@ class UserService
         $last_inserted_id =  $this->user_model->createUser($new_user_data); //
         return Result::success("The new user has been created successfully!", $last_inserted_id);
     }
+
+    public function authenticateUser(string $email, string $password): Result
+    {
+
+        //? Step 1) Get user email for authentication
+        $user = $this->user_model->getUserEmail($email);
+
+        //? Step 2) Check if user exists
+        if (!$user) {
+            return Result::failure("No user");
+        }
+
+        //? Step 3) Verify password
+        if (!password_verify($password, $user['password'])) {
+            return Result::failure("Invalid email or password");
+        }
+
+        //? Step 4) Group the user data
+        $userData = [
+            'user_id' => $user['user_id'],
+            'email' => $user['email'],
+            'isAdmin' => $user['isAdmin'], // use this for access control
+            'first_name' => $user['first_name'],
+            'last_name' => $user['last_name']
+        ];
+
+        //? Step 5) Return successful authentication information
+        return Result::success("Authentication successful", $userData);
+    }
 }

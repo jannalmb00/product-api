@@ -91,10 +91,9 @@ return static function (Slim\App $app): void {
 
     //* ROUTE: POST /register
     $app->post('/register', [UserController::class, 'handleCreateRegister']);
+    //* ROUTE: POST /login
+    $app->post("/login", [UserController::class, 'handleUserLogin']);
 
-
-    // Validation Helper
-    // $app->get('/test', [TestController::class, 'handleTest']);
     //* ROUTE: GET /ping
     $app->get('/ping', function (Request $request, Response $response, $args) {
         $payload = [
@@ -105,10 +104,7 @@ return static function (Slim\App $app): void {
         return $response;
     });
 
-    //* ================ AA B ============= REGISTER AND LOGIN ==========================
-
-    $app->post("/login", [AccountController::class, 'handleUserLogin']);
-    $app->post("/register", [AccountController::class, 'handleRegistration']);
+    // Add proxy
 
 
     // Example route to test error handling

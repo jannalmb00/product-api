@@ -22,6 +22,4 @@ class AccountModel extends BaseModel
         $sql = "SELECT * FROM ws_users WHERE email = :email";
         return $this->fetchSingle($sql, ['email' => $email]);
     }
-
-    
 }
