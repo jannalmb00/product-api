@@ -57,10 +57,13 @@ abstract class BaseModel
      */
     private function run(string $sql, array $args = [])
     {
+        error_log("SQL: $sql");
+        error_log("ARGS: " . print_r($args, true));
 
         if (empty($args)) {
             return $this->db->query($sql);
         }
+        // echo $sql;
         $stmt = $this->db->prepare($sql);
         //check if args is associative or sequential?
         $is_assoc = (array() === $args) ? false : array_keys($args) !== range(0, count($args) - 1);

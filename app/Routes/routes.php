@@ -7,6 +7,7 @@ use App\Controllers\AccountController;
 use App\Controllers\ProductsController;
 use App\Controllers\CategoriesController;
 use App\Controllers\AllergensController;
+use App\Controllers\UserController;
 use App\Helpers\DateTimeHelper;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -84,6 +85,13 @@ return static function (Slim\App $app): void {
 
     //* ROUTE: DELETE /allergens
     $app->delete('/allergens', [AllergensController::class, 'handleDeleteAllergen']);
+
+
+    //?---------User----------------------------------------------
+
+    //* ROUTE: POST /register
+    $app->post('/register', [UserController::class, 'handleCreateRegister']);
+
 
     // Validation Helper
     // $app->get('/test', [TestController::class, 'handleTest']);
