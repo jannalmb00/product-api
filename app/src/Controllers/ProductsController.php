@@ -20,7 +20,7 @@ class ProductsController extends BaseController
 
     private ValidationHelper $validator;
 
-    public function __construct(private ProductsModel $model, private ProductsService $service)
+    public function __construct(private ProductsModel $model, private ProductsService $product_service)
     {
         //$this->validator = new ValidationHelper();
 
@@ -50,7 +50,7 @@ class ProductsController extends BaseController
         // dd($new_product);
 
         //? CALL SERVICE
-        $result = $this->service->createProducts($new_product);
+        $result = $this->product_service->createProducts($new_product);
         if ($new_product != NULL) {
             dd($new_product);
 
@@ -274,5 +274,43 @@ class ProductsController extends BaseController
         }
 
         return $this->renderJson($response, $info);
+    }
+
+    function handleUpdateProduct(Request $request, Response $response, array $uri_args)
+    {
+        $id = $uri_args['product_id'];
+
+        if (empty($id)) {
+            $payload = [
+                'status' => 'failure',
+                'code' => 400,
+                'message' => 'Allergen ID is reuired',
+                'details' => 'Allergen ID is missing',
+            ];
+            return $this->renderJson($response, $payload, 400);
+        }
+        $data = $request->getParsedBody();
+        $condition = ["product_id" => $id];
+
+        $result = $this->product_service->updateProduct($data, $condition);
+
+        if ($result->isSuccess()) {
+            // Operation success
+            $payload = [
+                'status' => 'success',
+                'code' => 201,
+                'message' => $result->getMessage(),
+            ];
+            // Operation sucessful
+            return $this->renderJson($response, $payload, 201); // We write the status code that will be injected in the payload.
+        } else {
+            $payload = [
+                'status' => 'failure',
+                'code' => 400,
+                'message' => $result->getMessage(),
+                'details' => $result->getErrors(),
+            ];
+            return $this->renderJson($response, $payload, 400);
+        }
     }
 }

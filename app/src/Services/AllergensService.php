@@ -56,6 +56,13 @@ class AllergensService
         $new_allergen = $new_allergens_info[0];
         $validator = new Validator($new_allergen, [], 'en');
         $validator->mapFieldsRules($rules);
+        //  dd($new_allergen);
+        $last_inserted_id =  $this->allergens_model->insertAllergen($new_allergen); //
+        // Result pattern is implemented
+        // $last_insert_id = 29;
+        // Return a successful result
+        return Result::success("The allergen has been created successfully!", $last_inserted_id);
+    }
 
 
         if (!$validator->validate()) {

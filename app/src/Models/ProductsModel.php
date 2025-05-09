@@ -115,4 +115,20 @@ class ProductsModel extends BaseModel
 
         return $this->paginate($sql, $filters_map);
     }
+
+    function insertNewProduct($new_product): mixed
+    {
+        $last_id = $this->insert("product", $new_product);
+        return $last_id;
+    }
+
+    function updateProduct(array $data, array $condition)
+    {
+        return $this->update('product', $data, $condition);
+    }
+
+    function deleteProduct(array $conditions): int
+    {
+        return $this->delete('product', $conditions);
+    }
 }
