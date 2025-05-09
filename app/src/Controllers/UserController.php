@@ -132,7 +132,7 @@ class UserController extends BaseController
                 $iat = time(); // Issued at
                 $eat = $iat + 3600; // Expires at
 
-                $payload = [
+                $registered_claim = [
                     'iss' => 'http://localhost/product-api',
                     'aud' => 'http://localhost/product-api',
                     'iat' => $iat,
@@ -145,7 +145,7 @@ class UserController extends BaseController
 
                 //? Step 6) Generate a token for user log in
                 $key = $this->appSettings->get("jwt_key");
-                $jwt = JWT::encode($payload, $key, 'HS256');
+                $jwt = JWT::encode($registered_claim, $key, 'HS256');
 
 
                 //? Step 7) Throw successful response payload
@@ -163,7 +163,6 @@ class UserController extends BaseController
                     "lastname" => $user_info['last_name']
                 ];
 
-                // dd($jwt);
                 return $this->renderJson($response, $success_response_payload);
             } else {
 

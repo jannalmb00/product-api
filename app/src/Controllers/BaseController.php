@@ -44,7 +44,7 @@ abstract class BaseController
         // validate_pages =  new Validator($filters,  );
         //Add a default if no page and page size set
         $page = isset($filters["page"]) ? (int) $filters["page"] : 1;
-        $size = isset($filters["page_size"]) ? (int) $filters["page_size"] : 10;
+        $size = isset($filters["page_size"]) ? (int) $filters["page_size"] : 5;
 
         // setting pagination
         $model->setPaginationOptions($page, $size);
