@@ -37,12 +37,11 @@ class UserService
                 'email'
             ],
             "password" => [
-                'required',
-                'password'
+                'required'
             ],
             "isAdmin" => [
-                'require',
-                'boolean'
+                'required',
+                ['in', [0, 1]]
 
             ]
 
@@ -51,7 +50,7 @@ class UserService
 
         //TODO: 2) Insert the resource into the DB table
         //* We can use an array and using the first 1 so we can make our lives easier
-        $new_allergen = $new_user_data[0];
+        //$new_allergen = $new_user_data[0];
         $validator = new Validator($new_user_data, [], 'en');
         $validator->mapFieldsRules($rules);
 
@@ -70,8 +69,9 @@ class UserService
         }
         //Todo: hash the password
         $new_user_data['password'] = $this->cryptPassword($new_user_data['password']);
+        // echo $new_user_data;
 
         $last_inserted_id =  $this->user_model->createUser($new_user_data); //
-        return Result::success("The allergen has been created successfully!", $last_inserted_id);
+        return Result::success("The new user has been created successfully!", $last_inserted_id);
     }
 }

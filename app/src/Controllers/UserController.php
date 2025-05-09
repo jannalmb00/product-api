@@ -33,21 +33,29 @@ class UserController extends BaseController
      * @param \Psr\Http\Message\ResponseInterface $response
      * @return Response
      */
-    public function handleCreatRegister(Request $request, Response $response): Response
+    public function handleCreateRegister(Request $request, Response $response): Response
     {
 
         //TODO: Handle case where the case where the body could be empty
-        $request->getBody();
+        //$request->getBody();
 
-        $user_data = $request->getParsedBody();
+        $users_data = $request->getParsedBody();
 
-        if (empty($user_data)) {
+        if (empty($users_data)) {
             throw new HttpBadRequestException($request, "Data passed is empty");
         }
 
-        // dd($allergens_data);
-        $result = $this->user_model->createUser($user_data);
+        if (!is_array($users_data) || count($users_data) !== 1) {
+            throw new HttpBadRequestException($request, "Invalid data format, expected an array with a single user object");
+        }
 
+        $user_data = $users_data[0];
+
+
+
+        // dd($allergens_data);
+        $result = $this->user_service->createUser($user_data);
+        //dd($result);
         //* Dont forget to identify the outcome of the operations: success vs failure
         if ($result->isSuccess()) {
             // Operation success
@@ -72,5 +80,4 @@ class UserController extends BaseController
 
 
     }
-
 }
