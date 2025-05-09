@@ -21,7 +21,6 @@ class AppSettings
      */
     public function get(string $key = ''): mixed
     {
-        echo empty($key);
         return (empty($key)) ? $this->settings : $this->settings[$key];
     }
 }

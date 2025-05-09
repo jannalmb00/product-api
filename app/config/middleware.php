@@ -6,6 +6,7 @@ use App\Middleware\HelloMiddleware;
 use App\Middleware\LoggingMiddleware;
 
 use App\Middleware\ContentNegotiationMiddleware;
+use App\Middleware\AuthMiddleware;
 use Slim\App;
 
 return function (App $app) {
@@ -13,6 +14,9 @@ return function (App $app) {
     $app->add(ContentNegotiationMiddleware::class);
     $app->addBodyParsingMiddleware();
     $app->addRoutingMiddleware();
+
+    //* AuthMiddleware
+    $app->add(AuthMiddleware::class);
 
     //* Logging middleware
     //$app->add(LoggingMiddleware::class);
