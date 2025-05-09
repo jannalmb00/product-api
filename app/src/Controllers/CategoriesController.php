@@ -137,7 +137,7 @@ class CategoriesController extends BaseController
 
     /**
      * DELETE: Handles the deletion of an existing category
-     * 
+     *
      * @param \Psr\Http\Message\ServerRequestInterface $request refers to the request object
      * @param \Psr\Http\Message\ResponseInterface $response refers to the response object
      * @throws \Slim\Exception\HttpBadRequestException refers to the bad request if the request body is empty
