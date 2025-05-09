@@ -108,13 +108,13 @@ class UserController extends BaseController
         }
 
 
-        // //? Step 3) User data
-        if (!isset($user_data['email']) || !isset($user_data['password'])) {
-            throw new HttpInvalidInputException(
-                $request,
-                "Please input email and password!"
-            );
-        }
+        // // //? Step 3) User data
+        // if (!isset($user_data['email']) || !isset($user_data['password'])) {
+        //     throw new HttpInvalidInputException(
+        //         $request,
+        //         "Please input email and password!"
+        //     );
+        // }
 
         $user_data = $users_data[0]; // 1st user obj from array
 
