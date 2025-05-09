@@ -74,16 +74,16 @@ class AllergensService
     }
 
 
-        if (!$validator->validate()) {
+    //     if (!$validator->validate()) {
 
-            echo $validator->errorsToString();
-            // echo '<br>';
-            echo $validator->errorsToJson();
-            return Result::failure("error!");
-        }
-        $last_inserted_id =  $this->allergens_model->insertAllergen($new_allergen); //
-        return Result::success("The allergen has been created successfully!", $last_inserted_id);
-    }
+    //         echo $validator->errorsToString();
+    //         // echo '<br>';
+    //         echo $validator->errorsToJson();
+    //         return Result::failure("error!");
+    //     }
+    //     $last_inserted_id =  $this->allergens_model->insertAllergen($new_allergen); //
+    //     return Result::success("The allergen has been created successfully!", $last_inserted_id);
+    // }
 
     /**
      * Delete an allergen
