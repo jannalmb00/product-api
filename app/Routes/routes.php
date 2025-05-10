@@ -11,6 +11,8 @@ use App\Controllers\UserController;
 use App\Helpers\DateTimeHelper;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use App\Middleware\AuthMiddleware;
+
 
 return static function (Slim\App $app): void {
     // Routes with authentication
@@ -85,6 +87,8 @@ return static function (Slim\App $app): void {
 
     //* ROUTE: DELETE /allergens
     $app->delete('/allergens', [AllergensController::class, 'handleDeleteAllergen']);
+       // ->add(new AuthMiddleware($app->getContainer()->get('settings')['jwt_key']));
+
 
 
     //?---------User----------------------------------------------

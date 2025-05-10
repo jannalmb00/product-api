@@ -145,6 +145,7 @@ class UserController extends BaseController
                 ];
 
                 //? Step 6) Generate a token for user log in
+                //echo "quack";
                 $key = $this->appSettings->get("jwt_key");
                 $jwt = JWT::encode($registered_claim, $key, 'HS256');
 

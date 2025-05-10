@@ -13,7 +13,9 @@ class AllergensService
      * Summary of __construct
      * @param \App\Models\AllergensModel $allergens_model
      */
-    public function __construct(private AllergensModel $allergens_model) {}
+    public function __construct(private AllergensModel $allergens_model)
+    {
+    }
 
     /**
      * Create a new allergen
@@ -66,7 +68,7 @@ class AllergensService
         $validator = new Validator($new_allergen, [], 'en');
         $validator->mapFieldsRules($rules);
         //  dd($new_allergen);
-        $last_inserted_id =  $this->allergens_model->insertAllergen($new_allergen); //
+        $last_inserted_id = $this->allergens_model->insertAllergen($new_allergen); //
         // Result pattern is implemented
         // $last_insert_id = 29;
         // Return a successful result
