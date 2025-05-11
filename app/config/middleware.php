@@ -16,7 +16,9 @@ return function (App $app) {
     $app->addRoutingMiddleware();
 
     //* AuthMiddleware
-    $app->add(AuthMiddleware::class);
+    // $app->add(\App\Middleware\AuthMiddleware::class);
+    // $app->add(\App\Middleware\AdminMiddleware::class);
+
 
     //* Logging middleware
     //$app->add(LoggingMiddleware::class);

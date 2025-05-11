@@ -12,17 +12,17 @@ use App\Core\PasswordTrait;
 class ProductsModel extends BaseModel
 {
 
-    public function insertNewProduct(array $new_product): mixed
-    {
-        // From base model , pass table name, array conatining key value pairs
-        $last_id = $this->insert('products', $new_product);
+    // public function insertNewProduct(array $new_product): mixed
+    // {
+    //     // From base model , pass table name, array conatining key value pairs
+    //     $last_id = $this->insert('products', $new_product);
 
-        //for update
-        //$last_id = $this->update('products', $new_product, ["product_id" => ]);
+    //     //for update
+    //     //$last_id = $this->update('products', $new_product, ["product_id" => ]);
 
 
-        return $last_id;
-    }
+    //     return $last_id;
+    // }
 
     use PasswordTrait;
     /**
@@ -137,7 +137,7 @@ class ProductsModel extends BaseModel
      */
     function insertProduct(array $new_product): mixed
     {
-        $last_id = $this->insert("product", $new_product);
+        $last_id = $this->insert("products", $new_product);
         return $last_id;
     }
 
@@ -150,8 +150,8 @@ class ProductsModel extends BaseModel
     function updateProduct(array $update_product_date)
     {
         $product_id = $update_product_date["product_id"];
-        unset($product_id["product_id"]);
-        return $this->update('product', $update_product_date, ["product_id" => $product_id]);
+        unset($update_product_date["product_id"]);
+        return $this->update('products', $update_product_date, ["product_id" => $product_id]);
     }
 
     /**
@@ -162,6 +162,6 @@ class ProductsModel extends BaseModel
      */
     function deleteProduct(string $product_id): int
     {
-        return $this->delete('product', ["product_id" => $product_id]);
+        return $this->delete('products', ["product_id" => $product_id]);
     }
 }

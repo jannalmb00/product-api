@@ -139,7 +139,6 @@ class AllergensModel extends BaseModel
     {
         $allergen_id = $update_allergen_data["allergen_id"];
         unset($update_categroy_data["allergen_id"]);
-
         return $this->update('allergens', $update_allergen_data, ["allergen_id" =>  $allergen_id]);
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Middleware;
 
+use App\Core\AppSettings;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Psr\Http\Message\ResponseInterface;
@@ -18,7 +19,6 @@ class AuthMiddleware implements MiddlewareInterface
     {
         $this->jwtKey = $jwtKey;
     }
-
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $authHeader = $request->getHeaderLine('Authorization');
@@ -32,6 +32,7 @@ class AuthMiddleware implements MiddlewareInterface
         try {
             //decode
             $decoded = JWT::decode($token, new Key($this->jwtKey, 'HS256'));
+            // dd($token);
             $request = $request->withAttribute('jwt', (array)$decoded);
             return $handler->handle($request);
         } catch (\Exception $e) {

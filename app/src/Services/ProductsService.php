@@ -73,7 +73,7 @@ class ProductsService
 
         );
 
-        $new_product = $product_data[0];
+        $new_product = $product_data;
 
         $validator = new Validator($new_product, [], 'en');
 
@@ -85,7 +85,8 @@ class ProductsService
             return Result::failure("Product data validation failed", $validator->errors());
         }
 
-        $last_inserted_id = $this->products_model->insertProduct($product_data);
+        $last_inserted_id = $this->products_model->insertProduct($new_product);
+
 
         return Result::success("Product has been created successfully!", $last_inserted_id);
     }

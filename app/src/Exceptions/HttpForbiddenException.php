@@ -10,4 +10,6 @@ class HttpForbiddenException  extends HttpSpecializedException
     protected $message = 'Forbidden';
     protected string $title = '403 Forbidden';
     protected string $description = 'User is not authorized to access this resource';
+
+    
 }

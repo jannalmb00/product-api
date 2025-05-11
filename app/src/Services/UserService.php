@@ -66,6 +66,8 @@ class UserService
             echo $validator->errorsToJson();
             return Result::failure("error!");
         }
+
+        $new_user_data['isAdmin'] = isset($new_user_data['isAdmin']) && $new_user_data['isAdmin'] ? 1 : 0;
         //Todo: hash the password
         $new_user_data['password'] = $this->cryptPassword($new_user_data['password']);
         // echo $new_user_data;
@@ -87,6 +89,7 @@ class UserService
 
         //? Step 3) Verify password
         if (!password_verify($password, $user['password'])) {
+            echo "failed";
             return Result::failure("Invalid email or password");
         }
 

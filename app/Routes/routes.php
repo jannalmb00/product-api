@@ -12,91 +12,98 @@ use App\Helpers\DateTimeHelper;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Middleware\AuthMiddleware;
-
+use App\Middleware\AdminMiddleware;
+use Slim\Routing\RouteCollectorProxy;
 
 return static function (Slim\App $app): void {
-    // Routes with authentication
 
-
-    //* ROUTE: GET /
-    $app->get('/', [AboutController::class, 'handleAboutWebService']);
-
-    //?---------PRODUCTS----------------------------------------------
-    //* ROUTE: GET /products
-    $app->get('/products', [ProductsController::class, 'handleGetProducts']);
-
-    //!
-    //* ROUTE: GET /products/{product_id}
-    $app->get('/products/{product_id}', [ProductsController::class, 'handleGetProductById']);
-
-    //!
-    //* ROUTE: GET /products/{product_id}/nutrition
-    $app->get('/products/{product_id}/nutrition', [ProductsController::class, 'handleGetProductNutrition']);
-
-    //* ROUTE: POST /products
-    $app->post('/products', [ProductsController::class, 'handleCreateProducts']);
-
-    //* ROUTE: PUT /products
-    $app->put('/products/{product_id}', [ProductsController::class, 'handleUpdateProduct']);
-
-    //* ROUTE: DELETE /products
-    $app->delete('/products', [ProductsController::class, 'handleDeleteProduct']);
-
-    //?---------CATEGORIES----------------------------------------------
-    //!
-    //* ROUTE: GET /categories
-    $app->get('/categories', [CategoriesController::class, 'handleGetCategories']);
-
-    //!
-    //* ROUTE: GET /categories/{category_id}
-    $app->get('/categories/{category_id}', [CategoriesController::class, 'handleGetCategoryById']);
-
-    //!
-    //* ROUTE: GET /categories/{category_id}/brands
-    $app->get('/categories/{category_id}/brands', [CategoriesController::class, 'handleGetBrandsByCategory']);
-
-    //* ROUTE: POST /categories
-    $app->post('/categories', [CategoriesController::class, 'handleCreateCategories']);
-
-    //* ROUTE: PUT /categories/{category_id}
-    $app->put('/categories/{category_id}', [CategoriesController::class, 'handleUpdateCategories']);
-
-    //* ROUTE: DELETE /categories
-    $app->DELETE('/categories', [CategoriesController::class, 'handleDeleteCategories']);
-
-
-
-    //?---------ALLERGENS----------------------------------------------
-    //!
-    //* ROUTE: GET /allergens
-    $app->get('/allergens', [AllergensController::class, 'handleGetAllergens']);
-
-    //!
-    //* ROUTE: GET /allergens/{allergens_id}
-    $app->get('/allergens/{allergen_id}', [AllergensController::class, 'handleGetAllergenById']);
-
-    //!
-    //* ROUTE: GET /allergens/{allergens_id}/ingredients
-    $app->get('/allergens/{allergen_id}/ingredients', [AllergensController::class, 'handleGetIngredientsByAllergen']);
-
-    //* ROUTE: POST /allergens
-    $app->post('/allergens', [AllergensController::class, 'handleCreateAllergens']);
-
-    //* ROUTE: PUT /allergens
-    $app->put('/allergens/{allergen_id}', [AllergensController::class, 'handleUpdateAllergen']);
-
-    //* ROUTE: DELETE /allergens
-    $app->delete('/allergens', [AllergensController::class, 'handleDeleteAllergen']);
-       // ->add(new AuthMiddleware($app->getContainer()->get('settings')['jwt_key']));
-
-
+    //? --------- PUBLIC ROUTES ------
 
     //?---------User----------------------------------------------
 
     //* ROUTE: POST /register
     $app->post('/register', [UserController::class, 'handleCreateRegister']);
+
     //* ROUTE: POST /login
     $app->post("/login", [UserController::class, 'handleUserLogin']);
+
+
+    //* ROUTE: GET /
+    $app->get('/', [AboutController::class, 'handleAboutWebService']);
+
+    //? --------- PROTECTED ROUTES ------
+    //! All the GET methods
+
+    $app->group('', function (RouteCollectorProxy $group) {
+
+        //?---------PRODUCTS----------------------------------------------
+        //* ROUTE: GET /products
+        $group->get('/products', [ProductsController::class, 'handleGetProducts']);
+
+        //* ROUTE: GET /products/{product_id}
+        $group->get('/products/{product_id}', [ProductsController::class, 'handleGetProductById']);
+
+        //* ROUTE: GET /products/{product_id}/nutrition
+        $group->get('/products/{product_id}/nutrition', [ProductsController::class, 'handleGetProductNutrition']);
+
+
+        //?---------CATEGORIES----------------------------------------------
+        //* ROUTE: GET /categories
+        $group->get('/categories', [CategoriesController::class, 'handleGetCategories']);
+
+        //* ROUTE: GET /categories/{category_id}
+        $group->get('/categories/{category_id}', [CategoriesController::class, 'handleGetCategoryById']);
+
+        //* ROUTE: GET /categories/{category_id}/brands
+        $group->get('/categories/{category_id}/brands', [CategoriesController::class, 'handleGetBrandsByCategory']);
+
+
+        //?---------ALLERGENS----------------------------------------------
+        //* ROUTE: GET /allergens
+        $group->get('/allergens', [AllergensController::class, 'handleGetAllergens']);
+
+        //* ROUTE: GET /allergens/{allergens_id}
+        $group->get('/allergens/{allergen_id}', [AllergensController::class, 'handleGetAllergenById']);
+
+        //* ROUTE: GET /allergens/{allergens_id}/ingredients
+        $group->get('/allergens/{allergen_id}/ingredients', [AllergensController::class, 'handleGetIngredientsByAllergen']);
+    })->add($app->getContainer()->get(AuthMiddleware::class));
+
+    $app->group('/admin', function (RouteCollectorProxy $group) {
+        $group->post('/users', [UserController::class, 'createUser']);
+
+        //?---------PRODUCTS----------------------------------------------
+        //* ROUTE: POST /products
+        $group->post('/products', [ProductsController::class, 'handleCreateProducts']);
+
+        //* ROUTE: PUT /products
+        $group->put('/products/{product_id}', [ProductsController::class, 'handleUpdateProduct']);
+
+        //* ROUTE: DELETE /products
+        $group->delete('/products', [ProductsController::class, 'handleDeleteProduct']);
+
+
+        //?---------CATEGORIES----------------------------------------------
+        //* ROUTE: POST /categories
+        $group->post('/categories', [CategoriesController::class, 'handleCreateCategories']);
+
+        //* ROUTE: PUT /categories/{category_id}
+        $group->put('/categories/{category_id}', [CategoriesController::class, 'handleUpdateCategories']);
+
+        //* ROUTE: DELETE /categories
+        $group->DELETE('/categories', [CategoriesController::class, 'handleDeleteCategories']);
+
+        //?---------ALLERGENS----------------------------------------------
+        //* ROUTE: POST /allergens
+        $group->post('/allergens', [AllergensController::class, 'handleCreateAllergens']);
+
+        //* ROUTE: PUT /allergens
+        $group->put('/allergens/{allergen_id}', [AllergensController::class, 'handleUpdateAllergen']);
+
+        //* ROUTE: DELETE /allergens
+        $group->delete('/allergens', [AllergensController::class, 'handleDeleteAllergen']);
+    })->add(\App\Middleware\AdminMiddleware::class)
+        ->add($app->getContainer()->get(AuthMiddleware::class));
 
     //* ROUTE: GET /ping
     $app->get('/ping', function (Request $request, Response $response, $args) {
@@ -107,9 +114,6 @@ return static function (Slim\App $app): void {
         $response->getBody()->write(json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_PARTIAL_OUTPUT_ON_ERROR));
         return $response;
     });
-
-    // Add proxy
-
 
     // Example route to test error handling
     $app->get('/error', function (Request $request, Response $response, $args) {

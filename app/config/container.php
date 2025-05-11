@@ -13,6 +13,8 @@ use Psr\Http\Message\UriFactoryInterface;
 use Slim\Factory\AppFactory;
 use Slim\App;
 use Slim\Interfaces\RouteParserInterface;
+use App\Middleware\AuthMiddleware;
+
 
 $definitions = [
     AppSettings::class => function () {
@@ -36,6 +38,7 @@ $definitions = [
         return $app;
     },
 
+
     PDOService::class => function (ContainerInterface $container): PDOService {
         $db_config = $container->get(AppSettings::class)->get('db');
         return new PDOService($db_config);
@@ -53,6 +56,18 @@ $definitions = [
     UriFactoryInterface::class => function (ContainerInterface $container) {
         return $container->get(Psr17Factory::class);
     },
+
+    AuthMiddleware::class => function (ContainerInterface $container) {
+        $settings = $container->get(AppSettings::class);
+        $jwtKey = $settings->get('jwt_key');
+        return new AuthMiddleware($jwtKey);
+    },
+
+    \App\Middleware\AdminMiddleware::class => function () {
+        return new \App\Middleware\AdminMiddleware();
+    },
+
+
     // The Slim RouterParser
     RouteParserInterface::class => function (ContainerInterface $container) {
         return $container->get(App::class)->getRouteCollector()->getRouteParser();
