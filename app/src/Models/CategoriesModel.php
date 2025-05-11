@@ -38,6 +38,8 @@ class CategoriesModel extends BaseModel
         //dd(is_array($update_category_data));
 
         $category_id_data = $update_category_data["category_id"];
+        // dd($category_id_data);
+
 
         unset($update_category_data["category_id"]);
         // dd($update_category_data);
@@ -140,17 +142,17 @@ class CategoriesModel extends BaseModel
 
         // Use both of the category id from the parent and direct cat id
         $filters_map = [
-            "direct_category_id" => $category_id,
-            "parent_category_id" => $category_id
+            "category_id" => $category_id,
         ];
 
+       // dd($filters_map);
+
         //* SQL query FROM brands, products and category
-        $sql = "SELECT DISTINCT b.*
+        $sql = "SELECT DISTINCT c.category_id, c.category_name, b.*, c.*
             FROM brands b
             JOIN products p ON b.brand_id = p.brand_id
             LEFT JOIN categories c ON p.category_id = c.category_id
-            WHERE p.category_id = :direct_category_id
-               OR c.parent_category_id = :parent_category_id";
+            WHERE p.category_id = :category_id";
 
         //Provide the filters that we can accept ... I am not sure if we need filters for sub-collection resource but I will add just in case
         // //? Erase the filters if we oont need it

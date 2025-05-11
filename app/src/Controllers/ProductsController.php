@@ -112,7 +112,7 @@ class ProductsController extends BaseController
 
 
         //* paginate -- function from base controller
-        $info = $this->pagination($filters, $this->model, [$this->model, 'getProducts']);
+        $info = $this->pagination($filters, $this->model, [$this->model, 'getProducts'], $request);
 
         if ($info["data"] == false) {
             //! no matching record in the db
@@ -142,20 +142,16 @@ class ProductsController extends BaseController
         $filters = $request->getQueryParams();
         $filters['id'] = $id;
 
-        //! REGEX - VALIDATION - EXCEPTIONS - ID
+        //* Filter validation - id
         $regex_id = '/^P\d{5,6}$/';
 
-        if (preg_match($regex_id, $id) === 0) {
-            throw new HttpInvalidInputException($request, "Provided product is invalid.");
-        }
-
-        $id = $this->validateFilterIds($filters, $regex_id, 'id', "Invalid Product ID input!", $request);
+        $this->validateFilterIds($filters, $regex_id, 'id', "Provided product ID is invalid.", $request);
 
         //* paginate -- function from base controller
-        $info = $this->pagination($filters, $this->model, [$this->model, 'getProductById']);
+        $info = $this->pagination($filters, $this->model, [$this->model, 'getProductById'],  $request);
 
         if ($info["data"] == false) {
-            //! no matching record in the db
+            //! no matching record in the db - does not include message body by design
             throw new HttpNoContentException($request, "Request successful. No product in the record.");
         }
 
@@ -175,30 +171,25 @@ class ProductsController extends BaseController
      */
     public function handleGetProductNutrition(Request $request, Response $response, array $uri_args): Response
     {
-        //*Get id from request
+        //*Check if id from request
         if (!isset($uri_args['product_id'])) {
             throw new HttpInvalidInputException($request, "Product ID is required in the URL");
         }
 
-        //* Get allergen ID from URI
+        //* Get product ID from URI
         $product_id = $uri_args['product_id'];
 
         //* Get query parameters
         $filters = $request->getQueryParams();
-        $filters['product_id'] = $product_id;
+        $filters['id'] = $product_id;
 
-        //? Graceful error handling
+        //* Filter validation -
         $regex_id = '/^P\d{5,6}$/';
 
-        if (preg_match($regex_id, $product_id) === 0) {
-            throw new HttpInvalidInputException($request, "Provided product is invalid. Ingredients records cannot be retrieved.");
-        }
+        $this->validateFilterIds($filters, $regex_id, 'id', "Provided product ID is invalid. Ingredient records cannot be retrieved.", $request);
 
-        $this->validateFilterIds($filters, $regex_id, 'id', "Invalid Category ID input!", $request);
-
-        // $this->model->setPaginationOptions($filters["page"], $filters["page_size"]);
-
-        $info = $this->pagination($filters, $this->model, [$this->model, 'getProductByNutrition']);
+        //* Pagination
+        $info = $this->pagination($filters, $this->model, [$this->model, 'getProductByNutrition'],  $request);
 
         if ($info["data"] == false) {
             //! no matching record in the db
@@ -227,7 +218,7 @@ class ProductsController extends BaseController
         }
 
         //? Step 3) CALL the service
-        $result = $this->product_service->createProducts($product_data);
+        $result = $this->product_service->createProducts($product_data[0]);
 
         //! Note verify the outcome of the opertion: success vs failure
         if ($result->isSuccess()) {
@@ -236,7 +227,6 @@ class ProductsController extends BaseController
                 'status' => 'success',
                 'code' => 201,
                 'message' => $result->getMessage(),
-                'data' => $result->getData()
             ];
 
             //? Step 3) Return the response payload
@@ -264,15 +254,17 @@ class ProductsController extends BaseController
      * @throws \Slim\Exception\HttpBadRequestException refers to the bad request if parsed body is empty
      * @return Response refers to the result
      */
-    public function handleUpdateProduct(Request $request, Response $response, array $uri_args)
+    public function handleUpdateProduct(Request $request, Response $response)
     {
         $product_data = $request->getParsedBody();
 
         if (empty($product_data)) {
             throw new HttpBadRequestException($request, "Data passed is empty");
         }
+    //    dd($product_data[0]);
 
-        $result = $this->product_service->updateProduct($product_data);
+        //? CALL SERVICE
+        $result = $this->product_service->updateProduct($product_data[0]);
 
         if ($result->isSuccess()) {
 
@@ -293,6 +285,9 @@ class ProductsController extends BaseController
             ];
 
             return $this->renderJson($response, $payload, 400);
+
+            // If unsuccessful, throw exception
+            // throw new HttpBadRequestException($request, $result->getMessage(), $result->getErrors());
         }
     }
 

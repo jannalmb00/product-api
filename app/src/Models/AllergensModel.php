@@ -20,7 +20,7 @@ class AllergensModel extends BaseModel
         //? FOR FILTERING
         $filters_map = [];
 
-        $sql = "SELECT * FROM allergens WHERE 1";
+        $sql = "SELECT * FROM allergens a WHERE 1";
 
         // //? 1: FILTERING - CHECK THE DATA TYPE
         //Define filters
@@ -33,12 +33,15 @@ class AllergensModel extends BaseModel
             // Call the prepareStringSQL function for each field
             $filterResult = $this->prepareStringSQL($filters, $filterField, $filterField);
 
+            //dd($filterResult);
+
             // Check if sqlPart is not empty, meaning there is a filter for that
             if (!empty($filterResult['sqlPart'])) {
 
                 // Adds filter to the map
                 $filters_map[$filterField] = $filterResult['value'];
 
+               // dd($filters_map);
                 // Adds filtered sql to base sql statement
                 $sql .= $filterResult['sqlPart'];
             }
@@ -48,6 +51,7 @@ class AllergensModel extends BaseModel
         $approved_ordering = ['allergen_name', 'allergen_reaction_type ', 'food_group', 'food_origin', 'food_type'];
         $sql = $this->sortAndOrder($filters, 'allergen_id',  $approved_ordering, $sql);
 
+     //   dd($sql);
         //? PAGINATE
         return $this->paginate($sql, $filters_map);
     }
@@ -138,7 +142,7 @@ class AllergensModel extends BaseModel
     function updateAllergen(array $update_allergen_data)
     {
         $allergen_id = $update_allergen_data["allergen_id"];
-        unset($update_categroy_data["allergen_id"]);
+        unset($update_allergen_data["allergen_id"]);
 
         return $this->update('allergens', $update_allergen_data, ["allergen_id" =>  $allergen_id]);
     }

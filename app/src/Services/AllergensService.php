@@ -31,12 +31,12 @@ class AllergensService
             ],
             'allergen_name' => [
                 'required',
-                'alpha',
-                array('lengthMin', 3)
+                ['regex', '/^[A-Za-z ]+$/']
+
             ],
             "allergen_reaction_type" => [
-                'alpha',
-                array('lengthMin', 3)
+                ['regex', '/^[A-Za-z, ]+$/']
+
             ],
             "food_group" => [
                 'required',
@@ -44,17 +44,14 @@ class AllergensService
             ],
             "food_type" => [
                 'required',
-                array('lengthMin', 3)
+                ['regex', '/^[A-Za-z ]+$/']
             ],
             "food_origin" => [
-                'alpha',
-                array('lengthMin', 2)
-
+                ['regex', '/^[A-Za-z ]+$/']
             ],
             "food_item" => [
                 'required',
-                'alpha',
-                array('lengthMin', 3)
+                ['regex', '/^[A-Za-z ]+$/']
             ]
 
         );
@@ -110,6 +107,7 @@ class AllergensService
             }
         }
         if (count($validation_errors) > 0) {
+
             return Result::failure("Some of the allergen IDs are not valid", $validation_errors);
         }
         return Result::success("The allergen have been deleted successfully!");
@@ -127,31 +125,29 @@ class AllergensService
                 ['regex', '/^A\d{1,2}$/']
             ],
             'allergen_name' => [
-                'required',
-                'ascii',
-                array('lengthMin', 4)
+                ['regex', '/^[A-Za-z ]+$/']
             ],
             "allergen_reaction_type" => [
-                'required',
-                array('lengthMin', 4)
+                ['regex', '/^[A-Za-z, ]+$/']
+
             ],
             "food_group" => [
                 'required',
-                array('in', ["Fruits", "Vegetables", "Pulses", "Grains", "Proteins", "Dairy", "Fats and Oils", "Sweets and Snacks", "Beverages"])
+                'ascii',
+                array('in', ["Fruits", "Vegetables", "Pulse", "Grains", "Proteins", "Dairy", "Fats and Oils", "Sweets and Snacks", "Beverages"])
             ],
             "food_type" => [
-                'required',
-                array('lengthMin', 4)
+                ['regex', '/^[A-Za-z, ]+$/']
+
             ],
             "food_origin" => [
-                'ascii',
-                array('lengthMin', 4)
+                ['regex', '/^[A-Za-z, ]+$/']
+
 
             ],
             "food_item" => [
-                'required',
-                'ascii',
-                array('lengthMin', 4)
+                ['regex', '/^[A-Za-z, ]+$/']
+
             ]
         );
 
@@ -159,16 +155,16 @@ class AllergensService
         $validator->mapFieldsRules($rules);
 
         if (!$validator->validate()) {
-            //     echo $validator->errorsToString();
-            //    // echo '<br>';
-            //     echo $validator->errorsToJson();
-            return Result::failure("Data is not valid");
+
+            return Result::failure("Data is not valid. Error updating allergens");
         }
 
         $rowsUpdate = $this->allergens_model->updateAllergen($update_allergen_data);
         if ($rowsUpdate <= 0) {
+            $errorJSON =  $validator->errorsToJson();
+            echo $errorJSON . "\n\n";
             return Result::failure("No row has been updated");
         }
-        return Result::success("Updated successfully");
+        return Result::success("Allergen has been updated successfully");
     }
 }

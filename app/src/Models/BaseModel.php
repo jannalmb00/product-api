@@ -61,6 +61,7 @@ abstract class BaseModel
         if (empty($args)) {
             return $this->db->query($sql);
         }
+        //  dd($sql);
         $stmt = $this->db->prepare($sql);
         //check if args is associative or sequential?
         $is_assoc = (array() === $args) ? false : array_keys($args) !== range(0, count($args) - 1);
@@ -76,6 +77,7 @@ abstract class BaseModel
             }
             $stmt->execute();
         } else {
+     //       dd($stmt);
             $stmt->execute($args);
         }
         return $stmt;
@@ -296,6 +298,7 @@ abstract class BaseModel
     //! PREPARE SQL FOR STRING
     public function prepareStringSQL(array $filters, string $filterKey, string $toFilter): array
     {
+       // dd($filters);
         //FIlter check here
         if (isset($filters[$filterKey])) {
 
@@ -310,7 +313,17 @@ abstract class BaseModel
                 $sql = " AND pc.category_name LIKE CONCAT(:parent_category, '%')";
             } else if ($filterKey == 'category_type') {
                 $sql = " AND c.category_type LIKE CONCAT(:category_type, '%')";
-            } else {
+            } else if ($filterKey == 'allergen_name') {
+                $sql = " AND a.allergen_name LIKE CONCAT(:allergen_name, '%')";
+            }else if ($filterKey == 'food_group') {
+                $sql = " AND a.food_group LIKE CONCAT(:food_group, '%')";
+            }else if ($filterKey == 'food_origin') {
+                $sql = " AND a.food_origin LIKE CONCAT(:food_origin, '%')";
+            }else if ($filterKey == 'allergen_reaction_type') {
+                $sql = " AND a.allergen_reaction_type LIKE CONCAT(:allergen_reaction_type, '%')";
+            }else if ($filterKey == 'food_type') {
+                $sql = " AND a.food_type LIKE CONCAT(:food_type, '%')";
+            }else {
                 $sql = " AND p.$toFilter LIKE CONCAT(:$toFilter, '%')";
             }
             //$filters_map["given_name"] = $filters['given_name'];

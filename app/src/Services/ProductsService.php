@@ -22,71 +22,72 @@ class ProductsService
         $rules = array(
 
             'product_id' => [
-                ['regex', '/^P\d{5,6}$/'],
+                ['regex', '/^P[0-9]{5,6}$/'],
                 'required'
             ],
 
             'product_name' => [
-                ['lengthMin', 4],
+                'ascii',
+                array('lengthMin', 3),
                 'required'
+
             ],
 
             'product_barcode' => [
-                'numeric',
+                'integer',
                 'required'
             ],
 
             'product_origin' => [
-                ['lengthMin', 4],
+                'ascii',
+                ['lengthMin', 2],
                 'required',
             ],
 
             'product_serving_size' => [
                 'numeric',
-                'required',
+            ],
+            'product_image' => [
+                'ascii',
             ],
 
             'brand_id' => [
                 ['regex', '/^B\d{4}$/'],
-                'required',
             ],
 
             'category_id' => [
                 ['regex', '/^C-\d{4}$/'],
-                'required',
             ],
 
             'nutrition_id' => [
                 ['regex', '/^N\d{5}$/'],
-                'optional'
             ],
 
             'diet_id' => [
                 ['regex', '/^DA\d{4}$/'],
-                'optional'
             ],
 
             'environmental_id' => [
                 ['regex', '/^E\d{5}$/'],
-                'optional'
             ],
 
         );
 
         $new_product = $product_data[0];
 
-        $validator = new Validator($new_product, [], 'en');
+        //* Validation
+        $validator = new Validator($new_product);
 
         $validator->mapFieldsRules($rules);
 
         if (!$validator->validate()) {
             $errorJSON =  $validator->errorsToJson();
-            print($errorJSON);
-            return Result::failure("Product data validation failed", $validator->errors());
+            echo $errorJSON . "\n\n";
+            return Result::failure("Error inserting new product", $validator->errors());
         }
 
-        $last_inserted_id = $this->products_model->insertProduct($product_data);
-
+        $last_inserted_id = $this->products_model->insertProduct($new_product);
+        //dd($last_inserted_id);
         return Result::success("Product has been created successfully!", $last_inserted_id);
     }
 
@@ -101,63 +102,65 @@ class ProductsService
         //  Rules less strict for updates
         $rules = array(
 
-
+            'product_id' => [
+                ['regex', '/^P[0-9]{5,6}$/'],
+                'required'
+            ],
             'product_name' => [
-                ['lengthMin', 4],
-                'optional'
+                'ascii',
+                array('lengthMin', 3),
             ],
 
             'product_origin' => [
-                ['lengthMin', 4],
-                'optional'
+                'ascii',
+                ['lengthMin', 2],
             ],
 
             'product_barcode' => [
-                'numeric',
-                'optional'
+                'integer',
             ],
 
             'product_serving_size' => [
                 'numeric',
-                'optional'
+            ],
+            'product_image' => [
+                'ascii',
             ],
 
             'brand_id' => [
-                ['regex', '/^B\d{4}$/'],
-                'optional'
+                ['regex', '/^B[0-9]{4}$/'],
             ],
             'category_id' => [
-                ['regex', '/^C-\d{4}$/'],
-                'optional'
+                ['regex', '/^C-[0-9]{4}$/'],
             ],
 
             'nutrition_id' => [
-                ['regex', '/^N\d{5}$/'],
-                'optional'
+                ['regex', '/^N[0-9]{5}$/'],
             ],
 
             'diet_id' => [
-                ['regex', '/^DA\d{4}$/'],
-                'optional'
+                ['regex', '/^DA[0-9]{4}$/'],
             ],
 
             'environmental_id' => [
-                ['regex', '/^E\d{5}$/'],
-                'optional'
+                ['regex', '/^E[0-9]{5}$/'],
             ],
 
         );
 
-        $validator = new Validator($product_data, [], 'en');
+        $validator = new Validator($product_data);
         $validator->mapFieldsRules($rules);
 
         if (!$validator->validate()) {
-            return Result::failure("Data is not valid");
+            $errorJSON =  $validator->errorsToJson();
+            echo $errorJSON . "\n\n";
+            return Result::failure("Data is not valid. Error updating product");
         }
 
         $rowsUpdated = $this->products_model->updateProduct($product_data);
 
         if ($rowsUpdated <= 0) {
+ 
             return Result::failure("No row has been updated");
         }
         return Result::success("Updated successfully");
@@ -178,7 +181,8 @@ class ProductsService
 
             $rules = array(
                 'product_id' => [
-                    ['regex', '/^P\d{5,6}$/']
+                    ['regex', '/^P\d{5,6}$/'],
+                    'required'
                 ]
             );
 
@@ -191,12 +195,14 @@ class ProductsService
                 ];
             }
 
-            $rowsDeleted = $this->products_model->deleteProduct($product_id);
+            $this->products_model->deleteProduct($product_id);
         }
 
         if (count($validation_errors) > 0) {
+
             return Result::failure("Some of the product IDs are not valid", $validation_errors);
         }
+
 
         return Result::success("The product(s) have been deleted successfully!");
     }
