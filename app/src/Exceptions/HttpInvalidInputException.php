@@ -5,7 +5,7 @@ namespace App\Exceptions;
 use Slim\Exception\HttpSpecializedException;
 
 
-class HttpInvalidInputException  extends HttpSpecializedException
+class HttpInvalidInputException extends HttpSpecializedException
 {
     protected $code = 400;
     protected $message = 'Bad Request';

@@ -38,44 +38,77 @@ abstract class BaseController
      */
 
     //! PAGINATION
-    public function pagination(array $filters, BaseModel $model, callable $method): mixed
+    public function pagination(array $filters, BaseModel $model, callable $method,  Request $request): mixed
     {
 
         // validate_pages =  new Validator($filters,  );
         //Add a default if no page and page size set
         $page = isset($filters["page"]) ? (int) $filters["page"] : 1;
         $size = isset($filters["page_size"]) ? (int) $filters["page_size"] : 5;
+        // Validate page params
+        $rules = array(
 
-        // setting pagination
-        $model->setPaginationOptions($page, $size);
+            'page' => [
+                ['min', '1']
+            ],
+            "page_size" => [
+                ['min', '1']
+            ]
+        );
 
-        //Call the function( ex: GetProduct) to the specific model class -- used callable function to make this happen
-        $info = call_user_func($method, $filters);
+        // If input is non-numeric, the value is 0
+        $page_data = [
+            'page' => isset($filters["page"]) ? (string) $filters["page"] : '1',
+            'page_size' => isset($filters["page_size"]) ? (string) $filters["page_size"] : '10'
+        ];
+
+        // Validation
+        $validator = new Validator($page_data, [], 'en');
+        // dd($page_data);
+        $validator->mapFieldsRules($rules);
 
 
-        return $info;
+        if (!$validator->validate()) {
+
+            throw new HttpInvalidInputException($request, "Invalid input. Page and page size must be an integer greater than or equal to 1.");
+        } else {
+
+            // setting pagination
+            $model->setPaginationOptions((int) $page_data['page'], (int) $page_data['page_size']);
+
+            //Call the function( ex: GetProduct) to the specific model class -- used callable function to make this happen
+            $info = call_user_func($method, $filters);
+            return $info;
+        }
     }
 
     //! INPUT VALIDATION - IF STRING
     public function validateString(array $filters, string $arrayCheck, Request $request)
     {
-        //  dd($filters);
-        //  dd($arrayCheck); // <pre>string(13) "chocolatelll9"</pre>
+
+        //* Validation
+        // Validate filters with regex - only letters and space allowed
+        $rules = array(
+
+            'filter' => [
+                ['regex', '/^[A-Za-z ]+$/']
+            ]
+        );
 
         if (isset($filters[$arrayCheck])) {
 
-            //dd($arrayCheck); // 9
-            $filter = $filters[$arrayCheck];
-            //dd($filter);
 
-            //! VALIDATION
-            //Checks if input/string has numbers
-            $string_valid = $this->validator->isAlphaWithSpaces($filter);
+            $filter_data = ['filter' => $filters[$arrayCheck]];
 
+            // Using Valitron
+            $validator = new Validator($filter_data, [], 'en');
+            // Map rules to data
+            $validator->mapFieldsRules($rules);
 
+            // Throw exception if not valid
+            if (!$validator->validate()) {
 
-            if (!$string_valid) {
-                throw new HttpInvalidInputException($request, "Invalid input. Special charaters and number are not valid");
+                throw new HttpInvalidInputException($request, "Invalid input. Special charaters and number are not valid.");
             }
         }
     }
@@ -83,14 +116,35 @@ abstract class BaseController
     //! FILTER INPUT VALIDATION - REGEX FOR IDs
     public function validateFilterIds(array $filters, string $regex_id, string $column, string $errorMessage, Request $request)
     {
+        //* Validation
+        // Validate ids
+        $rules = array(
+            'filter' => [
+                ['regex', $regex_id]
+            ]
+        );
+
+
+        // Check if filter is not empty
         if (isset($filters[$column])) {
-            $filter = $filters[$column];
-            //$regex_tour_id = '/^WC-\d{4}$/'; regex id
-            if (preg_match($regex_id, $filter) === 0) {
+
+            //    $filter = $filters[$column];
+
+            $filter_data = ['filter' => $filters[$column]];
+            // Using Valitron
+            $validator = new Validator($filter_data, [], 'en');
+            // Map rules to data
+            $validator->mapFieldsRules($rules);
+
+            // Throw exception if not valid
+            if (!$validator->validate()) {
+
                 throw new HttpInvalidInputException($request, $errorMessage);
             }
+            // //$regex_tour_id = '/^WC-\d{4}$/'; regex id
+            // if (preg_match($regex_id, $filter) === 0) {
+            //     throw new HttpInvalidInputException($request, $errorMessage);
+            // }
         }
     }
-
-    // TODO: VALIDATE PAGE PARAMS ()
 }

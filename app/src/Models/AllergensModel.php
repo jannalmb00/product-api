@@ -20,7 +20,7 @@ class AllergensModel extends BaseModel
         //? FOR FILTERING
         $filters_map = [];
 
-        $sql = "SELECT * FROM allergens WHERE 1";
+        $sql = "SELECT * FROM allergens a WHERE 1";
 
         // //? 1: FILTERING - CHECK THE DATA TYPE
         //Define filters
@@ -33,12 +33,15 @@ class AllergensModel extends BaseModel
             // Call the prepareStringSQL function for each field
             $filterResult = $this->prepareStringSQL($filters, $filterField, $filterField);
 
+            //dd($filterResult);
+
             // Check if sqlPart is not empty, meaning there is a filter for that
             if (!empty($filterResult['sqlPart'])) {
 
                 // Adds filter to the map
                 $filters_map[$filterField] = $filterResult['value'];
 
+               // dd($filters_map);
                 // Adds filtered sql to base sql statement
                 $sql .= $filterResult['sqlPart'];
             }
@@ -48,6 +51,7 @@ class AllergensModel extends BaseModel
         $approved_ordering = ['allergen_name', 'allergen_reaction_type ', 'food_group', 'food_origin', 'food_type'];
         $sql = $this->sortAndOrder($filters, 'allergen_id',  $approved_ordering, $sql);
 
+     //   dd($sql);
         //? PAGINATE
         return $this->paginate($sql, $filters_map);
     }
@@ -89,26 +93,26 @@ class AllergensModel extends BaseModel
         // $sql = " SELECT DISTINCT pi.* FROM ingredients product_ingredients pi WHERE i
 
         // Provide the fitlers that we can accept ... I am not sure if we need filters for sub-collection resource but I will add just in case
-        //? Erase the filters if we dont need it
-        $stringToFilter = ['ingredient_name', 'processing_type'];
+        // //? Erase the filters if we dont need it
+        // $stringToFilter = ['ingredient_name', 'processing_type'];
 
-        //* Loop through string filters and apply them w/ prepareStringSQL
-        foreach ($stringToFilter as $filterField) {
-            // Get filter SQL for this field
-            $filterResult = $this->prepareStringSQL($filters, $filterField, $filterField);
+        // //* Loop through string filters and apply them w/ prepareStringSQL
+        // foreach ($stringToFilter as $filterField) {
+        //     // Get filter SQL for this field
+        //     $filterResult = $this->prepareStringSQL($filters, $filterField, $filterField);
 
-            // If filter was provided, we add it to the query
-            if (!empty($filterResult['sqlPart'])) {
-                $filters_map[$filterField] = $filterResult['value'];
-                $sql .= $filterResult['sqlPart'];
-            }
-        }
+        //     // If filter was provided, we add it to the query
+        //     if (!empty($filterResult['sqlPart'])) {
+        //         $filters_map[$filterField] = $filterResult['value'];
+        //         $sql .= $filterResult['sqlPart'];
+        //     }
+        // }
 
-        // Add filter for GMO status
-        if (isset($filters['isGMO']) && ($filters['isGMO'] === '1' || $filters['isGMO'] === '0')) {
-            $sql .= " AND i.isGMO = :isGMO";
-            $filters_map['isGMO'] = (int)$filters['isGMO'];
-        }
+        // // Add filter for GMO status
+        // if (isset($filters['isGMO']) && ($filters['isGMO'] === '1' || $filters['isGMO'] === '0')) {
+        //     $sql .= " AND i.isGMO = :isGMO";
+        //     $filters_map['isGMO'] = (int)$filters['isGMO'];
+        // }
 
         //* Sorting
         $approved_ordering = ['ingredient_name', 'processing_type', 'isGMO'];
@@ -138,7 +142,8 @@ class AllergensModel extends BaseModel
     function updateAllergen(array $update_allergen_data)
     {
         $allergen_id = $update_allergen_data["allergen_id"];
-        unset($update_categroy_data["allergen_id"]);
+        unset($update_allergen_data["allergen_id"]);
+
         return $this->update('allergens', $update_allergen_data, ["allergen_id" =>  $allergen_id]);
     }
 

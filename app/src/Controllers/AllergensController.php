@@ -42,6 +42,7 @@ class AllergensController extends BaseController
     {
         //*Filters
         $filters = $request->getQueryParams();
+    //   dd($filters);
 
         // //? Validation & exception handling of filter parameters
         //* Validating if filter input are string
@@ -51,14 +52,14 @@ class AllergensController extends BaseController
         foreach ($stringValidateArray as $validateString) {
             //If filter array value is not empty
             if (!empty($filters[$validateString])) {
-                //    dd($filters);
+                //  dd($filters);
                 //  $this->validateString($filters, (string) $filters[$validateString], $request);
                 $this->validateString($filters, $validateString, $request);
             }
         }
 
         //* paginate -- function from base controller
-        $info = $this->pagination($filters, $this->allergens_model, [$this->allergens_model, 'getAllergens']);
+        $info = $this->pagination($filters, $this->allergens_model, [$this->allergens_model, 'getAllergens'], $request);
 
         //! VALIDATION
         if ($info["data"] == false) {
@@ -95,10 +96,10 @@ class AllergensController extends BaseController
         //     throw new HttpInvalidInputException($request, "Provided product is invalid.");
         // }
 
-        $id = $this->validateFilterIds($filters, $regex_id, 'id', "Invalid Allergen ID input!", $request);
+        $this->validateFilterIds($filters, $regex_id, 'id', "Invalid Allergen ID input!", $request);
 
         //* paginate -- function from base controller
-        $info = $this->pagination($filters, $this->allergens_model, [$this->allergens_model, 'getAllergenById']);
+        $info = $this->pagination($filters, $this->allergens_model, [$this->allergens_model, 'getAllergenById'], $request);
 
         if ($info["data"] == false) {
             //! no matching record in the db
@@ -144,7 +145,7 @@ class AllergensController extends BaseController
 
         $regex_id =  '/^A\d{2,3}$/';
 
-        $allergen_id = $this->validateFilterIds($filters, $regex_id, 'allergen_id', "Invalid Allergen ID Input.", $request);
+        $this->validateFilterIds($filters, $regex_id, 'allergen_id', "Invalid Allergen ID Input.", $request);
 
         // Validate isGMO parameter
         if (isset($filters['isGMO']) && !in_array($filters['isGMO'], ['0', '1'])) {
@@ -152,7 +153,7 @@ class AllergensController extends BaseController
         }
 
         //* Get ingredients by allergen with pagination
-        $info = $this->pagination($filters, $this->allergens_model, [$this->allergens_model, 'getIngredientsByAllergen']);
+        $info = $this->pagination($filters, $this->allergens_model, [$this->allergens_model, 'getIngredientsByAllergen'], $request);
 
         //* Check if any ingredients were found
         if ($info["data"] == false) {
@@ -175,7 +176,7 @@ class AllergensController extends BaseController
     {
 
         //TODO: Handle case where the case where the body could be empty
-        $request->getBody();
+        //  $request->getBody();
 
         $allergens_data = $request->getParsedBody();
 
@@ -267,7 +268,7 @@ class AllergensController extends BaseController
             throw new HttpBadRequestException($request, "Data passed is empty");
         }
 
-        $result = $this->allergens_service->updateAllergen($update_allergen);
+        $result = $this->allergens_service->updateAllergen($update_allergen[0]);
 
         if ($result->isSuccess()) {
             // Operation success

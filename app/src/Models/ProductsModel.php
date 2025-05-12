@@ -105,14 +105,13 @@ class ProductsModel extends BaseModel
 
 
         //* Get the product id
-        $product_id = $filters['product_id'];
+        $product_id = $filters['id'];
 
         // Product id will be initialized with the filters map
         $filters_map = ["product_id" => $product_id];
 
         //* SQL query to join nutrition with products
-        $sql = " SELECT n.*, p.product_id, p.product_name, p.product_barcode, p.product_origin, p.product_serving_size, p.product_image, b.brand_name,
-        c.category_name
+        $sql = " SELECT n.*, p.product_id, p.product_name, p.product_barcode, p.product_origin, p.product_serving_size, p.product_image, b.brand_name, c.category_name
         FROM nutritions n
         JOIN products p
         ON n.nutritional_id = p.nutrition_id
@@ -125,7 +124,6 @@ class ProductsModel extends BaseModel
         WHERE pc.product_id = :product_id
         ";
 
-
         return $this->paginate($sql, $filters_map);
     }
 
@@ -137,6 +135,8 @@ class ProductsModel extends BaseModel
      */
     function insertProduct(array $new_product): mixed
     {
+        //     dd($new_product);
+        // table name, data array
         $last_id = $this->insert("products", $new_product);
         return $last_id;
     }
@@ -147,11 +147,22 @@ class ProductsModel extends BaseModel
      * @param array $update_product_data refers to the updated product data
      * @return int refers to the mumber of rows affected
      */
-    function updateProduct(array $update_product_date)
+    function updateProduct(array $update_product_data): mixed
     {
-        $product_id = $update_product_date["product_id"];
-        unset($update_product_date["product_id"]);
-        return $this->update('products', $update_product_date, ["product_id" => $product_id]);
+        $product_id_data = $update_product_data["product_id"];
+        //      dd($product_id_data);
+        //  dd($update_product_data);
+
+        unset($update_product_data["product_id"]);
+
+
+        // return $this->update('product', $update_product_date, ["product_id" => $product_id]);
+
+        //for update
+        $last_id = $this->update('products', $update_product_data, ["product_id" => $product_id_data]);
+        // dd($last_id);
+
+        return $last_id;
     }
 
     /**
