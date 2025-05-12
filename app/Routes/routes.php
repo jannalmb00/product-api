@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Controllers\AboutController;
 use App\Controllers\AccountController;
+use App\Controllers\CalculatorController;
 use App\Controllers\ProductsController;
 use App\Controllers\CategoriesController;
 use App\Controllers\AllergensController;
@@ -30,6 +31,9 @@ return static function (Slim\App $app): void {
 
     //* ROUTE: GET /
     $app->get('/', [AboutController::class, 'handleAboutWebService']);
+
+    //?---Computation functionality--------
+    $app->post('/calorie', [CalculatorController::class, 'calculateCalories']);
 
     //? --------- PROTECTED ROUTES ------
     //! All the GET methods
