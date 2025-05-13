@@ -19,7 +19,7 @@ class CategoriesModel extends BaseModel
     public function insertNewCategory(array $new_category): mixed
     {
         // From base model , pass table name, array conatining key value pairs
-        $last_id = $this->insert('category', $new_category);
+        $last_id = $this->insert('categories', $new_category);
 
         return $last_id;
     }
@@ -45,7 +45,7 @@ class CategoriesModel extends BaseModel
         // dd($update_category_data);
 
         //for update
-        $last_id = $this->update('category', $update_category_data, ["category_id" => $category_id_data]);
+        $last_id = $this->update('categories', $update_category_data, ["category_id" => $category_id_data]);
         // dd($last_id);
 
         return $last_id;
@@ -59,7 +59,7 @@ class CategoriesModel extends BaseModel
      */
     function deleteCategory(string $category_id): int
     {
-        return $this->delete('category', ["category_id" => $category_id]);
+        return $this->delete('categories', ["category_id" => $category_id]);
     }
 
     /**

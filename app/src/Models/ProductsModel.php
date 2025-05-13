@@ -41,8 +41,8 @@ class ProductsModel extends BaseModel
         $filters_map = [];
 
         $sql = "SELECT p.* , c.category_name, b.brand_name
-                FROM product p
-                JOIN category c ON p.category_id = c.category_id
+                FROM products p
+                JOIN categories c ON p.category_id = c.category_id
                 JOIN brands b ON p.brand_id = b.brand_id
                 WHERE 1";
 
