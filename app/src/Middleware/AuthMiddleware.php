@@ -36,7 +36,7 @@ class AuthMiddleware implements MiddlewareInterface
             $request = $request->withAttribute('jwt', (array)$decoded);
             return $handler->handle($request);
         } catch (\Exception $e) {
-            //anauthorized
+            //unauthorized
             throw new HttpUnauthorizedException($request, "Invalid or expired token");
         }
     }

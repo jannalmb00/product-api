@@ -15,7 +15,7 @@ class AdminMiddleware implements MiddlewareInterface
     {
 
         $jwt = $request->getAttribute('jwt');
-
+        //dd($jwt);
         if (!isset($jwt['isAdmin']) || !$jwt['isAdmin']) {
             throw new HttpForbiddenException($request, "Admin privileges required.");
         }
