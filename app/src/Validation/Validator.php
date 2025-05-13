@@ -371,6 +371,7 @@ class Validator
         if (!is_numeric($value)) {
             return false;
         } elseif (function_exists('bccomp')) {
+            //   dd($params[0]);
             return !(bccomp($params[0], $value, 14) === 1);
         } else {
             return $params[0] <= $value;
@@ -749,6 +750,7 @@ class Validator
      */
     protected function validateRegex($field, $value, $params)
     {
+        //dd($value);
         return preg_match($params[0], $value);
     }
 

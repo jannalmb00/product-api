@@ -4,7 +4,7 @@ namespace App\Exceptions;
 
 use Slim\Exception\HttpSpecializedException;
 
-class HttpNoContentException  extends HttpSpecializedException
+class HttpNoContentException extends HttpSpecializedException
 {
     protected $code = 204;
     protected $message = 'No Content';

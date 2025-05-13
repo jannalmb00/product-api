@@ -38,16 +38,18 @@ class CategoriesController extends BaseController
      */
     public function handleCreateCategories(Request $request, Response $response): Response
     {
-        $new_category = $request->getParsedBody();
+        // $request->getBody();
+
+        $category_data = $request->getParsedBody();
 
         //POST - in json
         //? the body could be empty. handle case where body is empty ,,, when request is returned null or invalid
-        if (empty($new_category)) {
+        if (empty($category_data)) {
             throw new HttpBadRequestException($request, "Data passed is empty");
         }
         //Pass the category_data array to service
         //? CALL SERVICE
-        $result = $this->service->createCategories($new_category);
+        $result = $this->service->createCategories($category_data);
 
         //!NOte verify he outcome of the opertion: sucess vs filure
         if ($result->isSuccess()) {
@@ -91,17 +93,17 @@ class CategoriesController extends BaseController
     public function handleUpdateCategories(Request $request, Response $response): Response
     {
         // category to update
-        $update_category = $request->getParsedBody();
+        $category_data = $request->getParsedBody();
 
         //dd($update_category);
         //POST - in json
         //? the body could be empty. handle case where body is empty ,,, when request is returned null or invalid
-        if (empty($update_category)) {
+        if (empty($category_data)) {
             throw new HttpBadRequestException($request, "Data passed is empty. Nothing to update.");
         }
         //Pass the category_data array to service
         //? CALL SERVICE
-        $result = $this->service->updateCategory($update_category);
+        $result = $this->service->updateCategory($category_data[0]);
 
         //!NOte verify he outcome of the opertion: sucess vs filure
         if ($result->isSuccess()) {
@@ -111,12 +113,23 @@ class CategoriesController extends BaseController
                 'status' => 'Success',
                 'code' => 201,
                 'message' => $result->getMessage(),
+
             ];
             //override the default 200 satus code to 201
             return  $this->renderJson($response, $payload, 201);
         } else {
+
+            $payload = [
+                'status' => 'error',
+                'code' => 400,
+                'message' => $result->getMessage(),
+                'details' => $result->getErrors()
+            ];
+
+            return $this->renderJson($response, $payload, 400);
+
             // If unsuccessful, throw exception
-            throw new HttpBadRequestException($request, $result->getMessage(), $result->getErrors());
+            // throw new HttpBadRequestException($request, $result->getMessage(), $result->getErrors());
         }
 
 
@@ -203,7 +216,7 @@ class CategoriesController extends BaseController
         }
 
         //* paginate -- function from base controller
-        $info = $this->pagination($filters, $this->model, [$this->model, 'getCategories']);
+        $info = $this->pagination($filters, $this->model, [$this->model, 'getCategories'], $request);
 
         //! VALIDATION
         if ($info["data"] == false) {
@@ -245,10 +258,10 @@ class CategoriesController extends BaseController
         //     throw new HttpInvalidInputException($request, "Provided product is invalid.");
         // }
 
-        $id = $this->validateFilterIds($filters, $regex_id, 'id', "Invalid Category ID input!", $request);
+        $this->validateFilterIds($filters, $regex_id, 'id', "Invalid Category ID input!", $request);
 
         //* paginate -- function from base controller
-        $info = $this->pagination($filters, $this->model, [$this->model, 'getCategoryById']);
+        $info = $this->pagination($filters, $this->model, [$this->model, 'getCategoryById'], $request);
 
         if ($info["data"] == false) {
             //! no matching record in the db
@@ -281,14 +294,13 @@ class CategoriesController extends BaseController
 
         //* Get query params
         $filters = $request->getQueryParams();
+        $filters['id'] = $category_id;
 
         // REGEX - VALIDATION - EXCEPTIONS - CATEGORY ID -> THIS IS THE INPUT VALIDATION if we needed have to double check
         $regex_id = '/^C-\d{4,5}$/';
-        // if (preg_match($regex_id, $category_id) === 0) {
-        //     throw new HttpInvalidInputException($request, "Provided category ID is invalid.");
-        // }
 
-        $category_id = $this->validateFilterIds($filters, $regex_id, 'id', "Invalid Category ID input!", $request);
+
+         $this->validateFilterIds($filters, $regex_id, 'id', "Provided category ID is invalid.Invalid Category ID input!", $request);
 
 
         //* Validate string parameters if they are provided
@@ -302,7 +314,7 @@ class CategoriesController extends BaseController
 
         //* Get brands by category with pagination
         $filters['category_id'] = $category_id;
-        $info = $this->pagination($filters, $this->model, [$this->model, 'getBrandsByCategory']);
+        $info = $this->pagination($filters, $this->model, [$this->model, 'getBrandsByCategory'], $request);
 
 
         //* Check if any brands were found

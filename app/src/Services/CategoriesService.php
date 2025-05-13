@@ -31,7 +31,7 @@ class CategoriesService
             ],
             'category_name' => [
                 'required',
-                'alpha',
+                'ascii',
                 array('lengthMin', 3)
             ],
             "category_description" => [
@@ -46,7 +46,6 @@ class CategoriesService
                 array('lengthMin', 4)
             ],
             "category_level" => [
-                'alpha',
                 array('in', ["parent", "child"])
             ],
             "category_tags" => [
@@ -64,7 +63,9 @@ class CategoriesService
 
         // return failure if there's error in validation in the first index
         if (!$validator->validate()) {
-            return Result::failure("Error inserting new category to database", $validator->errorsToString());
+            $errorJSON =  $validator->errorsToJson();
+            echo $errorJSON . "\n\n";
+            return Result::failure("Error inserting new category to database", $validator->errors());
         }
         $last_insert_id = $this->model->insertNewCategory($new_category);
 
@@ -82,7 +83,8 @@ class CategoriesService
         // TODO: 1- Validate the recieved data about the new resource to be created.
         $rules = array(
             'category_id' => [
-                ['regex', '/^[A-Z]-[0-9]{4}$/']
+                ['regex', '/^[A-Z]-[0-9]{4}$/'],
+                'required'
             ],
             'category_name' => [
                 'ascii',
@@ -111,21 +113,24 @@ class CategoriesService
 
         // ? 2- Insert new resource into the DB table
         //* Just process the first collection / first element in the array, if there are any errors just do that
-        //$update_category_data = $update_category[0];
+
         $validator = new Validator($update_category_data);
         $validator->mapFieldsRules($rules);
         //dd($validator);
 
         // return failure if there's error in validation in the first index
         if (!$validator->validate()) {
-            return Result::failure("Error updating category", $validator->errorsToJson());
+            $errorJSON =  $validator->errorsToJson();
+            echo $errorJSON . "\n\n";
+
+            return Result::failure("Data is not valid. Error updating category", $validator->errorsToJson());
         }
 
-        //   unset($update_category_data[0]);
+        $rowsUpdated = $this->model->updateCategory($update_category_data);
 
-        //
-        $this->model->updateCategory($update_category_data[0]);
-
+        if ($rowsUpdated <= 0) {
+            return Result::failure("No row has been updated");
+        }
         // return successful result
         return Result::success("Category has been updated successfully!");
     }
@@ -148,7 +153,7 @@ class CategoriesService
             $validator = new Validator(['category_id' => $category_id]);
             $rules = array(
                 'category_id' => [
-                    ['regex', '/^[A-Z]-[0-9]{4}$/']
+                    ['regex', '/^C-[0-9]{4}$/']
                 ]
             );
             $validator->mapFieldsRules($rules);
@@ -159,9 +164,8 @@ class CategoriesService
                     "category_id" => $category_id,
                     "error" => $validator->errorsToString()
                 ];
-            } {
-                $rowsDeleted = $this->model->deleteCategory($category_id);
             }
+            $this->model->deleteCategory($category_id);
         }
         if (count($validation_errors) > 0) {
             return Result::failure("Some of the category IDs are not valid", $validation_errors);
