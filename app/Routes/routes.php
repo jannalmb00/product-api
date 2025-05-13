@@ -12,7 +12,8 @@ use App\Helpers\DateTimeHelper;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Middleware\AuthMiddleware;
-use App\Middleware\AdminMiddleware;
+use App\Middleware\AdminMiddleware as AdminMiddleware;
+use App\Middleware\LoggingMiddleware;
 use Slim\Routing\RouteCollectorProxy;
 
 // return static function (Slim\App $app): void {
@@ -171,7 +172,7 @@ return static function (Slim\App $app): void {
         $group->put('/allergens/{allergen_id}', [AllergensController::class, 'handleUpdateAllergen']);
         $group->delete('/allergens', [AllergensController::class, 'handleDeleteAllergen']);
     })->add(AdminMiddleware::class)
-        ->add($app->getContainer()->get(AuthMiddleware::class)); // Auth first, then Admin check
+        ->add($app->getContainer()->get(AuthMiddleware::class));
 
     // Ping route
     $app->get('/ping', function (Request $request, Response $response) {
@@ -186,5 +187,8 @@ return static function (Slim\App $app): void {
     // Example route to test error handling
     $app->get('/error', function (Request $request, Response $response, $args) {
         throw new \Slim\Exception\HttpNotFoundException($request, "Something went wrong");
+    });
+    $app->get('/explode', function () {
+        throw new \RuntimeException("Boom!");
     });
 };

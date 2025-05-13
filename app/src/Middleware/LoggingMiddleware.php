@@ -10,6 +10,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
+use App\Helpers\LogHelper;
 
 /**
  * Participant in processing a server request and response.
@@ -35,19 +36,25 @@ class LoggingMiddleware implements MiddlewareInterface
     {
         // Optional: Handle the incoming request
         // ...
+        $result = $handler->handle($request);
 
-        $this->access_model->insertLog("Oi, QUCACKK");
 
-        echo "DB name " . $this->app_settings->get("db")["database"];
-
+        // echo "DB name " . $this->app_settings->get("db")["database"];
+        echo "1 GOES HERE ";
 
         // TODO: make LogHelper class
         //* 1) Write to access.log using the LogHelper class
+        LogHelper::writeToAccessLog($request, $result);
+        echo "5 GOES HERE";
+
+
+
         //* 2) Insert log records into the ws_user DB table --> Log Helper needs to be implemented and tested before this
         // Note: See aa_tables.zip on LEA. contains db schema to import to phpmyadmin
-        // We need an instance of AccessModel -> this is done by adding the access model to cosntructor
+        // We need an instance of AccessModel -> this is done by adding the access model to cosntructor --> done
         //*
-
+        // Inserts to db
+      //  $this->access_model->insertLog("Oi, QUCACKK");
 
         //! DO NOT remove or change the following statements.
         // Invoke the next middleware and get response
@@ -58,6 +65,4 @@ class LoggingMiddleware implements MiddlewareInterface
 
         return $response;
     }
-
-   
 }
