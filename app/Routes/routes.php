@@ -147,8 +147,6 @@ return static function (Slim\App $app): void {
         $group->get('/allergens', [AllergensController::class, 'handleGetAllergens']);
         $group->get('/allergens/{allergen_id}', [AllergensController::class, 'handleGetAllergenById']);
         $group->get('/allergens/{allergen_id}/ingredients', [AllergensController::class, 'handleGetIngredientsByAllergen']);
-
-        // Admin-prefixed GET routes that are accessible by ALL authenticated users
         $group->get('/admin/products', [ProductsController::class, 'handleGetProducts']);
         $group->get('/admin/categories', [CategoriesController::class, 'handleGetCategories']);
         $group->get('/admin/allergens', [AllergensController::class, 'handleGetAllergens']);
@@ -183,5 +181,10 @@ return static function (Slim\App $app): void {
         ];
         $response->getBody()->write(json_encode($payload));
         return $response;
+    });
+
+    // Example route to test error handling
+    $app->get('/error', function (Request $request, Response $response, $args) {
+        throw new \Slim\Exception\HttpNotFoundException($request, "Something went wrong");
     });
 };
