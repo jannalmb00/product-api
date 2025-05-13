@@ -36,17 +36,14 @@ class LoggingMiddleware implements MiddlewareInterface
     {
         // Optional: Handle the incoming request
         // ...
-        $result = $handler->handle($request);
-
-
+        $response = $handler->handle($request);
         // echo "DB name " . $this->app_settings->get("db")["database"];
-        echo "1 GOES HERE ";
+        // echo "1 GOES HERE ";
 
         // TODO: make LogHelper class
         //* 1) Write to access.log using the LogHelper class
-        LogHelper::writeToAccessLog($request, $result);
-        echo "5 GOES HERE";
-
+         LogHelper::writeToAccessLog($request, $response);
+        //  echo "5 GOES HERE";
 
 
         //* 2) Insert log records into the ws_user DB table --> Log Helper needs to be implemented and tested before this
@@ -54,12 +51,36 @@ class LoggingMiddleware implements MiddlewareInterface
         // We need an instance of AccessModel -> this is done by adding the access model to cosntructor --> done
         //*
         // Inserts to db
-      //  $this->access_model->insertLog("Oi, QUCACKK");
+        // get the response body and its content
+        $responseBody = $response->getBody();
+        if ($responseBody->isSeekable()) {
+            $responseBody->rewind();
+        }
+        $contents = (string) $responseBody->getContents();
+
+        // Decode JSON to array
+        $data = json_decode($contents, true) ?: [];
+
+        //Prepare data to pass to log to db
+        $userId = isset($data['user_id']) ? $data['user_id'] : null;
+        // dd($userId);
+        $email = $data['user_email'] ?? $data['email'] ?? 'guest';
+        //dd($email);
+
+        $user_action = $data['isAdmin'] ? 'admin' : 'guest';
+
+        $logData = [
+            'user_id' => $userId,
+            'email' => $email,
+            'user_action' => $user_action,
+        ];
+
+        // Pass to access model to insert to db
+        $this->access_model->insertLog($logData);
 
         //! DO NOT remove or change the following statements.
         // Invoke the next middleware and get response
         $response = $handler->handle($request);
-
         // Optional: Handle the outgoing response
         // ...
 

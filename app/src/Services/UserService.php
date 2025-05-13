@@ -28,7 +28,7 @@ class UserService
                 array('lengthMin', 2)
             ],
             "last_name" => [
-                
+
                 'required',
                 array('lengthMin', 2)
             ],
@@ -106,4 +106,6 @@ class UserService
         //? Step 5) Return successful authentication information
         return Result::success("Authentication successful", $userData);
     }
+
+    
 }

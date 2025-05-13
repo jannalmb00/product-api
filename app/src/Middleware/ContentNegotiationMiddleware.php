@@ -43,6 +43,8 @@ class ContentNegotiationMiddleware implements MiddlewareInterface
         if (json_last_error() === JSON_ERROR_NONE) {
             $request = $request->withParsedBody($contents);
         }
+     
+
 
         //! DO NOT remove or change the following statements.
         // Invoke the next middleware and get response
