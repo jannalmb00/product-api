@@ -41,6 +41,7 @@ class UserController extends BaseController
 
         //TODO: Handle case where the case where the body could be empty
         //$request->getBody();
+        echo "6 GOES HERE";
 
         $users_data = $request->getParsedBody();
 
@@ -58,18 +59,24 @@ class UserController extends BaseController
 
         // dd($allergens_data);
         $result = $this->user_service->createUser($user_data);
-        //dd($result);
+  
+        // dd($result->isSuccess());
         //* Dont forget to identify the outcome of the operations: success vs failure
         if ($result->isSuccess()) {
+            echo "SUCCESS";
             // Operation success
             $payload = [
                 'status' => 'success',
                 'code' => 201,
                 'message' => $result->getMessage(),
             ];
+
+
             // Operation sucessful
             return $this->renderJson($response, $payload, 201); // We write the status code that will be injected in the payload.
         } else {
+            //   dd("QUCAK");
+
             throw new HttpBadRequestException($request, $result->getMessage(), $result->getErrors());
         }
 

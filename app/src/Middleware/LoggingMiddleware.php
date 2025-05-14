@@ -36,14 +36,18 @@ class LoggingMiddleware implements MiddlewareInterface
     {
         // Optional: Handle the incoming request
         // ...
+
+        //! DO NOT remove or change the following statements.
+        // Invoke the next middleware and get response
+        // Optional: Handle the outgoing response
+        // ...
         $response = $handler->handle($request);
         // echo "DB name " . $this->app_settings->get("db")["database"];
-        // echo "1 GOES HERE ";
-
+        echo "1 GOES HERE ";
         // TODO: make LogHelper class
         //* 1) Write to access.log using the LogHelper class
-         LogHelper::writeToAccessLog($request, $response);
-        //  echo "5 GOES HERE";
+        LogHelper::writeToAccessLog($request, $response);
+        echo "5 GOES HERE";
 
 
         //* 2) Insert log records into the ws_user DB table --> Log Helper needs to be implemented and tested before this
@@ -52,37 +56,59 @@ class LoggingMiddleware implements MiddlewareInterface
         //*
         // Inserts to db
         // get the response body and its content
-        $responseBody = $response->getBody();
-        if ($responseBody->isSeekable()) {
-            $responseBody->rewind();
+        //! Register
+        $body = $request->getParsedBody();
+
+
+        // //        dd($responseBody);
+        if (is_array($body)) {
+            $bodyArray = isset($body[0]) ? $body[0] : "";
+            $email = $bodyArray["email"];
         }
-        $contents = (string) $responseBody->getContents();
 
-        // Decode JSON to array
-        $data = json_decode($contents, true) ?: [];
+        // $data = [
+        //     'method' => $request->getMethod(),
+        //     'ip' => $request->getServerParams()['REMOTE_ADDR'] ?? '-',
+        //     'resource' => (string)$request->getUri(),
+        //     'parameters' => $request->getQueryParams(),
+        //     'user' => $email
+        // ];
+        // // Decode JSON to array
+        // $data = json_decode($contents, true) ?: [];
+        // dd($data);
+        // // //Prepare data to pass to log to db
+        // $userId = isset($data['user_id']) ? $data['user_id'] : null;
+        // // dd($userId);
+        // $email = $data['user_email'] ?? $data['email'] ?? 'guest';
+        //  $user_action = $data['isAdmin'] ? 'admin' : 'guest';
 
-        //Prepare data to pass to log to db
-        $userId = isset($data['user_id']) ? $data['user_id'] : null;
-        // dd($userId);
-        $email = $data['user_email'] ?? $data['email'] ?? 'guest';
-        //dd($email);
+        //dd($data);
+        //! Logs when registering
 
-        $user_action = $data['isAdmin'] ? 'admin' : 'guest';
+        $user_action = $request->getMethod() . ' ' . (string) $request->getUri()->getPath();
+
+        $responseBody = $response->getBody();
+        // Rewind the stream if needed
+        if ($response->getBody()->isSeekable()) {
+            $response->getBody()->rewind();
+        }
+        $json = json_decode((string)$responseBody, true);
+        if (is_array($json)) {
+            $user_id = $json['user_id'] ?? "";
+        }
+
+
 
         $logData = [
-            'user_id' => $userId,
             'email' => $email,
             'user_action' => $user_action,
+            'user_id' => $user_id
         ];
 
         // Pass to access model to insert to db
         $this->access_model->insertLog($logData);
 
-        //! DO NOT remove or change the following statements.
-        // Invoke the next middleware and get response
-        $response = $handler->handle($request);
-        // Optional: Handle the outgoing response
-        // ...
+
 
         return $response;
     }
