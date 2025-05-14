@@ -7,6 +7,7 @@ use App\Controllers\AccountController;
 use App\Controllers\ProductsController;
 use App\Controllers\CategoriesController;
 use App\Controllers\AllergensController;
+use App\Controllers\CalculatorController;
 use App\Controllers\UserController;
 use App\Helpers\DateTimeHelper;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -31,6 +32,9 @@ return static function (Slim\App $app): void {
 
     //* ROUTE: GET /
     $app->get('/', [AboutController::class, 'handleAboutWebService']);
+
+    //* ROUTE: POST /login
+    $app->post("/calorie", [CalculatorController::class, 'calculateCalories']);
 
     //? --------- PROTECTED ROUTES ------
     //! All the GET methods
@@ -120,8 +124,7 @@ return static function (Slim\App $app): void {
     $app->get('/error', function (Request $request, Response $response, $args) {
         throw new \Slim\Exception\HttpNotFoundException($request, "Something went wrong");
     });
-    $app->get('/explode', function() {
+    $app->get('/explode', function () {
         throw new \RuntimeException("Boom!");
     });
-
 };
