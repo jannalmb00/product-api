@@ -21,6 +21,12 @@ class AuthMiddleware implements MiddlewareInterface
     }
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+
+        $uri = $request->getUri()->getPath();
+        //echo $uri;
+        if ($uri === '/product-api/register' ||  $uri === '/product-api/login') {
+            return $handler->handle($request);
+        }
         $authHeader = $request->getHeaderLine('Authorization');
 
         if (empty($authHeader) || !str_starts_with($authHeader, 'Bearer ')) {

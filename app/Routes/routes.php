@@ -74,7 +74,7 @@ return static function (Slim\App $app): void {
         $group->get('/allergens/{allergen_id}/ingredients', [AllergensController::class, 'handleGetIngredientsByAllergen']);
     })->add($app->getContainer()->get(AuthMiddleware::class));
 
-    $app->group('/admin', function (RouteCollectorProxy $group) {
+    $app->group('', function (RouteCollectorProxy $group) {
         $group->post('/users', [UserController::class, 'createUser']);
 
         //?---------PRODUCTS----------------------------------------------
@@ -109,6 +109,9 @@ return static function (Slim\App $app): void {
         $group->delete('/allergens', [AllergensController::class, 'handleDeleteAllergen']);
     })->add(AdminMiddleware::class)
         ->add($app->getContainer()->get(AuthMiddleware::class));
+
+
+
 
     //* ROUTE: GET /ping
     $app->get('/ping', function (Request $request, Response $response, $args) {

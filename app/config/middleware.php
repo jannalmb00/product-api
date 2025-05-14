@@ -22,14 +22,14 @@ return function (App $app) {
     $app->addBodyParsingMiddleware();
 
     //* Logging middleware
-    $app->add(LoggingMiddleware::class);
+    //$app->add(LoggingMiddleware::class);
 
     $app->add(ContentNegotiationMiddleware::class);
 
 
     // //* AuthMiddleware
-    $app->add(\App\Middleware\AdminMiddleware::class);
-    $app->add(AuthMiddleware::class);
+    // $app->add(\App\Middleware\AdminMiddleware::class);
+    //$app->add(AuthMiddleware::class);
 
     //!NOTE: the error handling middleware MUST be added last.
     $errorMiddleware = $app->addErrorMiddleware(true, true, true);
