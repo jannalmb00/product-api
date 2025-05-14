@@ -20,9 +20,12 @@ class AccessModel extends BaseModel
 
     public function insertLog(array $logData): mixed
     {
-        if (!isset($logData['timestamp'])) {
-            $logData['timestamp'] = DateTimeHelper::now(DateTimeHelper::Y_M_D_H_M_S);
+        if (!isset($logData['logged_at'])) {
+            $logData['logged_at'] = DateTimeHelper::now(DateTimeHelper::Y_M_D_H_M_S);
+          //  dd( $logData['logged_at'] );
+
         }
         return $this->insert('ws_log', $logData);
     }
+
 }

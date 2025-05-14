@@ -18,7 +18,7 @@ class DateTimeHelper
      * Year/month/day hour:minute:seconds date and time format
      * @var string
      */
-    const Y_M_D_H_M_S = 'Y\-m\-d\ h:i:s';
+    const Y_M_D_H_M_S = 'Y\-m\-d\ H:i:s';
     /**
      * Year/month/day hour:minute date and time format.
      * @var string .
@@ -62,6 +62,8 @@ class DateTimeHelper
     public static function now(string $format, string $time_zone = 'America/Toronto'): string
     {
         $datetime = new DateTime('now', new DateTimeZone($time_zone));
+      //  dd($datetime);
+
         return $datetime->format($format);
     }
     public static function nowForDb(): string
