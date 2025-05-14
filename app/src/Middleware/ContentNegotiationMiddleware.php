@@ -39,14 +39,30 @@ class ContentNegotiationMiddleware implements MiddlewareInterface
             throw new HttpNotAcceptableException($request);
         }
 
-        $contents = json_decode(file_get_contents('php://input'), true);
-        if (json_last_error() === JSON_ERROR_NONE) {
-            $request = $request->withParsedBody($contents);
-        }
-     
+        // $contents = json_decode(file_get_contents('php://input'), true);
+        // if (json_last_error() === JSON_ERROR_NONE) {
+        //     $request = $request->withParsedBody($contents);
+        // }
+  // 2) Read raw body using PSR-7 stream and decode
+  $bodyStream = $request->getBody();
 
+  // Rewind before reading
+  if ($bodyStream->isSeekable()) {
+      $bodyStream->rewind();
+  }
 
-        //! DO NOT remove or change the following statements.
+  $raw = $bodyStream->getContents();
+  $decoded = json_decode($raw, true);
+  if (JSON_ERROR_NONE === json_last_error()) {
+      $request = $request->withParsedBody($decoded);
+  }
+
+  // Rewind again for downstream middleware and controllers
+  if ($bodyStream->isSeekable()) {
+      $bodyStream->rewind();
+  }
+        // //! DO NOT remove or change the following statements.
+
         // Invoke the next middleware and get response
         $response = $handler->handle($request);
 
