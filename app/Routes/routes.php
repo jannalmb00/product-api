@@ -33,7 +33,7 @@ return static function (Slim\App $app): void {
     //* ROUTE: GET /
     $app->get('/', [AboutController::class, 'handleAboutWebService']);
 
-    //* ROUTE: POST /login
+    //* ROUTE: POST /calorie
     $app->post("/calorie", [CalculatorController::class, 'calculateCalories']);
 
     //? --------- PROTECTED ROUTES ------
