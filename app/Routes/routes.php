@@ -8,6 +8,7 @@ use App\Controllers\ProductsController;
 use App\Controllers\CategoriesController;
 use App\Controllers\AllergensController;
 use App\Controllers\CalculatorController;
+use App\Controllers\CompositeController;
 use App\Controllers\UserController;
 use App\Helpers\DateTimeHelper;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -35,6 +36,10 @@ return static function (Slim\App $app): void {
 
     //* ROUTE: POST /calorie
     $app->post("/calorie", [CalculatorController::class, 'calculateCalories']);
+
+
+    //*ROUTE:GET /coffee-info
+    $app->$get("/coffee_category", [CompositeController::class,'handleGetCoffeeCategory']);
 
     //? --------- PROTECTED ROUTES ------
     //! All the GET methods
