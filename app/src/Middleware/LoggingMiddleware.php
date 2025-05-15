@@ -36,17 +36,18 @@ class LoggingMiddleware implements MiddlewareInterface
     {
         // Optional: Handle the incoming request
         // ...
-        $result = $handler->handle($request);
 
-
+        //! DO NOT remove or change the following statements.
+        // Invoke the next middleware and get response
+        // Optional: Handle the outgoing response
+        // ...
+        $response = $handler->handle($request);
         // echo "DB name " . $this->app_settings->get("db")["database"];
-        // echo "1 GOES HERE ";
-
+        echo "1 GOES HERE ";
         // TODO: make LogHelper class
         //* 1) Write to access.log using the LogHelper class
-        LogHelper::writeToAccessLog($request, $result);
-        // echo "5 GOES HERE";
-
+        LogHelper::writeToAccessLog($request, $response);
+        echo "5 GOES HERE";
 
 
         //* 2) Insert log records into the ws_user DB table --> Log Helper needs to be implemented and tested before this
@@ -54,14 +55,60 @@ class LoggingMiddleware implements MiddlewareInterface
         // We need an instance of AccessModel -> this is done by adding the access model to cosntructor --> done
         //*
         // Inserts to db
-        $this->access_model->insertLog();
+        // get the response body and its content
+        //! Register
+        $body = $request->getParsedBody();
 
-        //! DO NOT remove or change the following statements.
-        // Invoke the next middleware and get response
-        $response = $handler->handle($request);
 
-        // Optional: Handle the outgoing response
-        // ...
+        // //        dd($responseBody);
+        if (is_array($body)) {
+            $bodyArray = isset($body[0]) ? $body[0] : "";
+            $email = $bodyArray["email"];
+        }
+
+        // $data = [
+        //     'method' => $request->getMethod(),
+        //     'ip' => $request->getServerParams()['REMOTE_ADDR'] ?? '-',
+        //     'resource' => (string)$request->getUri(),
+        //     'parameters' => $request->getQueryParams(),
+        //     'user' => $email
+        // ];
+        // // Decode JSON to array
+        // $data = json_decode($contents, true) ?: [];
+        // dd($data);
+        // // //Prepare data to pass to log to db
+        // $userId = isset($data['user_id']) ? $data['user_id'] : null;
+        // // dd($userId);
+        // $email = $data['user_email'] ?? $data['email'] ?? 'guest';
+        //  $user_action = $data['isAdmin'] ? 'admin' : 'guest';
+
+        //dd($data);
+        //! Logs when registering
+
+        $user_action = $request->getMethod() . ' ' . (string) $request->getUri()->getPath();
+
+        $responseBody = $response->getBody();
+        // Rewind the stream if needed
+        if ($response->getBody()->isSeekable()) {
+            $response->getBody()->rewind();
+        }
+        $json = json_decode((string)$responseBody, true);
+        if (is_array($json)) {
+            $user_id = $json['user_id'] ?? "";
+        }
+
+
+
+        $logData = [
+            'email' => $email,
+            'user_action' => $user_action,
+            'user_id' => $user_id
+        ];
+
+        // Pass to access model to insert to db
+        $this->access_model->insertLog($logData);
+
+
 
         return $response;
     }

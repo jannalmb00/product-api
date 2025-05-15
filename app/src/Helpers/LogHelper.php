@@ -16,30 +16,38 @@ class LogHelper
     public static function writeToAccessLog(Request $request, Response $response): void
     {
 
-        //echo "2 GOES HERE";
+        //  echo "2 GOES HERE";
 
         // Writes to access.log
         //1. create logger
         $logger = new Logger('access');
-        //echo "3 GOES HERE";
+        //   echo "3 GOES HERE";
 
         //2. push a log record handler
         $file_path = APP_LOGS_PATH . '/access.log';
         $logger->pushHandler(new StreamHandler($file_path, LogLevel::INFO));
 
+
         //3. write a log record to the logger
         // We can add here the HTTP method
+
+        // extract email from body
+        $body = $request->getParsedBody();
+
+        if (is_array($body)) {
+            $bodyArray = isset($body[0]) ? $body[0] : "";
+            $email = $bodyArray["email"];
+        }
+
+        //! Logs when registering
         $data = [
-            'extra'        => $request->getQueryParams(),
-            'method'      => $request->getMethod(),
-            'status'      => $response->getStatusCode(),
-            'ip'          => $request->getServerParams()['REMOTE_ADDR'] ?? '-',
-            // 'user_id' => $request->getAttribute('userId') ?? 'guest',
+            'method' => $request->getMethod(),
+            'resource' => (string)$request->getUri()->getPath(),
+            'ip' => $request->getServerParams()['REMOTE_ADDR'] ?? '-',
+            'parameters' => $request->getQueryParams(),
+            'user' => $email
         ];
         $logger->info("Access", $data);
-        // echo "4 GOES HERE";
-        // dd($logger);
-
     }
 
     public static function writeToErrorLog(\Throwable $e, Request $request): void

@@ -6,7 +6,7 @@ use App\Middleware\HelloMiddleware;
 use App\Middleware\LoggingMiddleware;
 
 use App\Middleware\ContentNegotiationMiddleware;
-use App\Middleware\AuthMiddleware;
+use App\Middleware\AuthMiddleware as AuthMiddleware;
 
 use App\Handlers\LoggingErrorHandler;
 
@@ -14,21 +14,25 @@ use Slim\App;
 
 return function (App $app) {
     //TODO: Add your middleware here.
-    // $app->add(ContentNegotiationMiddleware::class);
-    $app->addBodyParsingMiddleware();
+
+
+
     $app->addRoutingMiddleware();
 
-
+    $app->addBodyParsingMiddleware();
     //* Logging middleware
     $app->add(LoggingMiddleware::class);
 
-    // $app->get('/logme', function ($req, $res) {
-    //     $res->getBody()->write("hello!");
-    //     return $res;
-    // })->add(LoggingMiddleware::class);
+    $app->add(ContentNegotiationMiddleware::class);
 
 
-    // Custom Error Handling
+
+    // //* AuthMiddleware
+    //     $app->add(\App\Middleware\AdminMiddleware::class);
+
+    //    $app->add(AuthMiddleware::class);
+
+
 
     //!NOTE: the error handling middleware MUST be added last.
     $errorMiddleware = $app->addErrorMiddleware(true, true, true);
