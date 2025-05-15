@@ -261,7 +261,7 @@ class ProductsController extends BaseController
         if (empty($product_data)) {
             throw new HttpBadRequestException($request, "Data passed is empty");
         }
-    //    dd($product_data[0]);
+        //    dd($product_data[0]);
 
         //? CALL SERVICE
         $result = $this->product_service->updateProduct($product_data[0]);

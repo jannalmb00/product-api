@@ -14,6 +14,7 @@ use Slim\Factory\AppFactory;
 use Slim\App;
 use Slim\Interfaces\RouteParserInterface;
 use App\Middleware\AuthMiddleware;
+use App\Middleware\AdminMiddleware;
 
 
 $definitions = [
@@ -43,6 +44,7 @@ $definitions = [
         $db_config = $container->get(AppSettings::class)->get('db');
         return new PDOService($db_config);
     },
+
     // HTTP factories
     ResponseFactoryInterface::class => function (ContainerInterface $container) {
         return $container->get(Psr17Factory::class);
@@ -57,14 +59,16 @@ $definitions = [
         return $container->get(Psr17Factory::class);
     },
 
+    // Adding the auth dependency injection via factory in container because it allows for flexible and organized way of retrieving the key under App Settings
     AuthMiddleware::class => function (ContainerInterface $container) {
         $settings = $container->get(AppSettings::class);
         $jwtKey = $settings->get('jwt_key');
         return new AuthMiddleware($jwtKey);
     },
 
-    \App\Middleware\AdminMiddleware::class => function () {
-        return new \App\Middleware\AdminMiddleware();
+    // Adding admin middleware
+    AdminMiddleware::class => function () {
+        return new AdminMiddleware();
     },
 
 
