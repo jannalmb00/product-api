@@ -40,12 +40,12 @@ class LoggingMiddleware implements MiddlewareInterface
 
 
         // echo "DB name " . $this->app_settings->get("db")["database"];
-        echo "1 GOES HERE ";
+        // echo "1 GOES HERE ";
 
         // TODO: make LogHelper class
         //* 1) Write to access.log using the LogHelper class
         LogHelper::writeToAccessLog($request, $result);
-        echo "5 GOES HERE";
+        // echo "5 GOES HERE";
 
 
 
@@ -54,7 +54,7 @@ class LoggingMiddleware implements MiddlewareInterface
         // We need an instance of AccessModel -> this is done by adding the access model to cosntructor --> done
         //*
         // Inserts to db
-      //  $this->access_model->insertLog("Oi, QUCACKK");
+        $this->access_model->insertLog();
 
         //! DO NOT remove or change the following statements.
         // Invoke the next middleware and get response

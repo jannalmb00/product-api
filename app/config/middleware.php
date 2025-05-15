@@ -18,14 +18,9 @@ return function (App $app) {
     $app->addBodyParsingMiddleware();
     $app->addRoutingMiddleware();
 
-    //* AuthMiddleware
-    // $app->add(\App\Middleware\AdminMiddleware::class);
-    // $app->add(\App\Middleware\AuthMiddleware::class);
-
-
 
     //* Logging middleware
-    // $app->add(LoggingMiddleware::class);
+    $app->add(LoggingMiddleware::class);
 
     // $app->get('/logme', function ($req, $res) {
     //     $res->getBody()->write("hello!");

@@ -71,7 +71,6 @@ $definitions = [
         return new AdminMiddleware();
     },
 
-
     // The Slim RouterParser
     RouteParserInterface::class => function (ContainerInterface $container) {
         return $container->get(App::class)->getRouteCollector()->getRouteParser();

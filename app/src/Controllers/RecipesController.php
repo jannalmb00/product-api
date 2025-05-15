@@ -59,10 +59,12 @@ class RecipesController extends BaseController
 
         $product_info = $this->pagination($filters, $this->products_model, [$this->products_model, 'getProductById'], $request);
 
+        // If the body product is empty or not found
         if (empty($product_info['data'])) {
             throw new HttpNoContentException($request, "Product not found");
         }
 
+        // Gets the first ingredient
         $product = $product_info['data'][0];
         $ingredient = $this->getIngredientFromProduct($product); // Get the ingredient from product name
 

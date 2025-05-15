@@ -16,12 +16,12 @@ class LogHelper
     public static function writeToAccessLog(Request $request, Response $response): void
     {
 
-        echo "2 GOES HERE";
+        //echo "2 GOES HERE";
 
         // Writes to access.log
         //1. create logger
         $logger = new Logger('access');
-        echo "3 GOES HERE";
+        //echo "3 GOES HERE";
 
         //2. push a log record handler
         $file_path = APP_LOGS_PATH . '/access.log';
@@ -37,7 +37,7 @@ class LogHelper
             // 'user_id' => $request->getAttribute('userId') ?? 'guest',
         ];
         $logger->info("Access", $data);
-        echo "4 GOES HERE";
+        // echo "4 GOES HERE";
         // dd($logger);
 
     }
@@ -50,7 +50,7 @@ class LogHelper
         // Writes to access.log
         //1. create logger
         $logger = new Logger('error');
-       // echo "3 GOES HERE";
+        // echo "3 GOES HERE";
 
         //2. push a log record handler
         $file_path = APP_LOGS_PATH . '/error.log';
@@ -58,14 +58,14 @@ class LogHelper
 
         //3. write a log record to the logger
         $data = [
-          //  'extra'        => $request->getQueryParams(),
-          //  'exception'    => $e->getTrace(),
+            //  'extra'        => $request->getQueryParams(),
+            //  'exception'    => $e->getTrace(),
             'method'      => $request->getMethod(),
             'ip'          => $request->getServerParams()['REMOTE_ADDR'] ?? '-',
             'url'         => (string)$request->getUri(),
             // 'user_id' => $request->getAttribute('userId') ?? 'guest',
         ];
-       // dd($e->getMessage());
+        // dd($e->getMessage());
         $logger->error($e->getMessage(), $data);
     }
 }

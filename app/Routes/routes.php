@@ -52,12 +52,13 @@ return static function (Slim\App $app): void {
         $group->get('/allergens/{allergen_id}/ingredients', [AllergensController::class, 'handleGetIngredientsByAllergen']);
 
         //? -- Shared --
-        $group->get('/admin/products', [ProductsController::class, 'handleGetProducts']);
-        $group->get('/admin/categories', [CategoriesController::class, 'handleGetCategories']);
-        $group->get('/admin/allergens', [AllergensController::class, 'handleGetAllergens']);
+        // $group->get('/admin/products', [ProductsController::class, 'handleGetProducts']);
+        // $group->get('/admin/categories', [CategoriesController::class, 'handleGetCategories']);
+        // $group->get('/admin/allergens', [AllergensController::class, 'handleGetAllergens']);
 
         //? == Composite resource -- TheMealDBAPI
         $group->get('/recipes/product/{product_id}', [RecipesController::class, 'handleGetRecipesByProduct']);
+        
     })->add($app->getContainer()->get(AuthMiddleware::class));
 
     //? --------------------

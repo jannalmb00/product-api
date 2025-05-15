@@ -54,8 +54,6 @@ class UserController extends BaseController
 
         $user_data = $users_data[0];
 
-
-
         // dd($allergens_data);
         $result = $this->user_service->createUser($user_data);
         //dd($result);

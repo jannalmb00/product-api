@@ -71,7 +71,6 @@ class UserService
         //Todo: hash the password
         $new_user_data['password'] = $this->cryptPassword($new_user_data['password']);
         // echo $new_user_data;
-        echo "success";
         $last_inserted_id =  $this->user_model->createUser($new_user_data); //
         return Result::success("The new user has been created successfully!", $last_inserted_id);
     }
