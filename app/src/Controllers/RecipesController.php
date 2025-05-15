@@ -68,45 +68,47 @@ class RecipesController extends BaseController
         $product = $product_info['data'][0];
         $ingredient = $this->getIngredientFromProduct($product); // Get the ingredient from product name
 
-        // Call TheMealDB API
-        $api_response = $this->http_client->request('GET', 'https://www.themealdb.com/api/json/v1/1/filter.php', [
-            'query' => ['i' => $ingredient]
-        ]);
+        try {
+            // Call TheMealDB API
+            $api_response = $this->http_client->request('GET', 'https://www.themealdb.com/api/json/v1/1/filter.php', ['query' => ['i' => $ingredient]]);
 
-        $content = $api_response->getBody()->getContents();
-        $meals = json_decode($content, true);
+            $content = $api_response->getBody()->getContents();
+            $meals = json_decode($content, true);
 
-        // If no meals found
-        if (!isset($meals['meals']) || $meals['meals'] === null) {
-            throw new HttpNoContentException($request, "No recipes found for ingredient: $ingredient");
-        }
-
-        // Get details for the first 3 meals
-        $recipes = [];
-        $count = 0;
-
-        foreach ($meals['meals'] as $meal) {
-            if ($count >= 3) {
-                break;
+            // If no meals found
+            if (!isset($meals['meals']) || $meals['meals'] === null) {
+                throw new HttpNoContentException($request, "No recipes found for ingredient: $ingredient");
             }
 
-            $meal_id = $meal['idMeal'];
-            $meal_details = $this->getMealDetails($meal_id);
+            // Get details for the first 3 meals
+            $recipes = [];
+            $count = 0;
 
-            if ($meal_details) {
-                $recipes[] = $meal_details;
-                $count++;
+            foreach ($meals['meals'] as $meal) {
+                if ($count >= 3) {
+                    break;
+                }
+
+                $meal_id = $meal['idMeal'];
+                $meal_details = $this->getMealDetails($meal_id);
+
+                if ($meal_details) {
+                    $recipes[] = $meal_details;
+                    $count++;
+                }
             }
+
+            // Prepare response
+            $result = [
+                'product' => $product,
+                'ingredient_used' => $ingredient,
+                'recipes' => $recipes,
+            ];
+
+            return $this->renderJson($response, $result);
+        } catch (GuzzleException $e) {
+            throw new HttpNoContentException($request, "Error fetching recipes: " . $e->getMessage());
         }
-
-        // Prepare response
-        $result = [
-            'product' => $product,
-            'ingredient_used' => $ingredient,
-            'recipes' => $recipes,
-        ];
-
-        return $this->renderJson($response, $result);
     }
 
     /**
@@ -129,18 +131,19 @@ class RecipesController extends BaseController
     }
 
     /**
-     * Extract from a product for recipe search
+     * Get the product ingredient from product name for recipe search
      *
      * @param array $product The product details
-     * @return string The extracted ingredient
+     * @return string The name that matches the common ingredients
      */
     private function getIngredientFromProduct(array $product): string
     {
         // Get the product name by separating the product name as per the ingredients
+        // For this time, we use this method as we do not have product_ingredients data for now, we use based off product name!
         $product_words = explode(' ', strtolower($product['product_name']));
 
         $common_ingredients = [
-            // iF THE word does not match this it will just return the full product name
+            // If the word does not match this it will just return the full product name
             'chicken',
             'beef',
             'pork',
