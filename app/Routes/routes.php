@@ -34,7 +34,7 @@ return static function (Slim\App $app): void {
     $app->post("/fiber", [CalculatorController::class, 'handleCalculateFiber']);
 
     //*ROUTE:GET /coffee-info
-    //$app->$get("/coffee_category", [CompositeController::class,'handleGetCoffeeCategory']);
+    //$app->$get("/coffee_category", [CompositeController::class, 'handleGetCoffeeCategory']);
 
     //? --------- PROTECTED ROUTES ------
     //! All the GET methods
