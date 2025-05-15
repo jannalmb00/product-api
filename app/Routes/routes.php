@@ -9,6 +9,7 @@ use App\Controllers\CategoriesController;
 use App\Controllers\AllergensController;
 use App\Controllers\UserController;
 use App\Controllers\RecipesController;
+use App\Controllers\CalculatorController;
 use App\Helpers\DateTimeHelper;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -27,9 +28,11 @@ return static function (Slim\App $app): void {
     $app->post('/register', [UserController::class, 'handleCreateRegister']);
     $app->post('/login', [UserController::class, 'handleUserLogin']);
     $app->get('/', [AboutController::class, 'handleAboutWebService']);
+    $app->post("/calorie", [CalculatorController::class, 'handleCalculateCalories']);
+    $app->post("/fiber", [CalculatorController::class, 'handleCalculateFiber']);
 
     //? --------------------
-    //? SHARED ROUTES (Admin + General)
+    //? SHARED ROUTES
     //? --------------------
     $app->group('', function (RouteCollectorProxy $group) {
 

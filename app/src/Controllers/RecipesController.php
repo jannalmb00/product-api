@@ -43,14 +43,13 @@ class RecipesController extends BaseController
      */
     public function handleGetRecipesByProduct(Request $request, Response $response, array $uri_args): Response
     {
-        // Check if product ID is provided
         if (!isset($uri_args['product_id'])) {
-            throw new HttpInvalidInputException($request, "Product ID is required in the URL");
+            throw new HttpInvalidInputException($request, "Product ID is required in the URI");
         }
 
         $product_id = $uri_args['product_id'];
 
-        // Get product details from our DB
+        //* Get product details from our DB
         $filters = $request->getQueryParams();
         //dd($filters);
         $filters['id'] = $product_id;
@@ -58,7 +57,6 @@ class RecipesController extends BaseController
         $regex_id = '/^P\d{5,6}$/';
         $this->validateFilterIds($filters, $regex_id, 'id', "Provided product ID is invalid.", $request);
 
-        // Paginate
         $product_info = $this->pagination($filters, $this->products_model, [$this->products_model, 'getProductById'], $request);
 
         if (empty($product_info['data'])) {
@@ -69,18 +67,18 @@ class RecipesController extends BaseController
         $ingredient = $this->getIngredientFromProduct($product); // Get the ingredient from product name
 
         try {
-            // Call TheMealDB API
+            //* Call TheMealDB API
             $api_response = $this->http_client->request('GET', 'https://www.themealdb.com/api/json/v1/1/filter.php', ['query' => ['i' => $ingredient]]);
 
             $content = $api_response->getBody()->getContents();
             $meals = json_decode($content, true);
 
-            // If no meals found
+            //* If no meals found
             if (!isset($meals['meals']) || $meals['meals'] === null) {
                 throw new HttpNoContentException($request, "No recipes found for ingredient: $ingredient");
             }
 
-            // Get details for the first 3 meals
+            //* Get details for the first 3 meals
             $recipes = [];
             $count = 0;
 
@@ -98,7 +96,7 @@ class RecipesController extends BaseController
                 }
             }
 
-            // Prepare response
+            //* Prepare response
             $result = [
                 'product' => $product,
                 'ingredient_used' => $ingredient,
