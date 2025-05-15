@@ -27,23 +27,37 @@ class CalculatorController extends BaseController
         parent::__construct();
     }
 
-    public function calculateCalories(Request $request, Response $response):Response
+    public function handleCalculateCalories(Request $request, Response $response): Response
     {
         $data = $request->getParsedBody();
 
-        if(empty($data[0])){
+        if (empty($data[0])) {
             throw new HttpBadRequestException($request, "Data passed is empty");
         }
 
         $result = $this->calculator_model->calculateCalories($data[0]);
 
-        if(empty($result)){
+        if (empty($result)) {
             throw new HttpNoContentException($request, "Empty result");
-
         }
 
         return $this->renderJson($response, $result);
     }
 
+    public function handleCalculateFiber(Request $request, Response $response): Response
+    {
+        $data = $request->getParsedBody();
 
+        if (empty($data) || !isset($data[0])) {
+            throw new HttpBadRequestException($request, "Data passed is empty or invalid format");
+        }
+
+        $result = $this->calculator_model->calculateFiberIntake($data[0]);
+
+        if (empty($result)) {
+            throw new HttpNoContentException($request, "Empty result");
+        }
+
+        return $this->renderJson($response, $result);
+    }
 }

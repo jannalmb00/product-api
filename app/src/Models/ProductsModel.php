@@ -103,7 +103,6 @@ class ProductsModel extends BaseModel
     public function getProductByNutrition(array $filters): mixed
     {
 
-
         //* Get the product id
         $product_id = $filters['id'];
 
