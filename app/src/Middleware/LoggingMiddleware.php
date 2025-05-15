@@ -60,34 +60,17 @@ class LoggingMiddleware implements MiddlewareInterface
         $body = $request->getParsedBody();
 
 
-        // //        dd($responseBody);
+        // Prepare details to add to db
         if (is_array($body)) {
             $bodyArray = isset($body[0]) ? $body[0] : "";
             $email = $bodyArray["email"];
         }
 
-        // $data = [
-        //     'method' => $request->getMethod(),
-        //     'ip' => $request->getServerParams()['REMOTE_ADDR'] ?? '-',
-        //     'resource' => (string)$request->getUri(),
-        //     'parameters' => $request->getQueryParams(),
-        //     'user' => $email
-        // ];
-        // // Decode JSON to array
-        // $data = json_decode($contents, true) ?: [];
-        // dd($data);
-        // // //Prepare data to pass to log to db
-        // $userId = isset($data['user_id']) ? $data['user_id'] : null;
-        // // dd($userId);
-        // $email = $data['user_email'] ?? $data['email'] ?? 'guest';
-        //  $user_action = $data['isAdmin'] ? 'admin' : 'guest';
-
-        //dd($data);
-        //! Logs when registering
-
         $user_action = $request->getMethod() . ' ' . (string) $request->getUri()->getPath();
 
+        // For when it's not /register
         $responseBody = $response->getBody();
+
         // Rewind the stream if needed
         if ($response->getBody()->isSeekable()) {
             $response->getBody()->rewind();
@@ -96,8 +79,6 @@ class LoggingMiddleware implements MiddlewareInterface
         if (is_array($json)) {
             $user_id = $json['user_id'] ?? "";
         }
-
-
 
         $logData = [
             'email' => $email,
