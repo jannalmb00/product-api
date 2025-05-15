@@ -11,7 +11,7 @@ use App\Controllers\CalculatorController;
 use App\Controllers\CompositeController;
 use App\Controllers\UserController;
 use App\Controllers\RecipesController;
-use App\Controllers\CalculatorController;
+
 use App\Helpers\DateTimeHelper;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -33,12 +33,8 @@ return static function (Slim\App $app): void {
     $app->post("/calorie", [CalculatorController::class, 'handleCalculateCalories']);
     $app->post("/fiber", [CalculatorController::class, 'handleCalculateFiber']);
 
-    //* ROUTE: POST /calorie
-    $app->post("/calorie", [CalculatorController::class, 'calculateCalories']);
-
-
     //*ROUTE:GET /coffee-info
-    $app->$get("/coffee_category", [CompositeController::class,'handleGetCoffeeCategory']);
+    //$app->$get("/coffee_category", [CompositeController::class,'handleGetCoffeeCategory']);
 
     //? --------- PROTECTED ROUTES ------
     //! All the GET methods
