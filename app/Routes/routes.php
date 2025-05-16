@@ -7,9 +7,11 @@ use App\Controllers\AccountController;
 use App\Controllers\ProductsController;
 use App\Controllers\CategoriesController;
 use App\Controllers\AllergensController;
+use App\Controllers\CalculatorController;
+use App\Controllers\CompositeController;
 use App\Controllers\UserController;
 use App\Controllers\RecipesController;
-use App\Controllers\CalculatorController;
+
 use App\Helpers\DateTimeHelper;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -39,9 +41,12 @@ return static function (Slim\App $app, array $settings): void {
     });
 
 
-    //? --------------------
-    //? SHARED ROUTES
-    //? --------------------
+    //*ROUTE:GET /coffee-info
+    //$app->$get("/coffee_category", [CompositeController::class, 'handleGetCoffeeCategory']);
+
+    //? --------- PROTECTED ROUTES ------
+    //! All the GET methods
+
     $app->group('', function (RouteCollectorProxy $group) {
 
         //?---------PRODUCTS----------------------------------------------
@@ -68,11 +73,7 @@ return static function (Slim\App $app, array $settings): void {
         $group->get('/recipes/product/{product_id}', [RecipesController::class, 'handleGetRecipesByProduct']);
     })->add($authMiddleware);
 
-    //? --------------------
-    //? ADMIN-ONLY ROUTES (POST/PUT/DELETE)
-    //? --------------------
-    $app->group('/admin', function (RouteCollectorProxy $group) {
-
+    $app->group('', function (RouteCollectorProxy $group) {
         $group->post('/users', [UserController::class, 'createUser']);
 
         //?---------PRODUCTS----------------------------------------------
@@ -107,7 +108,6 @@ return static function (Slim\App $app, array $settings): void {
     $app->get('/error', function (Request $request, Response $response, $args) {
         throw new \Slim\Exception\HttpNotFoundException($request, "Something went wrong");
     });
-
     $app->get('/explode', function () {
         throw new \RuntimeException("Boom!");
     });

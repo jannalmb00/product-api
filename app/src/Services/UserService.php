@@ -11,7 +11,9 @@ use App\Core\PasswordTrait;
 class UserService
 {
     use PasswordTrait;
-    public function __construct(private UserModel $user_model) {}
+    public function __construct(private UserModel $user_model)
+    {
+    }
 
     function createUser(array $new_user_data): Result
     {
@@ -73,7 +75,7 @@ class UserService
         //Todo: hash the password
         $new_user_data['password'] = $this->cryptPassword($new_user_data['password']);
         // echo $new_user_data;
-        $last_inserted_id =  $this->user_model->createUser($new_user_data); //
+        $last_inserted_id = $this->user_model->createUser($new_user_data); //
         // echo " 3 goes HERE ";
 
         return Result::success("The new user has been created successfully!", $last_inserted_id);
