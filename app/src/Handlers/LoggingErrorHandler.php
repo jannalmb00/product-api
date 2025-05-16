@@ -21,7 +21,7 @@ class LoggingErrorHandler extends ErrorHandler
         );
     }
     /**
-     * Render the HTTP response. Here we emit a JSON “exception” object.
+     * 
      */
     protected function respond(): ResponseInterface
     {

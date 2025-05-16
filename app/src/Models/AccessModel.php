@@ -23,10 +23,9 @@ class AccessModel extends BaseModel
 
         if (!isset($logData['logged_at'])) {
             $logData['logged_at'] = DateTimeHelper::now(DateTimeHelper::Y_M_D_H_M_S);
-          //  dd( $logData['logged_at'] );
+            //  dd( $logData['logged_at'] );
 
         }
         return $this->insert('ws_log', $logData);
     }
-
 }
