@@ -75,11 +75,6 @@ class RecipesController extends BaseController
             $content = $api_response->getBody()->getContents();
             $meals = json_decode($content, true);
 
-            //* If no meals found
-            if (!isset($meals['meals']) || $meals['meals'] === null) {
-                throw new HttpNoContentException($request, "No recipes found for ingredient: $ingredient");
-            }
-
             //* Get details for the first 3 meals
             $recipes = [];
             $count = 0;

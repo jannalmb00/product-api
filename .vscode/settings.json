@@ -4,7 +4,7 @@
   //-------- Font settings --------
   "editor.fontLigatures": true,
   "editor.fontFamily": "'Fira Code', Consolas, Menlo, Monaco, 'Courier New', monospace",
-  "editor.fontWeight": "bold",
+  "editor.fontWeight": "normal",
   "editor.fontSize": 14,
   "editor.lineHeight": 20,
   // Enable format on save

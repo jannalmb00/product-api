@@ -43,11 +43,11 @@ class LoggingMiddleware implements MiddlewareInterface
         // ...
         $response = $handler->handle($request);
         // echo "DB name " . $this->app_settings->get("db")["database"];
-        echo "1 GOES HERE ";
+        // echo "1 GOES HERE ";
         // TODO: make LogHelper class
         //* 1) Write to access.log using the LogHelper class
         LogHelper::writeToAccessLog($request, $response);
-        echo "5 GOES HERE";
+        // echo "5 GOES HERE";
 
 
         //* 2) Insert log records into the ws_user DB table --> Log Helper needs to be implemented and tested before this
@@ -63,7 +63,7 @@ class LoggingMiddleware implements MiddlewareInterface
         // //        dd($responseBody);
         if (is_array($body)) {
             $bodyArray = isset($body[0]) ? $body[0] : "";
-            $email = $bodyArray["email"];
+            // $email = $bodyArray["email"];
         }
 
         // $data = [
@@ -100,7 +100,7 @@ class LoggingMiddleware implements MiddlewareInterface
 
 
         $logData = [
-            'email' => $email,
+            //  'email' => $email,
             'user_action' => $user_action,
             'user_id' => $user_id
         ];

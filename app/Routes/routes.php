@@ -19,17 +19,25 @@ use App\Middleware\LoggingMiddleware;
 use Slim\Routing\RouteCollectorProxy;
 
 
-return static function (Slim\App $app): void {
+return static function (Slim\App $app, array $settings): void {
+    // Create middleware instances directly in routes file
+    $authMiddleware = new AuthMiddleware($settings['jwt_key']);
+    $adminMiddleware = new AdminMiddleware();
 
     //? --------------------
     //? PUBLIC ROUTES
     //? --------------------
 
-    $app->post('/register', [UserController::class, 'handleCreateRegister']);
-    $app->post('/login', [UserController::class, 'handleUserLogin']);
-    $app->get('/', [AboutController::class, 'handleAboutWebService']);
-    $app->post("/calorie", [CalculatorController::class, 'handleCalculateCalories']);
-    $app->post("/fiber", [CalculatorController::class, 'handleCalculateFiber']);
+    $app->group('', function (RouteCollectorProxy $group) {
+        $group->get('/', [AboutController::class, 'handleAboutWebService']);
+
+        $group->post('/register', [UserController::class, 'handleCreateRegister']);
+        $group->post('/login', [UserController::class, 'handleUserLogin']);
+
+        $group->post("/calorie", [CalculatorController::class, 'handleCalculateCalories']);
+        $group->post("/fiber", [CalculatorController::class, 'handleCalculateFiber']);
+    });
+
 
     //? --------------------
     //? SHARED ROUTES
@@ -58,8 +66,7 @@ return static function (Slim\App $app): void {
 
         //? == Composite resource -- TheMealDBAPI
         $group->get('/recipes/product/{product_id}', [RecipesController::class, 'handleGetRecipesByProduct']);
-        
-    })->add($app->getContainer()->get(AuthMiddleware::class));
+    })->add($authMiddleware);
 
     //? --------------------
     //? ADMIN-ONLY ROUTES (POST/PUT/DELETE)
@@ -84,8 +91,7 @@ return static function (Slim\App $app): void {
         $group->post('/allergens', [AllergensController::class, 'handleCreateAllergens']);
         $group->put('/allergens/{allergen_id}', [AllergensController::class, 'handleUpdateAllergen']);
         $group->delete('/allergens', [AllergensController::class, 'handleDeleteAllergen']);
-    })->add(AdminMiddleware::class)
-        ->add($app->getContainer()->get(AuthMiddleware::class));
+    })->add($adminMiddleware)->add($authMiddleware);
 
     // Ping route
     $app->get('/ping', function (Request $request, Response $response) {

@@ -46,7 +46,7 @@ class UserService
 
         );
         //! RETRURN RIGHT AWAY AS SOON AS YOU DETECT ANY INVALID INPUTS
-       // echo "2 goes HERE";
+        // echo "2 goes HERE";
 
         //TODO: 2) Insert the resource into the DB table
         //* We can use an array and using the first 1 so we can make our lives easier
@@ -56,7 +56,7 @@ class UserService
 
         //todo: check is an existing user is in there
         if ($this->user_model->userExistsByEmail($new_user_data['email'])) {
-            echo "   WTF   ";
+            // echo "   WTF   ";
             return Result::failure("A user with this email already exists.");
         }
 
@@ -74,7 +74,7 @@ class UserService
         $new_user_data['password'] = $this->cryptPassword($new_user_data['password']);
         // echo $new_user_data;
         $last_inserted_id =  $this->user_model->createUser($new_user_data); //
-        echo " 3 goes HERE ";
+        // echo " 3 goes HERE ";
 
         return Result::success("The new user has been created successfully!", $last_inserted_id);
     }
@@ -108,6 +108,4 @@ class UserService
         //? Step 5) Return successful authentication information
         return Result::success("Authentication successful", $userData);
     }
-
-
 }

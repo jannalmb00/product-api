@@ -29,12 +29,12 @@ $definitions = [
         //$app->setBasePath('/slim-template');
         //echo APP_BASE_PATH;exit;
         $app->setBasePath('/' . APP_ROOT_DIR);
-
+        $settings = $container->get(AppSettings::class)->get();
         // Register routes
-        (require_once realpath(__DIR__ . '/../Routes/routes.php'))($app);
+        (require_once realpath(__DIR__ . '/../Routes/routes.php'))($app, $settings);
 
         // Register middleware
-        (require_once realpath(__DIR__ . '/middleware.php'))($app);
+        (require_once realpath(__DIR__ . '/middleware.php'))($app, $settings);
 
         return $app;
     },
@@ -59,17 +59,17 @@ $definitions = [
         return $container->get(Psr17Factory::class);
     },
 
-    // Adding the auth dependency injection via factory in container because it allows for flexible and organized way of retrieving the key under App Settings
-    AuthMiddleware::class => function (ContainerInterface $container) {
-        $settings = $container->get(AppSettings::class);
-        $jwtKey = $settings->get('jwt_key');
-        return new AuthMiddleware($jwtKey);
-    },
+    // // Adding the auth dependency injection via factory in container because it allows for flexible and organized way of retrieving the key under App Settings
+    // AuthMiddleware::class => function (ContainerInterface $container) {
+    //     $settings = $container->get(AppSettings::class);
+    //     $jwtKey = $settings->get('jwt_key');
+    //     return new AuthMiddleware($jwtKey);
+    // },
 
-    // Adding admin middleware
-    AdminMiddleware::class => function () {
-        return new AdminMiddleware();
-    },
+    // // Adding admin middleware
+    // AdminMiddleware::class => function () {
+    //     return new AdminMiddleware();
+    // },
 
     // The Slim RouterParser
     RouteParserInterface::class => function (ContainerInterface $container) {
