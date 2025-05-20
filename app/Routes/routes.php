@@ -33,6 +33,8 @@ return static function (Slim\App $app): void {
     $app->post("/calorie", [CalculatorController::class, 'handleCalculateCalories']);
     $app->post("/fiber", [CalculatorController::class, 'handleCalculateFiber']);
 
+    $app->get("/cocktail_category",[CompositeController::class, 'handleGetCocktailsCategories']);
+
     //*ROUTE:GET /coffee-info
     //$app->$get("/coffee_category", [CompositeController::class, 'handleGetCoffeeCategory']);
 
