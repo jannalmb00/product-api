@@ -136,4 +136,63 @@ class CalculatorModel extends BaseModel
 
         return $result;
     }
+
+    function calculateBMI(array $data)
+    {
+        // Validate inputs
+        $rules = array(
+            'gender' => [
+                'required',
+                ['in', ['female', 'male']]
+            ],
+            'weight_kg' => [
+                'required',
+                'numeric'
+            ],
+            'height_cm' => [
+                'required',
+                'numeric'
+            ]
+        );
+
+        $validator = new Validator($data, [], 'en');
+        $validator->mapFieldsRules($rules);
+
+        if (!$validator->validate()) {
+            return [
+                'success' => false,
+                'message' => 'Invalid inputs. Please check inputs.',
+                'errors' => $validator->errors()
+            ];
+        }
+
+        // convert height from cm to m
+        $height_m = $data["height_cm"] / 100;
+        $weight = $data["weight_kg"];
+
+        // bmi calculation
+        $bmi = $weight / ($height_m ** 2);
+        $bmi = round($bmi, 2);
+
+        // bmi range
+        if ($bmi < 18.5) {
+            $category = 'Underweight';
+        } elseif ($bmi < 25) {
+            $category = 'Normal weight';
+        } elseif ($bmi < 30) {
+            $category = 'Overweight';
+        } elseif ($bmi <= 35) {
+            $category = 'Obese';
+        } else {
+            $category = 'Severely Obese';
+        }
+
+        // Prepare result
+        $result = [
+            'bmi' => $bmi,
+            'category' => $category
+        ];
+
+        return $result;
+    }
 }

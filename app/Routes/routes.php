@@ -31,11 +31,13 @@ return static function (Slim\App $app): void {
     $app->get('/', [AboutController::class, 'handleAboutWebService']);
     $app->post("/calorie", [CalculatorController::class, 'handleCalculateCalories']);
     $app->post("/fiber", [CalculatorController::class, 'handleCalculateFiber']);
+    $app->post("/bmi", [CalculatorController::class, 'handleCalculateBMI']);
+
 
     //*ROUTE:GET /coffee-info
     //$app->$get("/coffee_category", [CompositeController::class, 'handleGetCoffeeCategory']);
 
-    // *ROUTE:GET /coffee-info
+    // *ROUTE:GET /fruit-info
     $app->get("/fruit_information/{fruit_name}", [CompositeController::class, 'handleGetFruitInformation']);
 
     //? --------- PROTECTED ROUTES ------
