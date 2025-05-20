@@ -21,6 +21,12 @@ class AuthMiddleware implements MiddlewareInterface
     }
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+
+        $uri = $request->getUri()->getPath();
+        //echo $uri;
+        if ($uri === '/product-api/register' ||  $uri === '/product-api/login') {
+            return $handler->handle($request);
+        }
         $authHeader = $request->getHeaderLine('Authorization');
 
         if (empty($authHeader) || !str_starts_with($authHeader, 'Bearer ')) {
@@ -29,9 +35,12 @@ class AuthMiddleware implements MiddlewareInterface
 
         $token = trim(str_replace('Bearer', '', $authHeader));
 
+        //echo "JWT KEY IN MIDDLEWARE" . $this->jwtKey;
+
         try {
             //decode
             $decoded = JWT::decode($token, new Key($this->jwtKey, 'HS256'));
+            //  var_dump($this->jwtKey);
             // dd($token);
             $request = $request->withAttribute('jwt', (array)$decoded);
             return $handler->handle($request);

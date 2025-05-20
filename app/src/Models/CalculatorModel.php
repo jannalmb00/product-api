@@ -11,7 +11,6 @@ class CalculatorModel extends BaseModel
     function calculateCalories(array $data)
     {
         //TODO: validate inputs first
-
         $rules = array(
             'gender' => [
                 'required',
@@ -42,7 +41,7 @@ class CalculatorModel extends BaseModel
         if (!$validator->validate()) {
             return [
                 'success' => false,
-                'message' => 'Invalid inputs',
+                'message' => 'Invalid inputs. Please check inputs.',
                 'errors' => $validator->errors()
             ];
         }
@@ -60,7 +59,7 @@ class CalculatorModel extends BaseModel
         if ($gender == 'female') {
             // echo "female";
             $bmr = 10 * $weight + 6.25 * $height - 5 * $age - 161;
-           // echo $bmr;
+            // echo $bmr;
         } else {
             $bmr = 10 * $weight + 6.25 * $height - 5 * $age + 5;
         }
@@ -90,13 +89,51 @@ class CalculatorModel extends BaseModel
             'bmr' => round($bmr, 2),
             'tdee' => round($tdee, 2),
             'unit' => 'kcal/day'
-
         ];
 
         //retur
 
 
         //TODO: return result
+        return $result;
+    }
+
+    function calculateFiberIntake(array $data)
+    {
+        // Validate inputs
+        $rules = array(
+            'daily_calories' => [
+                'required',
+                'numeric',
+            ]
+        );
+
+        $validator = new Validator($data, [], 'en');
+        $validator->mapFieldsRules($rules);
+
+        if (!$validator->validate()) {
+            return [
+                'success' => false,
+                'message' => 'Invalid inputs. Please check inputs.',
+                'errors' => $validator->errors()
+            ];
+        }
+
+        $dailyCalories = $data['daily_calories']; // Fetch input
+
+        // daily_calories / 1000 * 14g / https://www.omnicalculator.com/health/fiber
+        $recommendedFiberIntake = ($dailyCalories / 1000) * 14;
+
+        // Prepare result
+        $result = [
+            'daily_calories' => $dailyCalories,
+            'recommended_fiber_intake' => [
+                'value' => round($recommendedFiberIntake, 1),
+                'unit' => 'g/day'
+            ],
+            'formula_used' => 'daily_calories / 1000 * 14g'
+        ];
+
         return $result;
     }
 }

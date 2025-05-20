@@ -111,20 +111,10 @@ class UserController extends BaseController
         }
 
         if (!is_array($users_data) || count($users_data) !== 1) {
-            throw new HttpBadRequestException($request, "Invalid data format, expected an array with a single user object");
+            throw new HttpBadRequestException($request, "Invalid data format, expected an array with a single user");
         }
 
         $user_data = $users_data[0]; // 1st user obj from array
-
-        // // //? Step 3) User data
-        // if (!isset($user_data['email']) || !isset($user_data['password'])) {
-        //     throw new HttpInvalidInputException(
-        //         $request,
-        //         "Please input email and password!"
-        //     );
-        // }
-
-
 
         //? Step 4) Authenticate user
         try {
