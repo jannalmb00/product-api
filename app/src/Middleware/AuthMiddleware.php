@@ -41,11 +41,13 @@ class AuthMiddleware implements MiddlewareInterface
             //decode
             $decoded = JWT::decode($token, new Key($this->jwtKey, 'HS256'));
             //  var_dump($this->jwtKey);
-            // dd($token);
             $request = $request->withAttribute('jwt', (array)$decoded);
+
             return $handler->handle($request);
         } catch (\Exception $e) {
             //unauthorized
+            error_log('AuthMiddleware threw: ' . $e->getMessage());
+
             throw new HttpUnauthorizedException($request, "Invalid or expired token");
         }
     }

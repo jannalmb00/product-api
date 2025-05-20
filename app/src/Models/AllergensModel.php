@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Exceptions\HttpNoContentException;
+
 /**
  *
  * Allergen model handles data related to allergns in the system
@@ -19,7 +21,7 @@ class AllergensModel extends BaseModel
     {
         //? FOR FILTERING
         $filters_map = [];
-
+//dd($filters);
         $sql = "SELECT * FROM allergens a WHERE 1";
 
         // //? 1: FILTERING - CHECK THE DATA TYPE

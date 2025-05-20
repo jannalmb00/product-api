@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Exceptions\HttpForbiddenException;
+use App\Exceptions\HttpNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Exception\HttpBadRequestException;
@@ -56,6 +58,7 @@ class CompositeController extends BaseController
         //* paginate -- function from base controller
         $info = $this->pagination($filters, $this->composite_model, [$this->composite_model, 'getProducts'], $request);
 
+
         if ($info["data"] == false) {
             //! no matching record in the db
             throw new HttpNoContentException($request, "Request successful. No product in the record.");
@@ -66,9 +69,6 @@ class CompositeController extends BaseController
 
     public function handleGetFruitInformation(Request $request, Response $response, array $uri_args): Response
     {
-        //*Filters
-
-        $filters = $request->getQueryParams();
 
         if (!isset($uri_args['fruit_name'])) {
             throw new HttpInvalidInputException($request, "Fruit name is required in the URI");
@@ -104,33 +104,40 @@ class CompositeController extends BaseController
             $api_request = $this->http_client->request('GET', "https://www.fruityvice.com/api/fruit/{$name}");
 
             // Fetch the fruit from the composite resource (Fruit API)
-            $content = $api_request->getBody()->getContents();
+            $api_content = $api_request->getBody()->getContents();
 
-          //  dd($content);
-
-            $content = json_decode($content, true);
-
-            // Fetch the allergen of a fruit from the db
-            $allergen_information = $this->allergens_model->getAllergens($filters);
-
-            //* If no meals found
-            // if (!isset($meals['meals']) || $meals['meals'] === null) {
-            //     throw new HttpNoContentException($request, "No recipes found for ingredient: $ingredient");
-            // }
+            // fruit info from composite resource
+            $fruit_data = json_decode($api_content, true);
         } catch (GuzzleException $e) {
-            throw new HttpNoContentException($request, "Error fetching fruits: " . $e->getMessage());
+            throw new HttpNotFoundException($request, "Error fetching fruits: " . $e->getMessage());
         }
 
-
-        //* paginate -- function from base controller
-        $info = $this->pagination($filters, $this->composite_model, [$this->composite_model, 'getProducts'], $request);
-
-        if ($info["data"] == false) {
-            //! no matching record in the db
-            throw new HttpNoContentException($request, "Request successful. No product in the record.");
+        // Checks if fruit data exists --
+        if (!isset($fruit_data["name"])) {
+            throw new HttpNotFoundException($request, "No information found for fruit: {$name}");
         }
 
-        //   return $this->renderJson($response, $info);
-        return $this->renderJson($response, $info);
+        $filter = ["food_item" => $name];
+
+
+        // Fetch the allergen of a fruit from the db
+        $allergen_data["allergen"] =
+            $this->allergens_model->getAllergens($filter);
+
+        $allergen_info = $allergen_data["allergen"];
+
+        if (empty($allergen_info["data"])) {
+            throw new HttpNotFoundException($request, "No allergen found for that fruit in the database");
+        }
+
+        // extracted allergen data, without pagination
+        //* Prepare response
+        $result = [
+            'allergen' => $allergen_info["data"],
+            'fruit' => $fruit_data
+        ];
+
+
+        return $this->renderJson($response, $result);
     }
 }
