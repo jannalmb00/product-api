@@ -37,6 +37,8 @@ return static function (Slim\App $app, array $settings): void {
     $app->post("/bmi", [CalculatorController::class, 'handleCalculateBMI']);
 
 
+    $app->get("/cocktail_category", [CompositeController::class, 'handleGetCocktailsCategories']);
+
     //*ROUTE:GET /coffee-info
     //$app->$get("/coffee_category", [CompositeController::class, 'handleGetCoffeeCategory']);
 
@@ -70,7 +72,13 @@ return static function (Slim\App $app, array $settings): void {
 
         //? == Composite resource -- TheMealDBAPI
         $group->get('/recipes/product/{product_id}', [RecipesController::class, 'handleGetRecipesByProduct']);
+        $group->post('/cocktail', [CompositeController::class, 'handleGetCocktailByName']);
+        /**
+         * So i sesearch yung name nung cocktail then sa ingrdients use ingredient table to give more details slay!!!!!
+         */
+
     })->add($authMiddleware);
+
 
     $app->group('', function (RouteCollectorProxy $group) {
         $group->post('/users', [UserController::class, 'createUser']);

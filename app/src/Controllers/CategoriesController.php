@@ -64,7 +64,7 @@ class CategoriesController extends BaseController
             return  $this->renderJson($response, $payload, 201);
         } else {
             // If unsuccessful, throw exception
-            throw new HttpBadRequestException($request, $result->getMessage(), $result->getErrors());
+            throw new HttpBadRequestException($request, $result->getMessage());
         }
 
 
@@ -300,7 +300,7 @@ class CategoriesController extends BaseController
         $regex_id = '/^C-\d{4,5}$/';
 
 
-         $this->validateFilterIds($filters, $regex_id, 'id', "Provided category ID is invalid.Invalid Category ID input!", $request);
+        $this->validateFilterIds($filters, $regex_id, 'id', "Provided category ID is invalid.Invalid Category ID input!", $request);
 
 
         //* Validate string parameters if they are provided

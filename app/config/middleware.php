@@ -21,7 +21,7 @@ return function (App $app) {
 
     $app->addBodyParsingMiddleware();
     //* Logging middleware
-    //$app->add(LoggingMiddleware::class);
+    $app->add(LoggingMiddleware::class);
 
     $app->add(ContentNegotiationMiddleware::class);
 
