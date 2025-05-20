@@ -35,6 +35,9 @@ return static function (Slim\App $app): void {
     //*ROUTE:GET /coffee-info
     //$app->$get("/coffee_category", [CompositeController::class, 'handleGetCoffeeCategory']);
 
+    // *ROUTE:GET /coffee-info
+    $app->get("/fruit_information/{fruit_name}", [CompositeController::class, 'handleGetFruitInformation']);
+
     //? --------- PROTECTED ROUTES ------
     //! All the GET methods
 

@@ -21,7 +21,7 @@ class LoggingErrorHandler extends ErrorHandler
         );
     }
     /**
-     * 
+     *
      */
     protected function respond(): ResponseInterface
     {
@@ -39,7 +39,9 @@ class LoggingErrorHandler extends ErrorHandler
         ];
 
         // Create response and write to json
-        $response = $this->responseFactory->createResponse(500);
+        $response = $this->responseFactory->createResponse(
+            $exception->getCode()
+        );
         $response->getBody()->write(json_encode($payload, JSON_UNESCAPED_SLASHES));
 
         return $response

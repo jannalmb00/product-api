@@ -80,7 +80,7 @@ abstract class BaseModel
             }
             $stmt->execute();
         } else {
-     //       dd($stmt);
+            //       dd($stmt);
             $stmt->execute($args);
         }
         return $stmt;
@@ -301,7 +301,7 @@ abstract class BaseModel
     //! PREPARE SQL FOR STRING
     public function prepareStringSQL(array $filters, string $filterKey, string $toFilter): array
     {
-       // dd($filters);
+        // dd($filters);
         //FIlter check here
         if (isset($filters[$filterKey])) {
 
@@ -318,15 +318,17 @@ abstract class BaseModel
                 $sql = " AND c.category_type LIKE CONCAT(:category_type, '%')";
             } else if ($filterKey == 'allergen_name') {
                 $sql = " AND a.allergen_name LIKE CONCAT(:allergen_name, '%')";
-            }else if ($filterKey == 'food_group') {
+            } else if ($filterKey == 'food_group') {
                 $sql = " AND a.food_group LIKE CONCAT(:food_group, '%')";
-            }else if ($filterKey == 'food_origin') {
+            } else if ($filterKey == 'food_origin') {
                 $sql = " AND a.food_origin LIKE CONCAT(:food_origin, '%')";
-            }else if ($filterKey == 'allergen_reaction_type') {
+            } else if ($filterKey == 'allergen_reaction_type') {
                 $sql = " AND a.allergen_reaction_type LIKE CONCAT(:allergen_reaction_type, '%')";
-            }else if ($filterKey == 'food_type') {
+            } else if ($filterKey == 'food_type') {
                 $sql = " AND a.food_type LIKE CONCAT(:food_type, '%')";
-            }else {
+            } else if ($filterKey == 'food_item') {
+                $sql = " AND a.food_item LIKE CONCAT(:food_item, '%')";
+            } else {
                 $sql = " AND p.$toFilter LIKE CONCAT(:$toFilter, '%')";
             }
             //$filters_map["given_name"] = $filters['given_name'];
