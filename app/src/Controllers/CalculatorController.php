@@ -60,4 +60,21 @@ class CalculatorController extends BaseController
 
         return $this->renderJson($response, $result);
     }
+
+    public function handleCalculateBMI(Request $request, Response $response): Response
+    {
+        $data = $request->getParsedBody();
+
+        if (empty($data) || !isset($data[0])) {
+            throw new HttpBadRequestException($request, "Data passed is empty");
+        }
+
+        $result = $this->calculator_model->calculateBMI($data[0]);
+
+        if (empty($result)) {
+            throw new HttpNoContentException($request, "Empty result");
+        }
+
+        return $this->renderJson($response, $result);
+    }
 }

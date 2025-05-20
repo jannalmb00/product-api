@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Exceptions\HttpForbiddenException;
+use App\Exceptions\HttpNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Exceptions\HttpInvalidInputException;
@@ -42,7 +44,7 @@ class AllergensController extends BaseController
     {
         //*Filters
         $filters = $request->getQueryParams();
-    //   dd($filters);
+        //   dd($filters);
 
         // //? Validation & exception handling of filter parameters
         //* Validating if filter input are string
@@ -62,10 +64,14 @@ class AllergensController extends BaseController
         $info = $this->pagination($filters, $this->allergens_model, [$this->allergens_model, 'getAllergens'], $request);
 
         //! VALIDATION
-        if ($info["data"] == false) {
-            //! no matching record in the db
-            throw new HttpNoContentException($request, "Request successful. No product in the record.");
+        if (empty($info["data"])) {
+         //   dd('Throwing HttpNoContentException now');
+
+            // throw new HttpNoContentException($request, "Request successful. No product in the record.");
+            return $response->withStatus(204);
+
         }
+
 
         return $this->renderJson($response, $info);
     }

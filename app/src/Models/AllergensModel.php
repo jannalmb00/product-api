@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Exceptions\HttpNoContentException;
+
 /**
  *
  * Allergen model handles data related to allergns in the system
@@ -19,12 +21,12 @@ class AllergensModel extends BaseModel
     {
         //? FOR FILTERING
         $filters_map = [];
-
+//dd($filters);
         $sql = "SELECT * FROM allergens a WHERE 1";
 
         // //? 1: FILTERING - CHECK THE DATA TYPE
         //Define filters
-        $stringToFilter = ['allergen_name', 'allergen_reaction_type ', 'food_group', 'food_origin', 'food_type'];
+        $stringToFilter = ['allergen_name', 'allergen_reaction_type ', 'food_group', 'food_origin', 'food_type', 'food_item'];
 
         // Loop: making string filters shorter
         foreach ($stringToFilter as $filterField) {
@@ -41,17 +43,17 @@ class AllergensModel extends BaseModel
                 // Adds filter to the map
                 $filters_map[$filterField] = $filterResult['value'];
 
-               // dd($filters_map);
+                // dd($filters_map);
                 // Adds filtered sql to base sql statement
                 $sql .= $filterResult['sqlPart'];
             }
         }
 
         //? Sorting
-        $approved_ordering = ['allergen_name', 'allergen_reaction_type ', 'food_group', 'food_origin', 'food_type'];
+        $approved_ordering = ['allergen_name', 'allergen_reaction_type ', 'food_group', 'food_origin', 'food_type', 'food_item'];
         $sql = $this->sortAndOrder($filters, 'allergen_id',  $approved_ordering, $sql);
 
-     //   dd($sql);
+        //   dd($sql);
         //? PAGINATE
         return $this->paginate($sql, $filters_map);
     }

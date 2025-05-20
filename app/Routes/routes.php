@@ -17,7 +17,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\AdminMiddleware as AdminMiddleware;
-use App\Middleware\LoggingMiddleware;
 use Slim\Routing\RouteCollectorProxy;
 
 
@@ -30,19 +29,19 @@ return static function (Slim\App $app, array $settings): void {
     //? PUBLIC ROUTES
     //? --------------------
 
-    $app->group('', function (RouteCollectorProxy $group) {
-        $group->get('/', [AboutController::class, 'handleAboutWebService']);
-
-        $group->post('/register', [UserController::class, 'handleCreateRegister']);
-        $group->post('/login', [UserController::class, 'handleUserLogin']);
-
-        $group->post("/calorie", [CalculatorController::class, 'handleCalculateCalories']);
-        $group->post("/fiber", [CalculatorController::class, 'handleCalculateFiber']);
-    });
+    $app->post('/register', [UserController::class, 'handleCreateRegister']);
+    $app->post('/login', [UserController::class, 'handleUserLogin']);
+    $app->get('/', [AboutController::class, 'handleAboutWebService']);
+    $app->post("/calorie", [CalculatorController::class, 'handleCalculateCalories']);
+    $app->post("/fiber", [CalculatorController::class, 'handleCalculateFiber']);
+    $app->post("/bmi", [CalculatorController::class, 'handleCalculateBMI']);
 
 
     //*ROUTE:GET /coffee-info
     //$app->$get("/coffee_category", [CompositeController::class, 'handleGetCoffeeCategory']);
+
+    // *ROUTE:GET /fruit-info
+    $app->get("/fruit_information/{fruit_name}", [CompositeController::class, 'handleGetFruitInformation']);
 
     //? --------- PROTECTED ROUTES ------
     //! All the GET methods
