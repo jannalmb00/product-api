@@ -11,7 +11,6 @@ class UserModel extends BaseModel
      */
     function createUser(array $new_user): mixed
     {
-
         $last_id = $this->insert("ws_users", $new_user);
         return $last_id;
     }

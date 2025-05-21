@@ -19,7 +19,8 @@ class AccessModel extends BaseModel
     // Log records must include information about the acc used to access the resource, IP address, resource URI HTTP method used date and time, etc.
 
     public function insertLog(array $logData): mixed
-    {
+    {  //        echo "7 GOES HERE";
+
         if (!isset($logData['logged_at'])) {
             $logData['logged_at'] = DateTimeHelper::now(DateTimeHelper::Y_M_D_H_M_S);
             //  dd( $logData['logged_at'] );

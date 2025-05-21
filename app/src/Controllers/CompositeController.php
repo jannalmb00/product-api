@@ -18,23 +18,24 @@ class CompositeController extends BaseController
 {
 
     private AllergensModel $allergens_model;
+    private CategoriesModel $categories_model;
     private Client $http_client;
 
 
-    public function __construct(protected AppSettings $appSettings, private CompositeModel $composite_model, AllergensModel $allergens_model) // replace the reference to a service, and the service will have a reference to the model
+    public function __construct(protected AppSettings $appSettings, private CategoriesModel $categories_model, AllergensModel $allergens_model) // replace the reference to a service, and the service will have a reference to the model
     {
         //To initialize the validator
         parent::__construct();
 
         // For Fruit composite resource
         $this->allergens_model = $allergens_model;
-        // Guzzle client
+        $this->categories_model = $categories_model;
         $this->http_client = new Client();
     }
 
-
-    public function handleGetCoffeeCategory(Request $request, Response $response): Response
+    public function handleGetCocktailsCategories(Request $request, Response $response, array $uri_args): Response
     {
+
         //*Filters
         $filters = $request->getQueryParams();
 
@@ -44,18 +45,60 @@ class CompositeController extends BaseController
         // You can, use the valitron -> ascii
 
         //* Validating if input are string
+        //dd($filters);
 
 
-        //* paginate -- function from base controller
-        $info = $this->pagination($filters, $this->composite_model, [$this->composite_model, 'getProducts'], $request);
+        $name = $filters['name'] ?? '';
 
-
-        if ($info["data"] == false) {
-            //! no matching record in the db
-            throw new HttpNoContentException($request, "Request successful. No product in the record.");
+        if (empty($name)) {
+            throw new HttpBadRequestException($request, "Should input name of the an alcohol");
         }
 
-        return $this->renderJson($response, $info);
+
+        try {
+            $api_response = $this->http_client->request('GET', 'https://www.thecocktaildb.com/api/json/v1/1/search.php', ['query' => ['s' => $name]]);
+
+            $content = json_decode($api_response->getBody()->getContents(), true);
+            //dd($content);
+
+            $drinks = $content['drinks'] ?? [];
+
+            if (empty($drinks)) {
+                throw new HttpNoContentException($request, "No cocktail found in The CocktailDB for " . $name . "");
+            }
+
+            $result = [];
+
+
+            foreach ($drinks as $drink) {
+                $strCategory = $drink['strCategory'] ?? null;
+
+                if ($strCategory) {
+                    $filters['category_name'] = $strCategory;
+                    $categories_info = $this->pagination($filters, $this->categories_model, [$this->categories_model, 'getCategories'], $request);
+
+                    if (!empty($categories_info['data'])) {
+                        $category = $categories_info['data'][0];
+                    } else {
+                        $category = null;
+                    }
+                }
+
+                $result[] = [
+                    'idDrink' => $drink['idDrink'],
+                    'strDrink' => $drink['strDrink'],
+                    'strTags' => $drink['strTags'],
+                    'strCategory' => $strCategory,
+                    'categoryDetails' => $category,
+                    'strInstructions' => $drink['strInstructions'],
+                    'strDrinkThumb' => $drink['strDrinkThumb'],
+                ];
+            }
+
+            return $this->renderJson($response, $result);
+        } catch (GuzzleException $e) {
+            throw new Exception("Failed to fetchh data from The CocktailDB", $e->getMessage());
+        }
     }
 
     public function handleGetFruitInformation(Request $request, Response $response, array $uri_args): Response

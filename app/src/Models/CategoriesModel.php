@@ -10,26 +10,35 @@ namespace App\Models;
 class CategoriesModel extends BaseModel
 {
 
-    /**
-     * Insert a new category from the base model insert method
-     *
-     * @param array $new_category refers to the new category data
-     * @return mixed refers to the id of the inserted category
-     */
     public function insertNewCategory(array $new_category): mixed
     {
+        // increments the product_id
+        $sql = "SELECT category_id FROM categories ORDER BY key_id DESC LIMIT 1";
+        $lastCatId = $this->fetchSingle($sql);
+
+        if ($lastCatId != null) {
+            //  dd($lastCatId['category_id']);
+
+            if (preg_match('/C-(\d+)/', $lastCatId['category_id'], $matches)) { {
+                    //       dd($lastCatId['product_id']);
+
+                    // convert last digits to int
+                    $lastCatNumber = (int) $matches[1];
+                    $nextCatNumber = $lastCatNumber + 1;
+                    $nextCatId = 'C-' . sprintf("%04d", $nextCatNumber);
+                }
+            }
+        }
+
+
+        // add product id to array
+        $new_category['category_id'] = $nextCatId;
         // From base model , pass table name, array conatining key value pairs
         $last_id = $this->insert('categories', $new_category);
 
         return $last_id;
     }
 
-    /**
-     * Update a new category
-     *
-     * @param array $update_category_data refers to the new category data
-     * @return int refers to the number of rows affected
-     */
     public function updateCategory(array $update_category_data): mixed
     {
         // From base model , pass table name, array conatining key value pairs
@@ -38,11 +47,8 @@ class CategoriesModel extends BaseModel
         //dd(is_array($update_category_data));
 
         $category_id_data = $update_category_data["category_id"];
-        // dd($category_id_data);
-
 
         unset($update_category_data["category_id"]);
-        // dd($update_category_data);
 
         //for update
         $last_id = $this->update('categories', $update_category_data, ["category_id" => $category_id_data]);
@@ -51,12 +57,6 @@ class CategoriesModel extends BaseModel
         return $last_id;
     }
 
-    /**
-     * Deletes a category
-     *
-     * @param string $category_id refers to the deleted category data
-     * @return int refers to the number of rows affected
-     */
     function deleteCategory(string $category_id): int
     {
         return $this->delete('categories', ["category_id" => $category_id]);
@@ -75,8 +75,8 @@ class CategoriesModel extends BaseModel
         $filters_map = [];
 
         $sql = "SELECT c.*, pc.category_name AS parent_category_name
-                FROM category c
-                LEFT JOIN category pc ON c.parent_category_id = pc.category_id
+                FROM categories c
+                LEFT JOIN categories pc ON c.parent_category_id = pc.category_id
                 WHERE 1";
 
         // JOIN category pc ON c.category_id = pc.parent_category_id, , pc.category_name as parent_category_name
@@ -92,7 +92,6 @@ class CategoriesModel extends BaseModel
             // Call the prepareStringSQL function for each field
             //map of valid filters, current filter
             $filterResult = $this->prepareStringSQL($filters, $filterField, $filterField);
-
 
             // Check if sqlPart is not empty, meaning there is a filter for that
             if (!empty($filterResult['sqlPart'])) {
@@ -124,7 +123,7 @@ class CategoriesModel extends BaseModel
     public function getCategoryById(array $filter): mixed
     {
         //Sends the id, table name, column name
-        $result = $this->prepareIdSQL($filter['id'], 'category', 'category_id');
+        $result = $this->prepareIdSQL($filter['id'], 'categories', 'category_id');
 
         //? PAGINATE
         return $this->paginate($result['sqlPart'], $result[0]);
@@ -151,7 +150,7 @@ class CategoriesModel extends BaseModel
         $sql = "SELECT DISTINCT c.category_id, c.category_name, b.*, c.*
             FROM brands b
             JOIN products p ON b.brand_id = p.brand_id
-            LEFT JOIN category c ON p.category_id = c.category_id
+            LEFT JOIN categories c ON p.category_id = c.category_id
             WHERE p.category_id = :category_id";
 
         //Provide the filters that we can accept ... I am not sure if we need filters for sub-collection resource but I will add just in case

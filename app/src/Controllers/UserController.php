@@ -51,12 +51,11 @@ class UserController extends BaseController
 
         $user_data = $users_data[0];
 
-        // Call service to validate inputs and do create
         $result = $this->user_service->createUser($user_data);
 
         //* Dont forget to identify the outcome of the operations: success vs failure
         if ($result->isSuccess()) {
-            echo "SUCCESS";
+            // echo "SUCCESS";
             // Operation success
             $payload = [
                 'status' => 'success',

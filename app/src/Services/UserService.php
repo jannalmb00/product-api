@@ -55,7 +55,7 @@ class UserService
 
         //todo: check if an existing user is in there
         if ($this->user_model->userExistsByEmail($new_user_data['email'])) {
-
+            // echo "   WTF   ";
             return Result::failure("A user with this email already exists.");
         }
 

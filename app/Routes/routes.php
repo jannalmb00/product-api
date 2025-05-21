@@ -20,7 +20,10 @@ use App\Middleware\AdminMiddleware as AdminMiddleware;
 use Slim\Routing\RouteCollectorProxy;
 
 
-return static function (Slim\App $app): void {
+return static function (Slim\App $app, array $settings): void {
+    // Create middleware instances directly in routes file
+    $authMiddleware = new AuthMiddleware($settings['jwt_key']);
+    $adminMiddleware = new AdminMiddleware();
 
     //? --------------------
     //? PUBLIC ROUTES
@@ -33,6 +36,8 @@ return static function (Slim\App $app): void {
     $app->post("/fiber", [CalculatorController::class, 'handleCalculateFiber']);
     $app->post("/bmi", [CalculatorController::class, 'handleCalculateBMI']);
 
+
+    $app->get("/cocktail_category", [CompositeController::class, 'handleGetCocktailsCategories']);
 
     //*ROUTE:GET /coffee-info
     //$app->$get("/coffee_category", [CompositeController::class, 'handleGetCoffeeCategory']);
@@ -61,13 +66,19 @@ return static function (Slim\App $app): void {
         $group->get('/allergens/{allergen_id}/ingredients', [AllergensController::class, 'handleGetIngredientsByAllergen']);
 
         //? -- Shared --
-        $group->get('/admin/products', [ProductsController::class, 'handleGetProducts']);
-        $group->get('/admin/categories', [CategoriesController::class, 'handleGetCategories']);
-        $group->get('/admin/allergens', [AllergensController::class, 'handleGetAllergens']);
+        // $group->get('/admin/products', [ProductsController::class, 'handleGetProducts']);
+        // $group->get('/admin/categories', [CategoriesController::class, 'handleGetCategories']);
+        // $group->get('/admin/allergens', [AllergensController::class, 'handleGetAllergens']);
 
         //? == Composite resource -- TheMealDBAPI
         $group->get('/recipes/product/{product_id}', [RecipesController::class, 'handleGetRecipesByProduct']);
-    })->add($app->getContainer()->get(AuthMiddleware::class));
+        $group->post('/cocktail', [CompositeController::class, 'handleGetCocktailByName']);
+        /**
+         * So i sesearch yung name nung cocktail then sa ingrdients use ingredient table to give more details slay!!!!!
+         */
+
+    })->add($authMiddleware);
+
 
     $app->group('', function (RouteCollectorProxy $group) {
         $group->post('/users', [UserController::class, 'createUser']);
@@ -88,8 +99,7 @@ return static function (Slim\App $app): void {
         $group->post('/allergens', [AllergensController::class, 'handleCreateAllergens']);
         $group->put('/allergens/{allergen_id}', [AllergensController::class, 'handleUpdateAllergen']);
         $group->delete('/allergens', [AllergensController::class, 'handleDeleteAllergen']);
-    })->add(AdminMiddleware::class)
-        ->add($app->getContainer()->get(AuthMiddleware::class));
+    })->add($adminMiddleware)->add($authMiddleware);
 
     // Ping route
     $app->get('/ping', function (Request $request, Response $response) {

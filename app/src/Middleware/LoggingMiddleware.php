@@ -63,7 +63,7 @@ class LoggingMiddleware implements MiddlewareInterface
         // Prepare details to add to db
         if (is_array($body)) {
             $bodyArray = isset($body[0]) ? $body[0] : "";
-            $email = $bodyArray["email"];
+            // $email = $bodyArray["email"];
         }
 
         $user_action = $request->getMethod() . ' ' . (string) $request->getUri()->getPath();
@@ -81,7 +81,7 @@ class LoggingMiddleware implements MiddlewareInterface
         }
 
         $logData = [
-            'email' => $email,
+            //  'email' => $email,
             'user_action' => $user_action,
             'user_id' => $user_id
         ];
