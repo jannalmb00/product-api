@@ -17,14 +17,9 @@ class CategoriesService
      * @return Result refers to the result of the operation whether it is success or failure
      */
     function createCategories(array $new_category_info): Result
-    { // returns Result class
-        // TODO: 1- Validate the received data about the new resource to be created.
-
-        //--- here is where you do the checklist
+    {
+        // TODO: 1- Validate the recieved data about the new resource to be created.
         //* Using Valitron -- use VALIDATOR class (this uses Valitron already)
-        //! Return as soon as you detect any invalid inputs -- use early return technique. continue if valid.  ---> RETURN Result::failure (set the code in the controller not here)
-        // Return Result::failure("Error!", ["username"=>"wrong username"] );
-        //define validation rules
         $rules = array(
             'category_id' => [
                 ['regex', '/^[A-Z]-[0-9]{4}$/']
@@ -56,7 +51,6 @@ class CategoriesService
         );
 
         // ? 2- Insert new resource into the DB table
-        //* Just process the first collection / first element in the array, if there are any errors just do that
         $new_category = $new_category_info[0];
         $validator = new Validator($new_category, [], 'en');
         $validator->mapFieldsRules($rules);
@@ -117,7 +111,6 @@ class CategoriesService
 
         $validator = new Validator($update_category_data);
         $validator->mapFieldsRules($rules);
-        //dd($validator);
 
         // return failure if there's error in validation in the first index
         if (!$validator->validate()) {

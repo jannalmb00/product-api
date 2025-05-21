@@ -2,13 +2,12 @@
 
 namespace App\Controllers;
 
+
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Exceptions\HttpInvalidInputException;
-use App\Validation\ValidationHelper;
 use App\Exceptions\HttpNoContentException;
 use App\Models\AllergensModel;
-use App\Models\BaseModel;
 use App\Services\AllergensService;
 use Slim\Exception\HttpBadRequestException;
 
@@ -40,20 +39,20 @@ class AllergensController extends BaseController
      */
     public function handleGetAllergens(Request $request, Response $response): Response
     {
-        //*Filters
+        //*Filters - Get query parameters
         $filters = $request->getQueryParams();
-    //   dd($filters);
 
-        // //? Validation & exception handling of filter parameters
+        //? Validation & exception handling of filter parameters
+
         //* Validating if filter input are string
-        //! MISSING ALLERGEN_REACTION_TYPE - NOT SURE OF THAT AS A FILTER
+
         $stringValidateArray = ['allergen_name', 'food_group', 'food_type', 'food_origin', 'food_item'];
 
         foreach ($stringValidateArray as $validateString) {
             //If filter array value is not empty
             if (!empty($filters[$validateString])) {
-                //  dd($filters);
-                //  $this->validateString($filters, (string) $filters[$validateString], $request);
+
+                // Validate if inputs are string. Calls validateString() in base model
                 $this->validateString($filters, $validateString, $request);
             }
         }
@@ -62,10 +61,12 @@ class AllergensController extends BaseController
         $info = $this->pagination($filters, $this->allergens_model, [$this->allergens_model, 'getAllergens'], $request);
 
         //! VALIDATION
-        if ($info["data"] == false) {
-            //! no matching record in the db
-            throw new HttpNoContentException($request, "Request successful. No product in the record.");
+        if (empty($info["data"])) {
+
+            // throw new HttpNoContentException($request, "Request successful. No product in the record.");
+            return $response->withStatus(204);
         }
+
 
         return $this->renderJson($response, $info);
     }
@@ -92,17 +93,14 @@ class AllergensController extends BaseController
         //! REGEX - VALIDATION - EXCEPTIONS - ID
         $regex_id = '/^A\d{2,3}$/';
 
-        // if (preg_match($regex_id, $id) === 0) {
-        //     throw new HttpInvalidInputException($request, "Provided product is invalid.");
-        // }
-
+        // Validate ids using method from base model
         $this->validateFilterIds($filters, $regex_id, 'id', "Invalid Allergen ID input!", $request);
 
         //* paginate -- function from base controller
         $info = $this->pagination($filters, $this->allergens_model, [$this->allergens_model, 'getAllergenById'], $request);
 
         if ($info["data"] == false) {
-            //! no matching record in the db
+            // no matching record in the db
             throw new HttpNoContentException($request, "Request successful. No allergen in the record.");
         }
 
@@ -122,10 +120,10 @@ class AllergensController extends BaseController
     public function handleGetIngredientsByAllergen(Request $request, Response $response, array $uri_args): Response
     {
 
+        // Check if allergen id is in the parameter
         if (!isset($uri_args['allergen_id'])) {
             throw new HttpInvalidInputException($request, "Allergen ID is required in the URL");
         }
-
 
         //* Get allergen ID from URI
         $allergen_id = $uri_args['allergen_id'];
@@ -139,12 +137,14 @@ class AllergensController extends BaseController
 
         foreach ($stringValidateArray as $validateString) {
             if (!empty($filters[$validateString])) {
+                // Validate if inputs are string. Calls validateString() in base model
                 $this->validateString($filters, $validateString, $request);
             }
         }
 
         $regex_id =  '/^A\d{2,3}$/';
 
+        // Validate input ids using base model function
         $this->validateFilterIds($filters, $regex_id, 'allergen_id', "Invalid Allergen ID Input.", $request);
 
         // Validate isGMO parameter
@@ -164,10 +164,9 @@ class AllergensController extends BaseController
     }
 
 
-    //* ROUTE: POST /ALLERGENS
     /**
      * POST: Handle the creation of allergens
-     *
+     * ROUTE: POST /allergens
      * @param \Psr\Http\Message\ServerRequestInterface $request refers to the request object
      * @param \Psr\Http\Message\ResponseInterface $response refers to the response object
      * @return Response refers to the result
@@ -176,15 +175,15 @@ class AllergensController extends BaseController
     {
 
         //TODO: Handle case where the case where the body could be empty
-        //  $request->getBody();
 
+        // Get the body
         $allergens_data = $request->getParsedBody();
 
         if (empty($allergens_data)) {
             throw new HttpBadRequestException($request, "Data passed is empty");
         }
 
-        // dd($allergens_data);
+        // Validate inputs and do create using service
         $result = $this->allergens_service->createAllergens($allergens_data);
 
         //* Dont forget to identify the outcome of the operations: success vs failure
@@ -200,16 +199,6 @@ class AllergensController extends BaseController
         } else {
             throw new HttpBadRequestException($request, $result->getMessage(), $result->getErrors());
         }
-
-        /*
-        Write the rules ;
-        */
-        // Return a failed operation.
-        // TODO: You need to prepare (structure the response as shown in class) the bad request: 400 BAD REQUEST and return the JSON response -> YOU SET THE CODE IN CONTROLLER (PREPARED PAYLOAD IN BASE CONTROLLER)
-
-        // 400 bad request
-
-
     }
 
     /**
@@ -223,16 +212,18 @@ class AllergensController extends BaseController
      */
     public function handleDeleteAllergen(Request $request, Response $response, array $uri_args): Response
     {
-        ///$id = $uri_args['allergen_id'];
+        // Gets the body
         $allergen_ids = $request->getParsedBody();
+
         // NOTE: removes an element from an array: by its index or by its key.
-        //unset($allergen_ids[0]);
-        //dd($allergen_ids);
         if (empty($allergen_ids)) {
             throw new HttpBadRequestException($request, "Allergen ID is required");
         }
+
+        // Validate inputs and do delete using service
         $result = $this->allergens_service->deleteAllergens($allergen_ids);
 
+        // Checks is deletion is successful
         if ($result->isSuccess()) {
             $payload = [
                 'status' => 'success',
@@ -242,7 +233,7 @@ class AllergensController extends BaseController
             // Operation successful
             return $this->renderJson($response, $payload, 201);
         }
-        //! Operation failed.
+        // Operation failed.
         $payload = [
             'status' => 'error',
             'code' => 404,
@@ -262,14 +253,17 @@ class AllergensController extends BaseController
      */
     public function handleUpdateAllergen(Request $request, Response $response, array $uri_args): Response
     {
+        //Get the body
         $update_allergen = $request->getParsedBody();
 
         if (empty($update_allergen)) {
             throw new HttpBadRequestException($request, "Data passed is empty");
         }
 
+        // Validate inputs and do update using service
         $result = $this->allergens_service->updateAllergen($update_allergen[0]);
 
+        // Check if update is successful and return
         if ($result->isSuccess()) {
             // Operation success
             $payload = [

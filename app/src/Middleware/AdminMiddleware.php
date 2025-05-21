@@ -38,3 +38,5 @@ class AdminMiddleware implements MiddlewareInterface
         return $handler->handle($request);
     }
 }
+
+//* For the routing, I used slimref for the route prioxy collector

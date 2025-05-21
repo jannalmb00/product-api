@@ -25,7 +25,6 @@ class CategoriesModel extends BaseModel
         if ($lastCatId != null) {
 
             if (preg_match('/C-(\d+)/', $lastCatId['category_id'], $matches)) { {
-                    //       dd($lastCatId['product_id']);
 
                     // convert last digits to int
                     $lastCatNumber = (int) $matches[1];
@@ -35,8 +34,7 @@ class CategoriesModel extends BaseModel
             }
         }
 
-
-        // add product id to array
+        // add category id to array
         $new_category['category_id'] = $nextCatId;
         // From base model , pass table name, array conatining key value pairs
         $last_id = $this->insert('categories', $new_category);
@@ -59,7 +57,6 @@ class CategoriesModel extends BaseModel
         //for update
         $last_id = $this->update('categories', $update_category_data, ["category_id" => $category_id_data]);
 
-
         return $last_id;
     }
 
@@ -75,7 +72,7 @@ class CategoriesModel extends BaseModel
     }
 
     /**
-     * GET: Retriveds the list of categories from the database with optional filtering, sorting and pagination
+     * GET: Retrieves the list of categories from the database with optional filtering, sorting and pagination
      *
      * @param array $filters The filters to apply to the query: 'category_name', 'category_type', 'parent_category'
      *
@@ -90,8 +87,6 @@ class CategoriesModel extends BaseModel
                 FROM categories c
                 LEFT JOIN categories pc ON c.parent_category_id = pc.category_id
                 WHERE 1";
-
-        // JOIN category pc ON c.category_id = pc.parent_category_id, , pc.category_name as parent_category_name
 
         // //? 1: FILTERING - CHECK THE DATA TYPE
         //Define filters
@@ -119,7 +114,6 @@ class CategoriesModel extends BaseModel
         //? Sorting
         $approved_ordering = ['category_name', 'category_type', 'parent_category'];
         $sql = $this->sortAndOrder($filters, 'category_id',  $approved_ordering, $sql);
-        //dd($sql);
         //? PAGINATE
         return $this->paginate($sql, $filters_map);
     }
@@ -142,7 +136,7 @@ class CategoriesModel extends BaseModel
     }
 
     /**
-     * GET: Retrievs the brand of specified category in the system
+     * GET: Retrieves the brand of specified category in the system
      *
      * @param array $filters The filters to apply to the query:  'brand_name', 'brand_country'
      * @return array
@@ -156,7 +150,6 @@ class CategoriesModel extends BaseModel
             "category_id" => $category_id,
         ];
 
-
         //* SQL query FROM brands, products and category
         $sql = "SELECT DISTINCT c.category_id, c.category_name, b.*, c.*
             FROM brands b
@@ -164,8 +157,6 @@ class CategoriesModel extends BaseModel
             LEFT JOIN categories c ON p.category_id = c.category_id
             WHERE p.category_id = :category_id";
 
-        //Provide the filters that we can accept ... I am not sure if we need filters for sub-collection resource but I will add just in case
-        // //? Erase the filters if we oont need it
         $stringToFilter = ['brand_name', 'brand_country'];
 
         // Loop through string filters and apply them w/ prepareStringSQL

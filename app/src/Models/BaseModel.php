@@ -311,37 +311,43 @@ abstract class BaseModel
      */
     public function prepareStringSQL(array $filters, string $filterKey, string $toFilter): array
     {
-        //Check if the provided filter key exists in the filter array
+        //Checks is filter exists then adds it to sql statement
         if (isset($filters[$filterKey])) {
 
             if ($filterKey == 'category_name') {
-                $sql = " AND c.category_name LIKE CONCAT(:category_name, '%')";
+                $sql = " AND c.category_name LIKE CONCAT('%',:category_name, '%')";
             } else if ($filterKey == 'brand_name') {
-                $sql = " AND b.brand_name LIKE CONCAT(:brand_name, '%')";
+                $sql = " AND b.brand_name LIKE CONCAT('%',:brand_name, '%')";
             } else if ($filterKey == 'brand_country') {
-                $sql = " AND b.brand_country LIKE CONCAT(:brand_country, '%')";
+                $sql = " AND b.brand_country LIKE CONCAT('%',:brand_country, '%')";
             } else if ($filterKey == 'parent_category') {
                 $sql = " AND pc.category_name LIKE CONCAT(:parent_category, '%')";
             } else if ($filterKey == 'category_type') {
-                $sql = " AND c.category_type LIKE CONCAT(:category_type, '%')";
+                $sql = " AND c.category_type LIKE CONCAT('%',:category_type, '%')";
             } else if ($filterKey == 'allergen_name') {
-                $sql = " AND a.allergen_name LIKE CONCAT(:allergen_name, '%')";
+                $sql = " AND a.allergen_name LIKE CONCAT('%',:allergen_name, '%')";
             } else if ($filterKey == 'food_group') {
-                $sql = " AND a.food_group LIKE CONCAT(:food_group, '%')";
+                $sql = " AND a.food_group LIKE CONCAT('%',:food_group, '%')";
             } else if ($filterKey == 'food_origin') {
-                $sql = " AND a.food_origin LIKE CONCAT(:food_origin, '%')";
+                $sql = " AND a.food_origin LIKE CONCAT('%',:food_origin, '%')";
             } else if ($filterKey == 'allergen_reaction_type') {
-                $sql = " AND a.allergen_reaction_type LIKE CONCAT(:allergen_reaction_type, '%')";
+                $sql = " AND a.allergen_reaction_type LIKE CONCAT('%', :allergen_reaction_type, '%')";
             } else if ($filterKey == 'food_type') {
-                $sql = " AND a.food_type LIKE CONCAT(:food_type, '%')";
+                $sql = " AND a.food_type LIKE CONCAT('%',:food_type, '%')";
+            } else if ($filterKey == 'food_item') {
+                $sql = " AND a.food_item LIKE CONCAT('%',:food_item, '%')";
+            } else if ($filterKey == 'ingredient_name') {
+                $sql = " AND i.ingredient_name LIKE CONCAT('%', :ingredient_name, '%')";
+            } else if ($filterKey == 'processing_type') {
+                $sql = " AND i.processing_type LIKE CONCAT('%', :processing_type, '%')";
+            } else if ($filterKey == 'isGMO') {
+                $sql = " AND i.isGMO = :isGMO";
             } else {
                 $sql = " AND p.$toFilter LIKE CONCAT(:$toFilter, '%')";
             }
 
-
             return ['value' => $filters[$filterKey], 'sqlPart' => $sql];
         }
-
 
         return [];
     }

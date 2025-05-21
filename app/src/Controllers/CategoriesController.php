@@ -5,10 +5,8 @@ namespace App\Controllers;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Exceptions\HttpInvalidInputException;
-use App\Validation\ValidationHelper;
 use App\Exceptions\HttpNoContentException;
 use App\Models\CategoriesModel;
-use App\Models\BaseModel;
 use App\Services\CategoriesService;
 use Slim\Exception\HttpBadRequestException;
 
@@ -47,14 +45,13 @@ class CategoriesController extends BaseController
         if (empty($category_data)) {
             throw new HttpBadRequestException($request, "Data passed is empty");
         }
-        //Pass the category_data array to service
-        //? CALL SERVICE
+
+        //? CALL SERVICE-  Pass the category_data array to service
         $result = $this->service->createCategories($category_data);
 
-        //!NOte verify he outcome of the opertion: sucess vs filure
+        //!Note verify he outcome of the operation: success vs failure
         if ($result->isSuccess()) {
             //OPeration succeeded.
-            // create an array that will contain -- make this array reusable
             $payload = [
                 'status' => 'Success',
                 'code' => 201,
@@ -86,14 +83,14 @@ class CategoriesController extends BaseController
         if (empty($category_data)) {
             throw new HttpBadRequestException($request, "Data passed is empty. Nothing to update.");
         }
-        //Pass the category_data array to service
+
         //? CALL SERVICE
         $result = $this->service->updateCategory($category_data[0]);
 
-        //!NOte verify he outcome of the opertion: sucess vs filure
+        //!NOte verify he outcome of the operation: success vs failure
         if ($result->isSuccess()) {
             //OPeration succeeded.
-            // create an array that will contain -- make this array reusable
+
             $payload = [
                 'status' => 'Success',
                 'code' => 201,
@@ -104,6 +101,7 @@ class CategoriesController extends BaseController
             return  $this->renderJson($response, $payload, 201);
         } else {
 
+            // Unsuccessful
             $payload = [
                 'status' => 'error',
                 'code' => 400,
@@ -112,9 +110,6 @@ class CategoriesController extends BaseController
             ];
 
             return $this->renderJson($response, $payload, 400);
-
-            // If unsuccessful, throw exception
-            // throw new HttpBadRequestException($request, $result->getMessage(), $result->getErrors());
         }
     }
 
@@ -129,15 +124,15 @@ class CategoriesController extends BaseController
      */
     public function handleDeleteCategories(Request $request, Response $response): Response
     {
-        // Extract the data fromt eh request body
+        // Extract the data from the request body
         $allergen_ids = $request->getParsedBody();
 
-        //Validae if ID_is present
+        //Validate if ID_is present
         if (empty($allergen_ids)) {
             throw new HttpBadRequestException($request, "Allergen ID is required");
         }
 
-        //call service that process deletetion
+        //call service that process deletion
         $result = $this->service->deleteCategories($allergen_ids);
 
         //Evaluate the result
@@ -177,8 +172,7 @@ class CategoriesController extends BaseController
 
         // //? Validation & exception handling of filter parameters
         //* Validating if filter input are string
-        // ! removed category_name and parent_category in validate array
-        $stringValidateArray = ['category_type'];
+        $stringValidateArray = ['category_type', 'category_name', 'parent_category'];
 
         foreach ($stringValidateArray as $validateString) {
             //If filter array value is not empty
@@ -227,10 +221,6 @@ class CategoriesController extends BaseController
             throw new HttpInvalidInputException($request, "Provided category is invalid.");
         }
 
-        // if (preg_match($regex_id, $id) === 0) {
-        //     throw new HttpInvalidInputException($request, "Provided product is invalid.");
-        // }
-
         $this->validateFilterIds($filters, $regex_id, 'id', "Invalid Category ID input!", $request);
 
         //* paginate -- function from base controller
@@ -269,9 +259,8 @@ class CategoriesController extends BaseController
         $filters = $request->getQueryParams();
         $filters['id'] = $category_id;
 
-        // REGEX - VALIDATION - EXCEPTIONS - CATEGORY ID -> THIS IS THE INPUT VALIDATION if we needed have to double check
+        // Validating id
         $regex_id = '/^C-\d{4,5}$/';
-
 
         $this->validateFilterIds($filters, $regex_id, 'id', "Provided category ID is invalid.Invalid Category ID input!", $request);
 

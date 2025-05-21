@@ -4,11 +4,19 @@ namespace App\Handlers;
 
 use Slim\Handlers\ErrorHandler;
 use App\Helpers\LogHelper;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface;
 
+/**
+ * Custom error handler that logs exceptions and returns structured JSON error responses.
+ */
 class LoggingErrorHandler extends ErrorHandler
 {
+
+    /**
+     * Logs the error using a custom LogHelper class.
+     * @param string $error The error message.
+     * @return void
+     */
     protected function logError(string $error): void
     {
         // Insert custom error logging function.
@@ -20,11 +28,15 @@ class LoggingErrorHandler extends ErrorHandler
             $this->request
         );
     }
+
+
     /**
-     * Render the HTTP response. Here we emit a JSON “exception” object.
+     * Generates the JSON response returned when an exception occurs.
+     * @return ResponseInterface
      */
     protected function respond(): ResponseInterface
     {
+
         $exception = $this->exception;
 
         // Exception payload
@@ -39,7 +51,10 @@ class LoggingErrorHandler extends ErrorHandler
         ];
 
         // Create response and write to json
-        $response = $this->responseFactory->createResponse(500);
+        $response = $this->responseFactory->createResponse(
+            $exception->getCode(),
+            $exception->getMessage()
+        );
         $response->getBody()->write(json_encode($payload, JSON_UNESCAPED_SLASHES));
 
         return $response

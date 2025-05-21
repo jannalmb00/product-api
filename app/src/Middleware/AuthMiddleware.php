@@ -17,7 +17,7 @@ use App\Exceptions\HttpUnauthorizedException;
 class AuthMiddleware implements MiddlewareInterface
 {
     /**
-     * The sectret key used to validate JWTs
+     * The secret key used to validate JWTs
      * @var string
      */
     private string $jwtKey;
@@ -60,6 +60,8 @@ class AuthMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         } catch (\Exception $e) {
             //unauthorized
+            error_log('AuthMiddleware threw: ' . $e->getMessage());
+
             throw new HttpUnauthorizedException($request, "Invalid or expired token");
         }
     }

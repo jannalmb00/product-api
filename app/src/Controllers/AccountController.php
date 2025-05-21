@@ -12,6 +12,9 @@ use Firebase\JWT\Key;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+/**
+ * Controller that is for handling user registration and login
+ */
 class AccountController extends BaseController
 {
 
