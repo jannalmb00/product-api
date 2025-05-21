@@ -19,6 +19,7 @@ class ProductsService
      */
     public function createProducts(array $product_data): Result
     {
+        //Define the validation rules
         $rules = array(
 
             'product_id' => [
@@ -80,12 +81,14 @@ class ProductsService
 
         $validator->mapFieldsRules($rules);
 
+        //if validation fauls, returns error
         if (!$validator->validate()) {
             $errorJSON =  $validator->errorsToJson();
             echo $errorJSON . "\n\n";
             return Result::failure("Error inserting new product", $validator->errors());
         }
 
+        //Insert the validated product into the database
         $last_inserted_id = $this->products_model->insertProduct($new_product);
         //dd($last_inserted_id);
         return Result::success("Product has been created successfully!", $last_inserted_id);
@@ -151,18 +154,20 @@ class ProductsService
         $validator = new Validator($product_data);
         $validator->mapFieldsRules($rules);
 
+        //Return error if validation fails
         if (!$validator->validate()) {
             $errorJSON =  $validator->errorsToJson();
             echo $errorJSON . "\n\n";
             return Result::failure("Data is not valid. Error updating product");
         }
-
+        //call model to update the product
         $rowsUpdated = $this->products_model->updateProduct($product_data);
 
+        //If no rows were affected, return failure
         if ($rowsUpdated <= 0) {
-
             return Result::failure("No row has been updated");
         }
+
         return Result::success("Updated successfully");
     }
 
@@ -174,8 +179,10 @@ class ProductsService
      */
     public function deleteProduct(array $product_ids): Result
     {
+        //Track validation errors for any invalid ID
         $validation_errors = [];
 
+        // Loop through each product ID to validate and delete
         foreach ($product_ids as $key => $product_id) {
             $validator = new Validator(['product_id' => $product_id]);
 
@@ -197,13 +204,12 @@ class ProductsService
 
             $this->products_model->deleteProduct($product_id);
         }
-
+        //if any validation errors were found, return failure
         if (count($validation_errors) > 0) {
 
             return Result::failure("Some of the product IDs are not valid", $validation_errors);
         }
-
-
+        // Return success if all deletions processed
         return Result::success("The product(s) have been deleted successfully!");
     }
 }

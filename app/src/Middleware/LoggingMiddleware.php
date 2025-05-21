@@ -13,6 +13,11 @@ use Psr\Http\Server\MiddlewareInterface;
 use App\Helpers\LogHelper;
 
 /**
+ *
+ *
+ * Middleware that logs request and response information
+ * used for tracking APIusage, debugging, and analytics
+ *
  * Participant in processing a server request and response.
  *
  * An HTTP middleware component participates in processing an HTTP message:
@@ -38,16 +43,16 @@ class LoggingMiddleware implements MiddlewareInterface
         //! DO NOT remove or change the following statements.
         // Invoke the next middleware and get response
         // Optional: Handle the outgoing response
-        // ...
+
+        // 1.) Forward the request and get the response
         $response = $handler->handle($request);
 
         // TODO: make LogHelper class
-        //* 1) Write to access.log using the LogHelper class
+        //2) Write to access.log using the LogHelper class
         LogHelper::writeToAccessLog($request, $response);
 
 
         //* 2) Insert log records into the ws_user DB table --> Log Helper needs to be implemented and tested before this
-        // Note: See aa_tables.zip on LEA. contains db schema to import to phpmyadmin
         // We need an instance of AccessModel -> this is done by adding the access model to cosntructor --> done
 
         // Inserts to db. get the response body and its content
@@ -60,9 +65,11 @@ class LoggingMiddleware implements MiddlewareInterface
             // $email = $bodyArray["email"];
         }
 
+        //! Logs when registering
+        //3. Construct user action sring
         $user_action = $request->getMethod() . ' ' . (string) $request->getUri()->getPath();
 
-        // For when it's not /register
+        //4. Read the response body
         $responseBody = $response->getBody();
 
         // Rewind the stream if needed
@@ -75,9 +82,7 @@ class LoggingMiddleware implements MiddlewareInterface
             $user_id = $json['user_id'] ?? "";
         }
 
-        // to add user to the log
-        $user_id = $request->getAttribute('jwt')['user_id'] ?? '';
-
+        //5. Prepare log data for database
         $logData = [
             'user_action' => $user_action,
             'email' => $user_id,
@@ -89,7 +94,7 @@ class LoggingMiddleware implements MiddlewareInterface
         $this->access_model->insertLog($logData);
 
 
-
+        //8 Return the original response unchanged
         return $response;
     }
 }

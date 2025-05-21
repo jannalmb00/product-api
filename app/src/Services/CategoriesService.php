@@ -12,7 +12,7 @@ class CategoriesService
     public function __construct(private CategoriesModel $model, private Validator $validator) {}
 
     /**
-     * Create a new category
+     *POST:  Create a new category
      * @param array $new_category_info refers to the new category info
      * @return Result refers to the result of the operation whether it is success or failure
      */
@@ -68,13 +68,14 @@ class CategoriesService
     }
 
     /**
-     * Update a category
+     * PUT: Update a category
      * @param array $update_category_data refers to the updated category info
      * @return Result refers to the result of the operation whether it is success or failure
      */
     function updateCategory(array $update_category_data): Result
     { // returns Result class
         // TODO: 1- Validate the recieved data about the new resource to be created.
+        //define validation rules
         $rules = array(
             'category_id' => [
                 ['regex', '/^[A-Z]-[0-9]{4}$/'],
@@ -130,7 +131,7 @@ class CategoriesService
 
 
     /**
-     * Deletes categories
+     * DELETE: Deletes categories
      * @param array $category_ids refers to the ids for deletion
      * @return Result refers to the result of the operation whether it is success or failure
      */

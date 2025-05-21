@@ -11,7 +11,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 
 /**
- * Participant in processing a server request and response.
+ * Content Negotiation Middleware ensures the client accepts JSON responses and automatically decodes incoming JSON request bodies into associative array
+ *
  *
  * An HTTP middleware component participates in processing an HTTP message:
  * by acting on the request, generating the response, or forwarding the
@@ -25,42 +26,42 @@ class ContentNegotiationMiddleware implements MiddlewareInterface
      * Processes an incoming server request in order to produce a response.
      * If unable to produce the response itself, it may delegate to the provided
      * request handler to do so.
+     *
      */
     public function process(Request $request, RequestHandler $handler): ResponseInterface
     {
         // Optional: Handle the incoming request
         // ...
+        //1) Validate 'Accept' header
         if (!$request->hasHeader('Accept')) {
             throw new HttpNotAcceptableException($request);
         }
 
         $contentType = $request->getHeaderLine('Accept');
+        //Only allow  'application/json' or wildcard '*/*'
         if (!str_contains($contentType, 'application/json') && !str_contains($contentType, '*/*')) {
             throw new HttpNotAcceptableException($request);
         }
 
-        // $contents = json_decode(file_get_contents('php://input'), true);
-        // if (json_last_error() === JSON_ERROR_NONE) {
-        //     $request = $request->withParsedBody($contents);
-        // }
-  // 2) Read raw body using PSR-7 stream and decode
-  $bodyStream = $request->getBody();
 
-  // Rewind before reading
-  if ($bodyStream->isSeekable()) {
-      $bodyStream->rewind();
-  }
+        // 2) Read raw body using PSR-7 stream and decode
+        $bodyStream = $request->getBody();
 
-  $raw = $bodyStream->getContents();
-  $decoded = json_decode($raw, true);
-  if (JSON_ERROR_NONE === json_last_error()) {
-      $request = $request->withParsedBody($decoded);
-  }
+        // Rewind before reading
+        if ($bodyStream->isSeekable()) {
+            $bodyStream->rewind();
+        }
 
-  // Rewind again for downstream middleware and controllers
-  if ($bodyStream->isSeekable()) {
-      $bodyStream->rewind();
-  }
+        $raw = $bodyStream->getContents();
+        $decoded = json_decode($raw, true);
+        if (JSON_ERROR_NONE === json_last_error()) {
+            $request = $request->withParsedBody($decoded);
+        }
+
+        // Rewind again for downstream middleware and controllers
+        if ($bodyStream->isSeekable()) {
+            $bodyStream->rewind();
+        }
         // //! DO NOT remove or change the following statements.
 
         // Invoke the next middleware and get response

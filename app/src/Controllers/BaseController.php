@@ -14,6 +14,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 //use Psr\Http\Message\ResponseInterface as Response;
 //use Psr\Http\Message\ServerRequestInterface as Request;
 
+/**
+ * Proides shared utility methods for all controllers
+ */
 abstract class BaseController
 {
     private ValidationHelper $validator;
@@ -23,25 +26,37 @@ abstract class BaseController
         //Validator Helper
         $this->validator = new ValidationHelper();
     }
+
+    /**
+     * Sends a JSON response with appropriate headers and status code
+     *
+     * @param \Psr\Http\Message\ResponseInterface $response
+     * @param array $data
+     * @param int $status_code
+     * @return Response
+     */
     protected function renderJson(Response $response, array $data, int $status_code = 200): Response
     {
-        // var_dump($data);
         $payload = json_encode($data, JSON_UNESCAPED_SLASHES |    JSON_PARTIAL_OUTPUT_ON_ERROR);
-        //-- Write JSON data into the response's body.
         $response->getBody()->write($payload);
         return $response->withStatus($status_code)->withAddedHeader(HEADERS_CONTENT_TYPE, APP_MEDIA_TYPE_JSON);
     }
 
-    /**
-     * Combined
-     * $this->player_model->setPaginationOptions($filters["page"], $filters["page_size"
-     */
 
     //! PAGINATION
+    /**
+     * Handles pagination logic and data fetching
+     *
+     * @param array $filters  Query parameters from the request.
+     * @param \App\Models\BaseModel $model The model object to apply pagination on.
+     * @param callable $method
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @throws \App\Exceptions\HttpInvalidInputException
+     * @return mixed
+     */
     public function pagination(array $filters, BaseModel $model, callable $method,  Request $request): mixed
     {
 
-        // validate_pages =  new Validator($filters,  );
         //Add a default if no page and page size set
         $page = isset($filters["page"]) ? (int) $filters["page"] : 1;
         $size = isset($filters["page_size"]) ? (int) $filters["page_size"] : 5;
@@ -63,8 +78,7 @@ abstract class BaseController
         ];
 
         // Validation
-        $validator = new Validator($page_data, [], 'en');
-        // dd($page_data);
+        $validator = new Validator($page_data, [], 'en');;
         $validator->mapFieldsRules($rules);
 
 
@@ -73,7 +87,7 @@ abstract class BaseController
             throw new HttpInvalidInputException($request, "Invalid input. Page and page size must be an integer greater than or equal to 1.");
         } else {
 
-            // setting pagination
+            // Apply pagination settings to the model
             $model->setPaginationOptions((int) $page_data['page'], (int) $page_data['page_size']);
 
             //Call the function( ex: GetProduct) to the specific model class -- used callable function to make this happen
@@ -83,6 +97,14 @@ abstract class BaseController
     }
 
     //! INPUT VALIDATION - IF STRING
+    /**
+     * Validates a string to ensure that it only contains aphabetic and spaces
+     * @param array $filters
+     * @param string $arrayCheck
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @throws \App\Exceptions\HttpInvalidInputException
+     * @return void
+     */
     public function validateString(array $filters, string $arrayCheck, Request $request)
     {
 
@@ -96,7 +118,6 @@ abstract class BaseController
         );
 
         if (isset($filters[$arrayCheck])) {
-
 
             $filter_data = ['filter' => $filters[$arrayCheck]];
 
@@ -114,6 +135,17 @@ abstract class BaseController
     }
 
     //! FILTER INPUT VALIDATION - REGEX FOR IDs
+    /**
+     * Validates a filter input using a regex
+     *
+     * @param array $filters
+     * @param string $regex_id
+     * @param string $column
+     * @param string $errorMessage
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @throws \App\Exceptions\HttpInvalidInputException
+     * @return void
+     */
     public function validateFilterIds(array $filters, string $regex_id, string $column, string $errorMessage, Request $request)
     {
         //* Validation

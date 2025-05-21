@@ -9,14 +9,16 @@ namespace App\Models;
  */
 class CategoriesModel extends BaseModel
 {
+
     /**
-     * Inserts new category to the database using data input
-     * @param array $new_category  Associative array of category data.
-     * @return mixed The last inserted ID.
+     * POST: Insert a new category in the database
+     *
+     * @param array $new_category Associative array of category data
+     * @return mixed ID_of the inserted record or result from operation
      */
     public function insertNewCategory(array $new_category): mixed
     {
-        // increments the category_id
+        // fetch last inserted category id
         $sql = "SELECT category_id FROM categories ORDER BY key_id DESC LIMIT 1";
         $lastCatId = $this->fetchSingle($sql);
 
@@ -40,16 +42,16 @@ class CategoriesModel extends BaseModel
         return $last_id;
     }
 
-
     /**
-     *  Updates an existing category.
-     * @param array $update_category_data Associative array with updated fields.
-     * @return int Number of affected rows or result from database.
+     * PUT: Method use to update an existing category in the database based on category id
+     * @param array $update_category_data Associative array containing category fields and category id to update
+     * @return int the result of the update operation
      */
     public function updateCategory(array $update_category_data): mixed
     {
+        //extract the category_id
         $category_id_data = $update_category_data["category_id"];
-
+        //unset the category id to avoide updating it
         unset($update_category_data["category_id"]);
 
         //for update
@@ -58,14 +60,14 @@ class CategoriesModel extends BaseModel
         return $last_id;
     }
 
-
     /**
-     *  Deletes a category by its ID.
-     * @param string $category_id Category ID to delete.
-     * @return int Number of deleted rows.
+     * DELETE: Delete a category from the database using the given category_id
+     * @param string $category_id identifier to to perform delete
+     * @return int the number of rows affected by the delete operation
      */
     function deleteCategory(string $category_id): int
     {
+        //perform the delete operaton using the base model's delete method
         return $this->delete('categories', ["category_id" => $category_id]);
     }
 

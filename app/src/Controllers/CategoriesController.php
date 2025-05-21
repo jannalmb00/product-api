@@ -37,6 +37,7 @@ class CategoriesController extends BaseController
     public function handleCreateCategories(Request $request, Response $response): Response
     {
 
+        // Extract the JSON data from the request
         $category_data = $request->getParsedBody();
 
         //POST - in json
@@ -74,9 +75,10 @@ class CategoriesController extends BaseController
      */
     public function handleUpdateCategories(Request $request, Response $response): Response
     {
-        // category to update
+        // Etract JSON_body data from the request
         $category_data = $request->getParsedBody();
 
+        //POST - in json
         //? the body could be empty. handle case where body is empty ,,, when request is returned null or invalid
         if (empty($category_data)) {
             throw new HttpBadRequestException($request, "Data passed is empty. Nothing to update.");
@@ -85,7 +87,7 @@ class CategoriesController extends BaseController
         //? CALL SERVICE
         $result = $this->service->updateCategory($category_data[0]);
 
-        //!NOte verify he outcome of the opertion: sucess vs filure
+        //!NOte verify he outcome of the operation: success vs failure
         if ($result->isSuccess()) {
             //OPeration succeeded.
 
@@ -122,16 +124,20 @@ class CategoriesController extends BaseController
      */
     public function handleDeleteCategories(Request $request, Response $response): Response
     {
+        // Extract the data from the request body
         $allergen_ids = $request->getParsedBody();
 
-        // NOTE: removes an element from an array: by its index or by its key.
-
+        //Validate if ID_is present
         if (empty($allergen_ids)) {
             throw new HttpBadRequestException($request, "Allergen ID is required");
         }
+
+        //call service that process deletion
         $result = $this->service->deleteCategories($allergen_ids);
 
+        //Evaluate the result
         if ($result->isSuccess()) {
+
             $payload = [
                 'status' => 'success',
                 'code' => 201,
@@ -161,7 +167,7 @@ class CategoriesController extends BaseController
      */
     public function handleGetCategories(Request $request, Response $response): Response
     {
-        //*Filters
+        //*Filters:Extratc query param
         $filters = $request->getQueryParams();
 
         // //? Validation & exception handling of filter parameters
