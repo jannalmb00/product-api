@@ -63,15 +63,14 @@ abstract class BaseModel
         if (empty($args)) {
             return $this->db->query($sql);
         }
-        // echo $sql;
-        //  dd($sql);
+
         $stmt = $this->db->prepare($sql);
         //check if args is associative or sequential?
         $is_assoc = (array() === $args) ? false : array_keys($args) !== range(0, count($args) - 1);
         //dd($is_assoc);
         if ($is_assoc) {
             foreach ($args as $key => $value) {
-                //    dd($value);
+
                 if (is_int($value)) {
                     $stmt->bindValue(":$key", $value, PDO::PARAM_INT);
                 } else {
@@ -80,7 +79,6 @@ abstract class BaseModel
             }
             $stmt->execute();
         } else {
-     //       dd($stmt);
             $stmt->execute($args);
         }
         return $stmt;
@@ -202,7 +200,7 @@ abstract class BaseModel
         foreach ($data as $key => $value) {
             $field_details .= "$key = ?,";
         }
-        //dd($field_details);
+
         $field_details = rtrim($field_details, ',');
 
         //setup where
@@ -212,7 +210,7 @@ abstract class BaseModel
             $where_details .= $i == 0 ? "$key = ?" : " AND $key = ?";
             $i++;
         }
-        // dd($field_details);
+
         $stmt = $this->run("UPDATE $table SET $field_details WHERE $where_details", $values);
 
         return $stmt->rowCount();
@@ -265,12 +263,19 @@ abstract class BaseModel
     }
 
 
+    /**
+     * Handles pagination for a given SQL query and returns both metadata and paginated results.
+     *
+     * @param string $sql
+     * @param array $args
+     * @param mixed $fetchMode
+     * @return array
+     */
     protected function paginate(string $sql, array $args = [], $fetchMode = PDO::FETCH_ASSOC): array
     {
         //? 1 - determine number of (total) number of records included in the result set
         //* Hint: use the count()
         $total_records = $this->count($sql, $args);
-        //dd($total_records);
 
         //? 2 - Instantiate the pagination helper and pass to its constructor the required inputs (as parameters).
         $phelper = new PaginationHelper(
@@ -281,10 +286,8 @@ abstract class BaseModel
 
         //? 3 - Get the offset value from pagination helper's instance
         $offset = $phelper->getOffset();
-        //  dd($offset);
 
         $sql .= " LIMIT $this->records_per_page OFFSET $offset";
-        // dd($sql);
 
         //? 4 - Execute the constrained query
         $data = $this->fetchAll($sql, $args);
@@ -299,13 +302,18 @@ abstract class BaseModel
     }
 
     //! PREPARE SQL FOR STRING
+    /**
+     * Dynamically generating a partial SQL where cluase and a corresponding value for parameter binding based on a provided filter key and its value.
+     * @param array $filters
+     * @param string $filterKey
+     * @param string $toFilter
+     * @return array|array{sqlPart: string, value: mixed}
+     */
     public function prepareStringSQL(array $filters, string $filterKey, string $toFilter): array
     {
-       // dd($filters);
-        //FIlter check here
+        //Check if the provided filter key exists in the filter array
         if (isset($filters[$filterKey])) {
 
-            // $filter = $filters $filterKey];
             if ($filterKey == 'category_name') {
                 $sql = " AND c.category_name LIKE CONCAT(:category_name, '%')";
             } else if ($filterKey == 'brand_name') {
@@ -318,32 +326,36 @@ abstract class BaseModel
                 $sql = " AND c.category_type LIKE CONCAT(:category_type, '%')";
             } else if ($filterKey == 'allergen_name') {
                 $sql = " AND a.allergen_name LIKE CONCAT(:allergen_name, '%')";
-            }else if ($filterKey == 'food_group') {
+            } else if ($filterKey == 'food_group') {
                 $sql = " AND a.food_group LIKE CONCAT(:food_group, '%')";
-            }else if ($filterKey == 'food_origin') {
+            } else if ($filterKey == 'food_origin') {
                 $sql = " AND a.food_origin LIKE CONCAT(:food_origin, '%')";
-            }else if ($filterKey == 'allergen_reaction_type') {
+            } else if ($filterKey == 'allergen_reaction_type') {
                 $sql = " AND a.allergen_reaction_type LIKE CONCAT(:allergen_reaction_type, '%')";
-            }else if ($filterKey == 'food_type') {
+            } else if ($filterKey == 'food_type') {
                 $sql = " AND a.food_type LIKE CONCAT(:food_type, '%')";
-            }else {
+            } else {
                 $sql = " AND p.$toFilter LIKE CONCAT(:$toFilter, '%')";
             }
-            //$filters_map["given_name"] = $filters['given_name'];
-            // dd($sql);
+
 
             return ['value' => $filters[$filterKey], 'sqlPart' => $sql];
         }
 
 
         return [];
-        //return [$filters['given_name'], $sql];
     }
 
-
+    /**
+     * GEenrates a parameterized SQL query to select a record by id from spcified table and column
+     * @param string $id
+     * @param string $table
+     * @param string $column
+     * @return array|array{sqlPart: string}
+     */
     public function prepareIdSQL(string $id, string $table, string $column): array
     {
-        //FIlter check here
+        //check ID if not empty
         if (!empty($id)) {
 
             $sql = "SELECT * FROM $table WHERE $column = :id";
@@ -353,22 +365,28 @@ abstract class BaseModel
 
 
         return [];
-        //return [$filters['given_name'], $sql];
     }
 
     //! SORTING
+    /**
+     * Appends ORDER BY and sorting direction to an existing SQL query based on provided filters.
+     * @param array $filters
+     * @param string $orderDefault
+     * @param array $approved_ordering
+     * @param string $sql
+     * @return string
+     */
     public function sortAndOrder(array $filters, string $orderDefault, array $approved_ordering, string $sql): string
     {
 
         $direction = "ASC"; // Default
 
+        //Check if sort parameter is present
         if (isset($filters["sort"])) {
 
             $direction = strtolower($filters["sort"]) == 'descending' ? 'DESC' : 'ASC'; // Default to ascending if not descending
 
         }
-
-        //dd($filters["sort"]);
 
         $order_by = $filters["order_by"] ?? $orderDefault; // Default to 'id' if 'order_by' not set
 
@@ -378,7 +396,7 @@ abstract class BaseModel
         }
 
         $sql .= " ORDER BY " . $order_by . " " . $direction;
-        //    }
+
         return $sql;
     }
 }
