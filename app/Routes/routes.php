@@ -32,10 +32,14 @@ return static function (Slim\App $app, array $settings): void {
     $app->post('/register', [UserController::class, 'handleCreateRegister']);
     $app->post('/login', [UserController::class, 'handleUserLogin']);
     $app->get('/', [AboutController::class, 'handleAboutWebService']);
+
+
+    //? --------------------
+    //? COMPUTATION FUNCTIONALITY
+    //? --------------------
     $app->post("/calorie", [CalculatorController::class, 'handleCalculateCalories']);
     $app->post("/fiber", [CalculatorController::class, 'handleCalculateFiber']);
     $app->post("/bmi", [CalculatorController::class, 'handleCalculateBMI']);
-
 
     $app->get("/cocktail_category", [CompositeController::class, 'handleGetCocktailsCategories']);
 
@@ -71,12 +75,11 @@ return static function (Slim\App $app, array $settings): void {
         // $group->get('/admin/allergens', [AllergensController::class, 'handleGetAllergens']);
 
         //? == Composite resource -- TheMealDBAPI
-        $group->get('/recipes/product/{product_id}', [RecipesController::class, 'handleGetRecipesByProduct']);
-        $group->post('/cocktail', [CompositeController::class, 'handleGetCocktailByName']);
+        $group->get('/recipes/product/{product_id}', [CompositeController::class, 'handleGetRecipesByProduct']);
+        // $group->post('/cocktail', [CompositeController::class, 'handleGetCocktailByName']);
         /**
          * So i sesearch yung name nung cocktail then sa ingrdients use ingredient table to give more details slay!!!!!
          */
-
     })->add($authMiddleware);
 
 

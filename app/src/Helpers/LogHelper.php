@@ -34,6 +34,7 @@ class LogHelper
         // extract email from body
         $body = $request->getParsedBody();
 
+
         if (is_array($body)) {
             $bodyArray = isset($body[0]) ? $body[0] : "";
             $email = $bodyArray["email"];
@@ -45,7 +46,7 @@ class LogHelper
             'resource' => (string)$request->getUri()->getPath(),
             'ip' => $request->getServerParams()['REMOTE_ADDR'] ?? '-',
             'parameters' => $request->getQueryParams(),
-            'user' => $email
+            'user' => 'test'
         ];
         $logger->info("Access", $data);
     }
