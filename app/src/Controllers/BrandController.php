@@ -23,20 +23,20 @@ class BrandController extends BaseController
      * @param \App\Models\BrandModel $brandModel
      *
      */
-    public function __construct(private BrandModel $brandModel) // replace the reference to a service, and the service will have a reference to the model
+    public function __construct(private BrandModel $brandModel)
     {
         //To initialize the validator
         parent::__construct();
     }
 
     /**
-     * GET: Handles the request of retrieving allergens based on the filter parameter
+     * GET: Handles the request of retrievin products of a specified brand
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request The request object containing query parameter
      * @param \Psr\Http\Message\ResponseInterface $response The response object to return
      *
      * @throws \App\Exceptions\HttpNoContentException Throw when data is not found after all the filters
-     * @return Response Response containing the list of allergens and its header
+     * @return Response
      */
     public function handleGetProductsByBrand(Request $request, Response $response, array $uri_args): Response
     {
@@ -81,38 +81,4 @@ class BrandController extends BaseController
 
         return $this->renderJson($response, $info);
     }
-
-
-    /**
-     * GET: handles details of the specified allergen
-     *
-     * @param \Psr\Http\Message\ServerRequestInterface $request The request object containing query parameter
-     * @param \Psr\Http\Message\ResponseInterface $response The response object to return
-     * @param array $uri_args The URI argument containing ID
-     *
-     * @throws \App\Exceptions\HttpNoContentException Throw when data is empty after all the filters
-     * @return Response Response containing the detail of the specified player
-     */
-
-
-    /**
-     * GET: handles the retrieval of ingredients for a specified allergen.
-     * @param \Psr\Http\Message\ServerRequestInterface $request The request containing all the query parameter
-     * @param \Psr\Http\Message\ResponseInterface $response The response object to return
-     * @param array $uri_args The URI_arguments containing ID
-     *
-     * @throws \App\Exceptions\HttpInvalidInputException Throw error when invalid input is used/entered
-     * @throws \App\Exceptions\HttpNoContentException Throw error when data is empty
-     * @return Response Response containing the details of the specified allergen
-     */
-
-
-    //* ROUTE: POST /ALLERGENS
-    /**
-     * POST:
-     *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param \Psr\Http\Message\ResponseInterface $response
-     * @return Response
-     */
 }
