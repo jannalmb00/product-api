@@ -10,14 +10,19 @@ namespace App\Models;
 class CategoriesModel extends BaseModel
 {
 
+    /**
+     * POST: Insert a new category in the database
+     *
+     * @param array $new_category Associative array of category data
+     * @return mixed ID_of the inserted record or result from operation
+     */
     public function insertNewCategory(array $new_category): mixed
     {
-        // increments the product_id
+        // fetch last inserted category id
         $sql = "SELECT category_id FROM categories ORDER BY key_id DESC LIMIT 1";
         $lastCatId = $this->fetchSingle($sql);
 
         if ($lastCatId != null) {
-            //  dd($lastCatId['category_id']);
 
             if (preg_match('/C-(\d+)/', $lastCatId['category_id'], $matches)) { {
                     //       dd($lastCatId['product_id']);
@@ -39,26 +44,33 @@ class CategoriesModel extends BaseModel
         return $last_id;
     }
 
+    /**
+     * PUT: Method use to update an existing category in the database based on category id
+     * @param array $update_category_data Associative array containing category fields and category id to update
+     * @return int the result of the update operation
+     */
     public function updateCategory(array $update_category_data): mixed
     {
-        // From base model , pass table name, array conatining key value pairs
-        //    $last_id = $this->update('category', ["data" => $update_category_data[1]], ["category_id" => $update_category_data[0]]);
-
-        //dd(is_array($update_category_data));
-
+        //extract the category_id
         $category_id_data = $update_category_data["category_id"];
-
+        //unset the category id to avoide updating it
         unset($update_category_data["category_id"]);
 
         //for update
         $last_id = $this->update('categories', $update_category_data, ["category_id" => $category_id_data]);
-        // dd($last_id);
+
 
         return $last_id;
     }
 
+    /**
+     * DELETE: Delete a category from the database using the given category_id
+     * @param string $category_id identifier to to perform delete
+     * @return int the number of rows affected by the delete operation
+     */
     function deleteCategory(string $category_id): int
     {
+        //perform the delete operaton using the base model's delete method
         return $this->delete('categories', ["category_id" => $category_id]);
     }
 
@@ -144,7 +156,6 @@ class CategoriesModel extends BaseModel
             "category_id" => $category_id,
         ];
 
-        // dd($filters_map);
 
         //* SQL query FROM brands, products and category
         $sql = "SELECT DISTINCT c.category_id, c.category_name, b.*, c.*

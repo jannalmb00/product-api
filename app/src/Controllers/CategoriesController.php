@@ -38,8 +38,8 @@ class CategoriesController extends BaseController
      */
     public function handleCreateCategories(Request $request, Response $response): Response
     {
-        // $request->getBody();
 
+        // Extract the JSON data from the request
         $category_data = $request->getParsedBody();
 
         //POST - in json
@@ -66,20 +66,6 @@ class CategoriesController extends BaseController
             // If unsuccessful, throw exception
             throw new HttpBadRequestException($request, $result->getMessage());
         }
-
-
-        // DO FAILED OPERATION
-        //Return a failed operation
-
-        //TODO prepare and return a response containing the "status, message, code, details"
-        //TODO structure repsonse as shown in class and return as JSON response
-        // $payload = [
-        //     'status' => 'error',
-        //     'code' => 400,
-        //     'message' => $result->getMessage(),
-        //     'details' => $result->getErrors()
-        // ];
-        // return  $this->renderJson($response, $payload, 400);
     }
 
     /**
@@ -92,10 +78,9 @@ class CategoriesController extends BaseController
      */
     public function handleUpdateCategories(Request $request, Response $response): Response
     {
-        // category to update
+        // Etract JSON_body data from the request
         $category_data = $request->getParsedBody();
 
-        //dd($update_category);
         //POST - in json
         //? the body could be empty. handle case where body is empty ,,, when request is returned null or invalid
         if (empty($category_data)) {
@@ -131,20 +116,6 @@ class CategoriesController extends BaseController
             // If unsuccessful, throw exception
             // throw new HttpBadRequestException($request, $result->getMessage(), $result->getErrors());
         }
-
-
-        // DO FAILED OPERATION
-        //Return a failed operation
-
-        //TODO prepare and return a response containing the "status, message, code, details"
-        //TODO structure repsonse as shown in class and return as JSON response
-        // $payload = [
-        //     'status' => 'error',
-        //     'code' => 400,
-        //     'message' => $result->getMessage(),
-        //     'details' => $result->getErrors()
-        // ];
-        // return  $this->renderJson($response, $payload, 400);
     }
 
 
@@ -158,18 +129,20 @@ class CategoriesController extends BaseController
      */
     public function handleDeleteCategories(Request $request, Response $response): Response
     {
-        ///$id = $uri_args['allergen_id'];
+        // Extract the data fromt eh request body
         $allergen_ids = $request->getParsedBody();
-        // NOTE: removes an element from an array: by its index or by its key.
-        //unset($allergen_ids[0]);
-        //dd($allergen_ids);
 
+        //Validae if ID_is present
         if (empty($allergen_ids)) {
             throw new HttpBadRequestException($request, "Allergen ID is required");
         }
+
+        //call service that process deletetion
         $result = $this->service->deleteCategories($allergen_ids);
 
+        //Evaluate the result
         if ($result->isSuccess()) {
+
             $payload = [
                 'status' => 'success',
                 'code' => 201,
@@ -199,7 +172,7 @@ class CategoriesController extends BaseController
      */
     public function handleGetCategories(Request $request, Response $response): Response
     {
-        //*Filters
+        //*Filters:Extratc query param
         $filters = $request->getQueryParams();
 
         // //? Validation & exception handling of filter parameters
