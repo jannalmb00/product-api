@@ -23,63 +23,11 @@ class ProductsController extends BaseController
 
     public function __construct(private ProductsModel $model, private ProductsService $product_service)
     {
-        //$this->validator = new ValidationHelper();
 
         //To initialize the validator
         parent::__construct();
     }
-    // public function __construct(private ProductsModel $model)
-    // {
-    //     //$this->validator = new ValidationHelper();
 
-    //     //To initialize the validator
-    //     parent::__construct();
-    // }
-
-    // public function handleCreateProducts(Request $request, Response $response): Response
-    // {
-
-    //     echo ' blet';
-
-    //     //POST - in json
-    //     // TODO: the body could be empty. handle case where body is empty ,,, when request is returned null or invalid
-    //     $new_product = $request->getParsedBody();
-
-    //     // dd($new_product);
-
-    //     //? CALL SERVICE
-    //     $result = $this->service->createProducts($new_product);
-    //     if ($new_product != NULL) {
-    //         dd($new_product);
-
-    //         //!NOte verify he outcome of the opertion: sucess vs filure
-    //         if ($result->isSuccess()) {
-    //             //OPeration succeeded.
-    //             // create an array that will contain -- make this array reusable
-    //             $payload = [
-    //                 'status' => 'Success',
-    //                 'code' => 200,
-    //                 'message' => $result->getMessage(),
-    //             ];
-
-    //             //override the default 200 satus code to 201
-    //             return  $this->renderJson($response, $payload, 201);
-    //         }
-    //     }
-
-    //     // DO FAILED OPERATION
-    //     //Return a failed operation
-
-    //     //TODO prepare and return a response containing the "status, message, code, details"
-    //     //TODO structure repsonse as shown in class and return as JSON response
-    //     $payload = [
-    //         'status' => 'error',
-    //         'code' => 400,
-    //         'message' => $result->getMessage(),
-    //         'details' => $result->getErrors()
-    //     ];
-    //     return  $this->renderJson($response, $payload, 400);
-    // }
 
     /**
      * GET: Handles the request  of retrieving the products based on the filter parameter
@@ -104,7 +52,6 @@ class ProductsController extends BaseController
 
         foreach ($stringValidateArray as $validateString) {
 
-            //If filter array value is not empty
             if (!empty($filters[$validateString])) {
                 $this->validateString($filters, $validateString, $request);
             }
@@ -256,16 +203,16 @@ class ProductsController extends BaseController
      */
     public function handleUpdateProduct(Request $request, Response $response)
     {
+        //retrieve data from the request body
         $product_data = $request->getParsedBody();
 
         if (empty($product_data)) {
             throw new HttpBadRequestException($request, "Data passed is empty");
         }
-        //    dd($product_data[0]);
-
         //? CALL SERVICE
         $result = $this->product_service->updateProduct($product_data[0]);
 
+        //return a JSON_response depending on the result process
         if ($result->isSuccess()) {
 
             $payload = [
@@ -291,7 +238,6 @@ class ProductsController extends BaseController
         }
     }
 
-
     /**
      * DELETE: Handles the deletion of an existing product
      *
@@ -303,15 +249,16 @@ class ProductsController extends BaseController
      */
     public function handleDeleteProduct(Request $request, Response $response, array $uri_args): Response
     {
-
+        //retrieve id from the request body
         $product_ids = $request->getParsedBody();
-
+        //validate that id is provided
         if (empty($product_ids)) {
             throw new HttpBadRequestException($request, "Product ID is required");
         }
-
+        //? CALL SERVICE
         $result = $this->product_service->deleteProduct($product_ids);
 
+        //return a JSON_response depending on the result of the deletion process
         if ($result->isSuccess()) {
             $payload = [
                 'status' => 'success',

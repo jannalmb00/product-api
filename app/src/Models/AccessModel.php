@@ -5,6 +5,11 @@ namespace App\Models;
 use App\Core\PDOService;
 use App\Helpers\DateTimeHelper;
 
+/**
+ * AccessModel handles logging of access to system resources.
+ *
+ * Logs include account info, IP address, URI, HTTP method, and timestamp.
+ */
 class AccessModel extends BaseModel
 {
 
@@ -18,14 +23,18 @@ class AccessModel extends BaseModel
 
     // Log records must include information about the acc used to access the resource, IP address, resource URI HTTP method used date and time, etc.
 
+    /**
+     * Inserts a log entry into the ws_log table.
+     * @param array $logData Log data to insert.
+     * @return mixed Insert result
+     */
     public function insertLog(array $logData): mixed
-    {  //        echo "7 GOES HERE";
-
+    {
+        // Adds the date if not provided
         if (!isset($logData['logged_at'])) {
             $logData['logged_at'] = DateTimeHelper::now(DateTimeHelper::Y_M_D_H_M_S);
-            //  dd( $logData['logged_at'] );
-
         }
+        // insert log to the db
         return $this->insert('ws_log', $logData);
     }
 }

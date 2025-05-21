@@ -6,14 +6,14 @@ use App\Exceptions\HttpNoContentException;
 
 /**
  *
- * Allergen model handles data related to allergns in the system
+ * Allergen model handles data related to allergens in the system
  */
 class AllergensModel extends BaseModel
 {
     /**
-     * GET: Retrieves the list of allergens from the databse with optional filtering, sorting and pagination
+     * GET: Retrieves the list of allergens from the database with optional filtering, sorting and pagination
      *
-     * @param array $filters The filtrs to apply: 'allergen_name', 'allergen_reaction_type ', 'food_group', 'food_origin', and 'food_type'
+     * @param array $filters The filters to apply: 'allergen_name', 'allergen_reaction_type ', 'food_group', 'food_origin', and 'food_type'
      *
      * @return array List of allergens after all the filters
      */
@@ -21,7 +21,7 @@ class AllergensModel extends BaseModel
     {
         //? FOR FILTERING
         $filters_map = [];
-//dd($filters);
+
         $sql = "SELECT * FROM allergens a WHERE 1";
 
         // //? 1: FILTERING - CHECK THE DATA TYPE
@@ -31,11 +31,9 @@ class AllergensModel extends BaseModel
         // Loop: making string filters shorter
         foreach ($stringToFilter as $filterField) {
 
-            // Checks if there is filter param and ands the sql statement for the filter, returns it
+            // Checks if there is filter param and sql statement for the filter, returns it
             // Call the prepareStringSQL function for each field
             $filterResult = $this->prepareStringSQL($filters, $filterField, $filterField);
-
-            //dd($filterResult);
 
             // Check if sqlPart is not empty, meaning there is a filter for that
             if (!empty($filterResult['sqlPart'])) {
@@ -43,7 +41,6 @@ class AllergensModel extends BaseModel
                 // Adds filter to the map
                 $filters_map[$filterField] = $filterResult['value'];
 
-                // dd($filters_map);
                 // Adds filtered sql to base sql statement
                 $sql .= $filterResult['sqlPart'];
             }
@@ -53,31 +50,30 @@ class AllergensModel extends BaseModel
         $approved_ordering = ['allergen_name', 'allergen_reaction_type ', 'food_group', 'food_origin', 'food_type', 'food_item'];
         $sql = $this->sortAndOrder($filters, 'allergen_id',  $approved_ordering, $sql);
 
-        //   dd($sql);
         //? PAGINATE
         return $this->paginate($sql, $filters_map);
     }
     /**
-     * GET: Retrives the details of the specified product
+     * GET: Retrieves the details of the specified product
      *
-     * @param array $filter The filters to apply the query:
+     * @param array $param The parameter taken from the URI: allergen_id
      *
-     * @return array List of fetails for the specified allergen
+     * @return array List of details for the specified allergen
      *
      */
-    public function getAllergenById(array $filter): mixed
+    public function getAllergenById(array $param): mixed
     {
         //Sends the id, table name, column name
-        $result = $this->prepareIdSQL($filter['id'], 'allergens', 'allergen_id');
+        $result = $this->prepareIdSQL($param['id'], 'allergens', 'allergen_id');
 
         //? PAGINATE
         return $this->paginate($result['sqlPart'], $result[0]);
     }
 
     /**
-     * GET: Retrives the ingredietns of the specified allergen
+     * GET: Retrieves the ingredients of the specified allergen
      *
-     * @param array $filters The filters to apply the query:
+     * @param array $filters The filters to apply the query: 'allergen_id', 'ingredient_name', 'processing_type', 'isGMO'
      *
      * @return array List of ingredients of the specified allergen
      */
@@ -92,29 +88,20 @@ class AllergensModel extends BaseModel
         //* SQL query to join ingredients with allergens
         $sql = "SELECT DISTINCT i.* FROM ingredients i WHERE i.allergen_id = :allergen_id";
 
-        // $sql = " SELECT DISTINCT pi.* FROM ingredients product_ingredients pi WHERE i
+        // Provide the filters that we can accept
+        $stringToFilter = ['ingredient_name', 'processing_type', 'isGMO'];
 
-        // Provide the fitlers that we can accept ... I am not sure if we need filters for sub-collection resource but I will add just in case
-        // //? Erase the filters if we dont need it
-        // $stringToFilter = ['ingredient_name', 'processing_type'];
+        //* Loop through string filters and apply them w/ prepareStringSQL
+        foreach ($stringToFilter as $filterField) {
+            // Get filter SQL for this field
+            $filterResult = $this->prepareStringSQL($filters, $filterField, $filterField);
 
-        // //* Loop through string filters and apply them w/ prepareStringSQL
-        // foreach ($stringToFilter as $filterField) {
-        //     // Get filter SQL for this field
-        //     $filterResult = $this->prepareStringSQL($filters, $filterField, $filterField);
-
-        //     // If filter was provided, we add it to the query
-        //     if (!empty($filterResult['sqlPart'])) {
-        //         $filters_map[$filterField] = $filterResult['value'];
-        //         $sql .= $filterResult['sqlPart'];
-        //     }
-        // }
-
-        // // Add filter for GMO status
-        // if (isset($filters['isGMO']) && ($filters['isGMO'] === '1' || $filters['isGMO'] === '0')) {
-        //     $sql .= " AND i.isGMO = :isGMO";
-        //     $filters_map['isGMO'] = (int)$filters['isGMO'];
-        // }
+            // If filter was provided, we add it to the query
+            if (!empty($filterResult['sqlPart'])) {
+                $filters_map[$filterField] = $filterResult['value'];
+                $sql .= $filterResult['sqlPart'];
+            }
+        }
 
         //* Sorting
         $approved_ordering = ['ingredient_name', 'processing_type', 'isGMO'];
@@ -132,7 +119,6 @@ class AllergensModel extends BaseModel
     function insertAllergen($new_allergen): mixed
     {
         $last_id = $this->insert("allergens", $new_allergen);
-        // $last_id = $this->update("allergens", $new_allergen);
         return $last_id;
     }
 
@@ -143,20 +129,25 @@ class AllergensModel extends BaseModel
      */
     function updateAllergen(array $update_allergen_data)
     {
+        // Extract allergen id from the data array
         $allergen_id = $update_allergen_data["allergen_id"];
+
+        // Removes the allergen id from the array, we don't want to update that
         unset($update_allergen_data["allergen_id"]);
 
+        // call update method in base model
         return $this->update('allergens', $update_allergen_data, ["allergen_id" =>  $allergen_id]);
     }
 
 
     /**
-     * Delete an allergen
+     * Delete an allergen based on allergen_id
      * @param string $allergen_id refers to the ID of the allergen
      * @return int refers to the number of rows affected
      */
     function deleteAllergen(string $allergen_id): int
     {
+        // call delete method in base model
         return $this->delete('allergens', ["allergen_id" => $allergen_id]);
     }
 }

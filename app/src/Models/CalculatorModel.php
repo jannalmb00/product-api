@@ -5,9 +5,17 @@ namespace App\Models;
 use App\Validation\Validator;
 use App\Core\Result;
 
-
+/**
+ * Model for calculating and validating inputs for the calculation resource
+ */
 class CalculatorModel extends BaseModel
 {
+
+    /**
+     * Calculates BMR and TDEE (total daily energy expenditure)
+     * @param array $data Input data including gender, weight, height, age, and activity level.
+     * @return array{bmr: float, tdee: float, unit: string|array{errors: array|bool, message: string, success: bool}} Result with BMR, TDEE, or validation error.
+     */
     function calculateCalories(array $data)
     {
         //TODO: validate inputs first
@@ -38,6 +46,7 @@ class CalculatorModel extends BaseModel
         $validator = new Validator($data, [], 'en');
         $validator->mapFieldsRules($rules);
 
+        // Return error if validation fails
         if (!$validator->validate()) {
             return [
                 'success' => false,
@@ -47,8 +56,7 @@ class CalculatorModel extends BaseModel
         }
 
 
-        //TODO extract the inputsss pookie
-
+        //TODO extract the inputss
         //variables: gender (female,male),weights(kg),height(cm),age(yrs)
 
         $gender = strtolower($data['gender']);
@@ -56,16 +64,14 @@ class CalculatorModel extends BaseModel
         $height = $data['height'];
         $age = $data['age'];
 
+        // Calculate BMR (Basal Metabolic Rate)
         if ($gender == 'female') {
-            // echo "female";
             $bmr = 10 * $weight + 6.25 * $height - 5 * $age - 161;
-            // echo $bmr;
         } else {
             $bmr = 10 * $weight + 6.25 * $height - 5 * $age + 5;
         }
-        // dd($data);
 
-        //activit
+        // Activity multiplier based on activity/week
         $activity_per_week = $data['activity_per_week'];
 
         if ($activity_per_week === 0) {
@@ -82,7 +88,7 @@ class CalculatorModel extends BaseModel
             $multiplier = 2.3;
         }
 
-
+        // Calculate TDEE
         $tdee = $bmr * $multiplier;
 
         $result = [
@@ -91,13 +97,17 @@ class CalculatorModel extends BaseModel
             'unit' => 'kcal/day'
         ];
 
-        //retur
-
 
         //TODO: return result
         return $result;
     }
 
+
+    /**
+     * Calculates recommended daily fiber intake.
+     * @param array $data  Must include 'daily_calories'.
+     * @return array{daily_calories: mixed, formula_used: string, recommended_fiber_intake: array{unit: string, value: float}|array{errors: array|bool, message: string, success: bool}}  Recommended fiber intake in grams or validation error.
+     */
     function calculateFiberIntake(array $data)
     {
         // Validate inputs
@@ -121,7 +131,7 @@ class CalculatorModel extends BaseModel
 
         $dailyCalories = $data['daily_calories']; // Fetch input
 
-        // daily_calories / 1000 * 14g / https://www.omnicalculator.com/health/fiber
+        // Calculate
         $recommendedFiberIntake = ($dailyCalories / 1000) * 14;
 
         // Prepare result
@@ -137,6 +147,12 @@ class CalculatorModel extends BaseModel
         return $result;
     }
 
+
+    /**
+     *  Calculates BMI and returns the category.
+     * @param array $data  Must include weight (kg), height (cm) and gender.
+     * @return array{bmi: float, category: string|array{errors: array|bool, message: string, success: bool}} BMI value and category, or validation error.
+     */
     function calculateBMI(array $data)
     {
         // Validate inputs

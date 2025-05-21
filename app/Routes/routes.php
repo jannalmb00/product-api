@@ -11,6 +11,7 @@ use App\Controllers\CalculatorController;
 use App\Controllers\CompositeController;
 use App\Controllers\UserController;
 use App\Controllers\RecipesController;
+use App\Controllers\BrandController;
 
 use App\Helpers\DateTimeHelper;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -42,6 +43,8 @@ return static function (Slim\App $app, array $settings): void {
     $app->post("/bmi", [CalculatorController::class, 'handleCalculateBMI']);
 
     $app->get("/cocktail_category", [CompositeController::class, 'handleGetCocktailsCategories']);
+
+    $app->get('/brands/{brand_id}/products', [BrandController::class, 'handleGetProductsByBrand']);
 
     //*ROUTE:GET /coffee-info
     //$app->$get("/coffee_category", [CompositeController::class, 'handleGetCoffeeCategory']);

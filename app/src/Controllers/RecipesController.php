@@ -134,7 +134,6 @@ class RecipesController extends BaseController
     private function getIngredientFromProduct(array $product): string
     {
         // Get the product name by separating the product name as per the ingredients
-        // For this time, we use this method as we do not have product_ingredients data for now, we use based off product name!
         $product_words = explode(' ', strtolower($product['product_name']));
 
         $common_ingredients = [

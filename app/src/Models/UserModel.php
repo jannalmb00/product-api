@@ -2,26 +2,42 @@
 
 namespace App\Models;
 
+/**
+ * Model that handles the View, Create, Update and Delete actions
+ */
 class UserModel extends BaseModel
 {
-
+    /**
+     *  Creates a new user in the database
+     * @param array $new_user Associative array containing user data to insert.
+     * @return mixed Returns the last inserted ID or false on failure.
+     */
     function createUser(array $new_user): mixed
-    {        // echo "user created";
-
+    {
         $last_id = $this->insert("ws_users", $new_user);
         return $last_id;
     }
+
+    /**
+     *  Checks if a user exists by their email address.
+     * @param string $email The email address to search for
+     * @return bool Returns true if the user exists, false otherwise.
+     */
     public function userExistsByEmail(string $email): bool
     {
-        // echo "  checking if user exists   ";
-        // echo ' ' . $email . ' ';
+
         $sql = "SELECT 1 FROM ws_users WHERE email = :email LIMIT 1";
         $result = $this->fetchSingle($sql, ['email' => $email]);
-        // dd($result);
-        //echo $result;
         return $result !== false;
     }
 
+
+    /**
+     * Retrieves full user data by email address.
+     * @param string $email The email address of the user.
+     * @return mixed Returns an associative array of the user's record,
+     *  or false if not found.
+     */
     public function getUserEmail(string $email): mixed
     {
         $sql = "SELECT * FROM ws_users WHERE email = :email";
