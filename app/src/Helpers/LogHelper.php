@@ -39,6 +39,7 @@ class LogHelper
             $bodyArray = isset($body[0]) ? $body[0] : "";
             $email = $bodyArray["email"];
         }
+        //dd($email);
 
         //! Logs when registering
         $data = [
@@ -54,12 +55,11 @@ class LogHelper
     public static function writeToErrorLog(\Throwable $e, Request $request): void
     {
 
-        //echo "2 GOES HERE";
 
         // Writes to access.log
         //1. create logger
         $logger = new Logger('error');
-        // echo "3 GOES HERE";
+
 
         //2. push a log record handler
         $file_path = APP_LOGS_PATH . '/error.log';
@@ -74,7 +74,7 @@ class LogHelper
             'url'         => (string)$request->getUri(),
             // 'user_id' => $request->getAttribute('userId') ?? 'guest',
         ];
-        // dd($e->getMessage());
+
         $logger->error($e->getMessage(), $data);
     }
 }
