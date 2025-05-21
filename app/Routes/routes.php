@@ -42,6 +42,7 @@ return static function (Slim\App $app, array $settings): void {
     $app->post("/fiber", [CalculatorController::class, 'handleCalculateFiber']);
     $app->post("/bmi", [CalculatorController::class, 'handleCalculateBMI']);
 
+    
     $app->get("/cocktail_category", [CompositeController::class, 'handleGetCocktailsCategories']);
 
     $app->get('/brands/{brand_id}/products', [BrandController::class, 'handleGetProductsByBrand']);

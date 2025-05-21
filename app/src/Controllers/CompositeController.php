@@ -8,6 +8,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Exceptions\HttpNoContentException;
 use App\Exceptions\HttpInvalidInputException;
 use App\Models\CategoriesModel;
+use App\Models\ProductsModel;
 use App\Core\AppSettings;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
