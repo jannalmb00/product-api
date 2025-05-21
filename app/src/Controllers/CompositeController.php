@@ -7,12 +7,13 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Exceptions\HttpNoContentException;
 use App\Exceptions\HttpInvalidInputException;
-use App\Models\CompositeModel;
+use App\Models\CategoriesModel;
 use App\Core\AppSettings;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use App\Validation\Validator;
 use App\Models\AllergensModel;
+use Slim\Exception\HttpBadRequestException;
 
 class CompositeController extends BaseController
 {
@@ -22,32 +23,34 @@ class CompositeController extends BaseController
     private Client $http_client;
 
 
-    public function __construct(protected AppSettings $appSettings, private CategoriesModel $categories_model, AllergensModel $allergens_model) // replace the reference to a service, and the service will have a reference to the model
+    public function __construct(protected AppSettings $appSettings, CategoriesModel $categories_model, AllergensModel $allergens_model) // replace the reference to a service, and the service will have a reference to the model
     {
         //To initialize the validator
         parent::__construct();
 
         // For Fruit composite resource
         $this->allergens_model = $allergens_model;
+        // For cocktail composite resource
         $this->categories_model = $categories_model;
         $this->http_client = new Client();
     }
 
-    public function handleGetCocktailsCategories(Request $request, Response $response, array $uri_args): Response
+    /**
+     * Fetches cocktail data from TheCocktailDB API and matches it with the a category from the database. Gives an aggregated data of the cocktail data and category data.
+     * Requires a 'name' query parameter to search for a cocktail.
+     * @param \Psr\Http\Message\ServerRequestInterface $request The HTTP request.
+     * @param \Psr\Http\Message\ResponseInterface $response  The HTTP response.
+     * @throws \Slim\Exception\HttpBadRequestException If 'name' is missing or external API fails.
+     * @throws \App\Exceptions\HttpNoContentException If no matching cocktail is found.
+     * @return Response A JSON response containing cocktail and matched category data.
+     */
+    public function handleGetCocktailsCategories(Request $request, Response $response): Response
     {
 
         //*Filters
         $filters = $request->getQueryParams();
 
         // //? Validation & exception handling of filter parameters
-
-        //!NOTE: Can't add a Name filter for product that filters if the product name is only letters (ex: 2% milk)  -- need ideas
-        // You can, use the valitron -> ascii
-
-        //* Validating if input are string
-        //dd($filters);
-
-
         $name = $filters['name'] ?? '';
 
         if (empty($name)) {
@@ -97,10 +100,22 @@ class CompositeController extends BaseController
 
             return $this->renderJson($response, $result);
         } catch (GuzzleException $e) {
-            throw new Exception("Failed to fetchh data from The CocktailDB", $e->getMessage());
+            throw new HttpBadRequestException($request, "Failed to fetch data from The CocktailDB" .  $e->getMessage());
         }
     }
 
+    /**
+     * Retrieves fruit information data from Fruityvice API and allergen data from the database.
+     *Requires a 'fruit_name' query parameter to search for a fruit.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request The HTTP request.
+     * @param \Psr\Http\Message\ResponseInterface $response The HTTP response.
+     * @param array $uri_args URI parameters, must include 'fruit_name'.
+     * @throws \App\Exceptions\HttpInvalidInputException If 'fruit_name' is missing or invalid.
+     * @throws \Slim\Exception\HttpBadRequestException If the external API request fails.
+     * @throws \App\Exceptions\HttpNotFoundException If fruit data or  allergens data are not found.
+     * @return Response A JSON response containing fruit info and allergen info.
+     */
     public function handleGetFruitInformation(Request $request, Response $response, array $uri_args): Response
     {
 
@@ -143,7 +158,7 @@ class CompositeController extends BaseController
             // fruit info from composite resource
             $fruit_data = json_decode($api_content, true);
         } catch (GuzzleException $e) {
-            throw new HttpNotFoundException($request, "Error fetching fruits: " . $e->getMessage());
+            throw new HttpBadRequestException($request, "Error fetching fruits: " . $e->getMessage());
         }
 
         // Checks if fruit data exists --
