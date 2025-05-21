@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+/**
+ * Model that handles the View, Create, Update and Delete actions
+ */
 class UserModel extends BaseModel
 {
     /**

@@ -6,7 +6,7 @@ use App\Exceptions\HttpNoContentException;
 
 /**
  *
- * Allergen model handles data related to allergns in the system
+ * Allergen model handles data related to allergens in the system
  */
 class AllergensModel extends BaseModel
 {

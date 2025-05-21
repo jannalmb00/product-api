@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Slim\Exception\HttpBadRequestException;
 
+
 class CompositeModel extends BaseModel
 {
 

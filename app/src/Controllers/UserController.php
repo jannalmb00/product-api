@@ -5,19 +5,16 @@ namespace App\Controllers;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Exception\HttpBadRequestException;
-use App\Exceptions\HttpNoContentException;
-use App\Exceptions\HttpInvalidInputException;
-use App\Validation\ValidationHelper;
 use App\Models\UserModel;
-use App\Models\BaseModel;
 use App\Services\UserService;
 use App\Core\AppSettings;
 use Exception;
 use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 
 
-
+/**
+ * Controller that is for handling the user creation and user login
+ */
 class UserController extends BaseController
 {
 

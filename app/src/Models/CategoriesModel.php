@@ -9,18 +9,20 @@ namespace App\Models;
  */
 class CategoriesModel extends BaseModel
 {
-
+    /**
+     * Inserts new category to the database using data input
+     * @param array $new_category  Associative array of category data.
+     * @return mixed The last inserted ID.
+     */
     public function insertNewCategory(array $new_category): mixed
     {
-        // increments the product_id
+        // increments the category_id
         $sql = "SELECT category_id FROM categories ORDER BY key_id DESC LIMIT 1";
         $lastCatId = $this->fetchSingle($sql);
 
         if ($lastCatId != null) {
-            //  dd($lastCatId['category_id']);
 
             if (preg_match('/C-(\d+)/', $lastCatId['category_id'], $matches)) { {
-                    //       dd($lastCatId['product_id']);
 
                     // convert last digits to int
                     $lastCatNumber = (int) $matches[1];
@@ -30,8 +32,7 @@ class CategoriesModel extends BaseModel
             }
         }
 
-
-        // add product id to array
+        // add category id to array
         $new_category['category_id'] = $nextCatId;
         // From base model , pass table name, array conatining key value pairs
         $last_id = $this->insert('categories', $new_category);
@@ -39,31 +40,37 @@ class CategoriesModel extends BaseModel
         return $last_id;
     }
 
+
+    /**
+     *  Updates an existing category.
+     * @param array $update_category_data Associative array with updated fields.
+     * @return int Number of affected rows or result from database.
+     */
     public function updateCategory(array $update_category_data): mixed
     {
-        // From base model , pass table name, array conatining key value pairs
-        //    $last_id = $this->update('category', ["data" => $update_category_data[1]], ["category_id" => $update_category_data[0]]);
-
-        //dd(is_array($update_category_data));
-
         $category_id_data = $update_category_data["category_id"];
 
         unset($update_category_data["category_id"]);
 
         //for update
         $last_id = $this->update('categories', $update_category_data, ["category_id" => $category_id_data]);
-        // dd($last_id);
 
         return $last_id;
     }
 
+
+    /**
+     *  Deletes a category by its ID.
+     * @param string $category_id Category ID to delete.
+     * @return int Number of deleted rows.
+     */
     function deleteCategory(string $category_id): int
     {
         return $this->delete('categories', ["category_id" => $category_id]);
     }
 
     /**
-     * GET: Retriveds the list of categories from the database with optional filtering, sorting and pagination
+     * GET: Retrieves the list of categories from the database with optional filtering, sorting and pagination
      *
      * @param array $filters The filters to apply to the query: 'category_name', 'category_type', 'parent_category'
      *
@@ -78,8 +85,6 @@ class CategoriesModel extends BaseModel
                 FROM categories c
                 LEFT JOIN categories pc ON c.parent_category_id = pc.category_id
                 WHERE 1";
-
-        // JOIN category pc ON c.category_id = pc.parent_category_id, , pc.category_name as parent_category_name
 
         // //? 1: FILTERING - CHECK THE DATA TYPE
         //Define filters
@@ -107,7 +112,6 @@ class CategoriesModel extends BaseModel
         //? Sorting
         $approved_ordering = ['category_name', 'category_type', 'parent_category'];
         $sql = $this->sortAndOrder($filters, 'category_id',  $approved_ordering, $sql);
-        //dd($sql);
         //? PAGINATE
         return $this->paginate($sql, $filters_map);
     }
@@ -130,7 +134,7 @@ class CategoriesModel extends BaseModel
     }
 
     /**
-     * GET: Retrievs the brand of specified category in the system
+     * GET: Retrieves the brand of specified category in the system
      *
      * @param array $filters The filters to apply to the query:  'brand_name', 'brand_country'
      * @return array
@@ -144,8 +148,6 @@ class CategoriesModel extends BaseModel
             "category_id" => $category_id,
         ];
 
-        // dd($filters_map);
-
         //* SQL query FROM brands, products and category
         $sql = "SELECT DISTINCT c.category_id, c.category_name, b.*, c.*
             FROM brands b
@@ -153,8 +155,6 @@ class CategoriesModel extends BaseModel
             LEFT JOIN categories c ON p.category_id = c.category_id
             WHERE p.category_id = :category_id";
 
-        //Provide the filters that we can accept ... I am not sure if we need filters for sub-collection resource but I will add just in case
-        // //? Erase the filters if we oont need it
         $stringToFilter = ['brand_name', 'brand_country'];
 
         // Loop through string filters and apply them w/ prepareStringSQL

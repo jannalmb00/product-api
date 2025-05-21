@@ -7,12 +7,20 @@ use App\Models\UserModel;
 use App\Validation\Validator;
 use App\Core\PasswordTrait;
 
-
+/**
+ * Handles user creation and authentication.
+ */
 class UserService
 {
     use PasswordTrait;
     public function __construct(private UserModel $user_model) {}
 
+
+    /**
+     *  Creates a new user after validating input and checking for duplicates.
+     * @param array $new_user_data Associative array containing user input data.
+     * @return Result Result Success or failure result with a message
+     */
     function createUser(array $new_user_data): Result
     {
         //TODO: 1) Validate the received resource data about the new resource to be created.
@@ -49,13 +57,11 @@ class UserService
 
         //TODO: 2) Insert the resource into the DB table
 
-        //* We can use an array and using the first 1 so we can make our lives easier
         $validator = new Validator($new_user_data, [], 'en');
         $validator->mapFieldsRules($rules);
 
         //todo: check if an existing user is in there
         if ($this->user_model->userExistsByEmail($new_user_data['email'])) {
-            // echo "   WTF   ";
             return Result::failure("A user with this email already exists.");
         }
 
@@ -75,6 +81,13 @@ class UserService
         return Result::success("The new user has been created successfully!", $last_inserted_id);
     }
 
+    /**
+     *  Authenticates a user by email and password.
+     *
+     * @param string $email User's email.
+     * @param string $password Plain-text password to verify.
+     * @return Result  Result Success with user data, or failure with message.
+     */
     public function authenticateUser(string $email, string $password): Result
     {
 

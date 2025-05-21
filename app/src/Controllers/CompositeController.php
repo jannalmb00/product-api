@@ -15,6 +15,9 @@ use App\Validation\Validator;
 use App\Models\AllergensModel;
 use Slim\Exception\HttpBadRequestException;
 
+/**
+ * Controller that is for handling composite resources and aggregating them with our own resources
+ */
 class CompositeController extends BaseController
 {
 
@@ -62,7 +65,6 @@ class CompositeController extends BaseController
             $api_response = $this->http_client->request('GET', 'https://www.thecocktaildb.com/api/json/v1/1/search.php', ['query' => ['s' => $name]]);
 
             $content = json_decode($api_response->getBody()->getContents(), true);
-            //dd($content);
 
             $drinks = $content['drinks'] ?? [];
 

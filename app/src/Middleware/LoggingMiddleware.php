@@ -34,31 +34,25 @@ class LoggingMiddleware implements MiddlewareInterface
      */
     public function process(Request $request, RequestHandler $handler): ResponseInterface
     {
-        // Optional: Handle the incoming request
-        // ...
 
         //! DO NOT remove or change the following statements.
         // Invoke the next middleware and get response
         // Optional: Handle the outgoing response
         // ...
         $response = $handler->handle($request);
-        // echo "DB name " . $this->app_settings->get("db")["database"];
-        // echo "1 GOES HERE ";
+
         // TODO: make LogHelper class
         //* 1) Write to access.log using the LogHelper class
         LogHelper::writeToAccessLog($request, $response);
-        // echo "5 GOES HERE";
 
 
         //* 2) Insert log records into the ws_user DB table --> Log Helper needs to be implemented and tested before this
         // Note: See aa_tables.zip on LEA. contains db schema to import to phpmyadmin
         // We need an instance of AccessModel -> this is done by adding the access model to cosntructor --> done
-        //*
-        // Inserts to db
-        // get the response body and its content
+
+        // Inserts to db. get the response body and its content
         //! Register
         $body = $request->getParsedBody();
-
 
         // Prepare details to add to db
         if (is_array($body)) {
@@ -75,15 +69,20 @@ class LoggingMiddleware implements MiddlewareInterface
         if ($response->getBody()->isSeekable()) {
             $response->getBody()->rewind();
         }
+
         $json = json_decode((string)$responseBody, true);
         if (is_array($json)) {
             $user_id = $json['user_id'] ?? "";
         }
 
+        // to add user to the log
+        $user_id = $request->getAttribute('jwt')['user_id'] ?? '';
+
         $logData = [
-            //  'email' => $email,
             'user_action' => $user_action,
-            'user_id' => $user_id
+            'email' => $user_id,
+            'ip_address' => $request->getServerParams()['REMOTE_ADDR'] ?? 'unknown',
+
         ];
 
         // Pass to access model to insert to db
