@@ -11,38 +11,52 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use App\Exceptions\HttpUnauthorizedException;
 
+/**
+ * Middleware responsible for authenticating incoming request using JWT
+ */
 class AuthMiddleware implements MiddlewareInterface
 {
+    /**
+     * The sectret key used to validate JWTs
+     * @var string
+     */
     private string $jwtKey;
 
     public function __construct(string $jwtKey)
     {
         $this->jwtKey = $jwtKey;
     }
+    /**
+     * Intercepts the incoming request, validate the JWT and attaches the decode data
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param \Psr\Http\Server\RequestHandlerInterface $handler
+     * @throws \App\Exceptions\HttpUnauthorizedException
+     * @return ResponseInterface
+     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
 
         $uri = $request->getUri()->getPath();
-        //echo $uri;
-        if ($uri === '/product-api/register' ||  $uri === '/product-api/login') {
-            return $handler->handle($request);
-        }
+        // retrieve the authorization header
         $authHeader = $request->getHeaderLine('Authorization');
 
+        //valudate header format
         if (empty($authHeader) || !str_starts_with($authHeader, 'Bearer ')) {
             throw new HttpUnauthorizedException($request, "Missing or invalid Authorization header");
         }
-
+        //Extract the JWT token from the authorization header
         $token = trim(str_replace('Bearer', '', $authHeader));
 
-        //echo "JWT KEY IN MIDDLEWARE" . $this->jwtKey;
+
 
         try {
-            //decode
+            //decode the token using the HS256 algoritm and provide sectret key
             $decoded = JWT::decode($token, new Key($this->jwtKey, 'HS256'));
-            //  var_dump($this->jwtKey);
-            // dd($token);
+
+            //Attach decode JWT to the request attributes
             $request = $request->withAttribute('jwt', (array)$decoded);
+
+            //Proceed to the next step (either another middleware or controller)
             return $handler->handle($request);
         } catch (\Exception $e) {
             //unauthorized
