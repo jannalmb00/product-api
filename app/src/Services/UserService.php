@@ -101,7 +101,6 @@ class UserService
 
         //? Step 3) Verify password
         if (!password_verify($password, $user['password'])) {
-            echo "failed";
             return Result::failure("Invalid email or password");
         }
 

@@ -41,10 +41,10 @@ return function (App $app) {
     //!NOTE: You can add override the default error handler with your custom error handler.
     //* For more details, refer to Slim framework's documentation.
     // Custom error handler for logging errors
-    // $errorMiddleware->setDefaultErrorHandler(
-    //     new LoggingErrorHandler(
-    //         $app->getCallableResolver(),
-    //         $app->getResponseFactory()
-    //     )
-    // );
+    $errorMiddleware->setDefaultErrorHandler(
+        new LoggingErrorHandler(
+            $app->getCallableResolver(),
+            $app->getResponseFactory()
+        )
+    );
 };

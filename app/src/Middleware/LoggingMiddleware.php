@@ -82,11 +82,14 @@ class LoggingMiddleware implements MiddlewareInterface
             $user_id = $json['user_id'] ?? "";
         }
 
+        // to add user to the log
+        $user_id = $request->getAttribute('jwt')['user_id'] ?? '';
+
         //5. Prepare log data for database
         $logData = [
             'user_action' => $user_action,
             'email' => $user_id,
-            'ip_address' => $request->getServerParams()['REMOTE_ADDR'] ?? 'unknown',
+            //     'ip_address' => $request->getServerParams()['REMOTE_ADDR'] ?? 'unknown',
 
         ];
 

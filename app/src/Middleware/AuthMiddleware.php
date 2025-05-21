@@ -61,8 +61,8 @@ class AuthMiddleware implements MiddlewareInterface
         } catch (\Exception $e) {
             //unauthorized
             error_log('AuthMiddleware threw: ' . $e->getMessage());
-
-            throw new HttpUnauthorizedException($request, "Invalid or expired token");
+             throw $e;
+        //    throw new HttpUnauthorizedException($request, "Invalid or expired token");
         }
     }
 }

@@ -189,6 +189,7 @@ class CategoriesController extends BaseController
         if ($info["data"] == false) {
             //! no matching record in the db
             throw new HttpNoContentException($request, "Request successful. No product in the record.");
+            // return $response->withStatus(204);
         }
 
         return $this->renderJson($response, $info);
