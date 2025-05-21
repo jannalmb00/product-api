@@ -51,51 +51,36 @@ class LoggingMiddleware implements MiddlewareInterface
         //2) Write to access.log using the LogHelper class
         LogHelper::writeToAccessLog($request, $response);
 
-
-        //* 2) Insert log records into the ws_user DB table --> Log Helper needs to be implemented and tested before this
-        // We need an instance of AccessModel -> this is done by adding the access model to cosntructor --> done
-
         // Inserts to db. get the response body and its content
-        //! Register
+        //* Register
         $body = $request->getParsedBody();
 
-        // Prepare details to add to db
-        if (is_array($body)) {
-            $bodyArray = isset($body[0]) ? $body[0] : "";
-            // $email = $bodyArray["email"];
+        //3.Extracts email from body / session
+        //* When registering: checks if email is in the body, to add it to the log
+        $email = "";
+        if (isset($body[0]["email"])) {
+            // For REGISTER & LOGIN
+            $email = $body[0]["email"];
+        } else if (isset($_SESSION['user']['email'])) {
+            // adds email using session: used for GET
+            $email = $_SESSION['user']['email'];
         }
 
-        //! Logs when registering
-        //3. Construct user action sring
+        //4. Construct user action sring
         $user_action = $request->getMethod() . ' ' . (string) $request->getUri()->getPath();
 
-        //4. Read the response body
-        $responseBody = $response->getBody();
+        // 5. Gets userid and email from session
+        $user_id = isset($_SESSION['user']['id']) ? $_SESSION['user']['id'] : "";
 
-        // Rewind the stream if needed
-        if ($response->getBody()->isSeekable()) {
-            $response->getBody()->rewind();
-        }
-
-        $json = json_decode((string)$responseBody, true);
-        if (is_array($json)) {
-            $user_id = $json['user_id'] ?? "";
-        }
-
-        // to add user to the log
-        $user_id = $request->getAttribute('jwt')['user_id'] ?? '';
-
-        //5. Prepare log data for database
+        //6. Prepare log data for database - no ip for the db
         $logData = [
             'user_action' => $user_action,
-            'email' => $user_id,
-            //     'ip_address' => $request->getServerParams()['REMOTE_ADDR'] ?? 'unknown',
-
+            'user_id' => $user_id,
+            'email' => $email,
         ];
 
-        // Pass to access model to insert to db
+        // 7. Pass to access model to insert to db
         $this->access_model->insertLog($logData);
-
 
         //8 Return the original response unchanged
         return $response;

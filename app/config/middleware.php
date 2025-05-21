@@ -7,7 +7,8 @@ use App\Middleware\LoggingMiddleware;
 
 use App\Middleware\ContentNegotiationMiddleware;
 use App\Middleware\AuthMiddleware as AuthMiddleware;
-
+use Psr\Http\Message\ServerRequestInterface;
+use App\Helpers\LogHelper;
 use App\Handlers\LoggingErrorHandler;
 
 use Slim\App;
@@ -41,10 +42,37 @@ return function (App $app) {
     //!NOTE: You can add override the default error handler with your custom error handler.
     //* For more details, refer to Slim framework's documentation.
     // Custom error handler for logging errors
-    $errorMiddleware->setDefaultErrorHandler(
-        new LoggingErrorHandler(
-            $app->getCallableResolver(),
-            $app->getResponseFactory()
-        )
-    );
+    $customErrorHandler = function (
+        ServerRequestInterface $request,
+        Throwable $exception,
+        bool $displayErrorDetails,
+        bool $logErrors,
+        bool $logErrorDetails
+    ) use ($app) {
+
+        // Log to error.log
+        LogHelper::writeToErrorLog($exception, $request);
+
+        // structure the error payload
+        $payload = [
+            'error' => true,
+            'exception' => [
+                'type' => get_class($exception),
+                'message' => $exception->getMessage(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine()
+            ]
+        ];
+
+        $response = $app->getResponseFactory()->createResponse(
+            $exception->getCode(),
+            $exception->getMessage()
+        );
+
+        $response->getBody()->write(json_encode($payload));
+
+        return $response->withHeader('Content-Type', 'application/json');
+    };
+
+    $errorMiddleware->setDefaultErrorHandler($customErrorHandler);
 };

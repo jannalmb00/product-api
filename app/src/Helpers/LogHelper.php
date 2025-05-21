@@ -11,32 +11,30 @@ use App\Helpers\DateTimeHelper as Date;
 
 class LogHelper
 {
-
-
     public static function writeToAccessLog(Request $request, Response $response): void
     {
-
-        //  echo "2 GOES HERE";
-
         // Writes to access.log
         //1. create logger
         $logger = new Logger('access');
-        //   echo "3 GOES HERE";
 
         //2. push a log record handler
         $file_path = APP_LOGS_PATH . '/access.log';
         $logger->pushHandler(new StreamHandler($file_path, LogLevel::INFO));
 
-
         //3. write a log record to the logger
-        // We can add here the HTTP method
 
         // extract email from body
         $body = $request->getParsedBody();
 
-        if (is_array($body)) {
-            $bodyArray = isset($body[0]) ? $body[0] : "";
-            $email = $bodyArray["email"];
+        $status = $response->getStatusCode();
+
+        $email = "";
+        if (isset($body[0]["email"])) {
+            // For REGISTER & LOGIN
+            $email = $body[0]["email"];
+        } else if (isset($_SESSION['user']['email'])) {
+            // adds email using session: used for GET
+            $email = $_SESSION['user']['email'];
         }
 
         //! Logs when registering
@@ -45,7 +43,8 @@ class LogHelper
             'resource' => (string)$request->getUri()->getPath(),
             'ip' => $request->getServerParams()['REMOTE_ADDR'] ?? '-',
             'parameters' => $request->getQueryParams(),
-            'user' => $email
+            'user' => $email,
+            'status' => $status
         ];
         $logger->info("Access", $data);
     }
@@ -53,27 +52,35 @@ class LogHelper
     public static function writeToErrorLog(\Throwable $e, Request $request): void
     {
 
-        //echo "2 GOES HERE";
-
-        // Writes to access.log
+        // Writes to error.log
         //1. create logger
         $logger = new Logger('error');
-        // echo "3 GOES HERE";
 
         //2. push a log record handler
         $file_path = APP_LOGS_PATH . '/error.log';
         $logger->pushHandler(new StreamHandler($file_path, LogLevel::ERROR));
 
+        // extract email from body
+        $body = $request->getParsedBody();
+
+        $email = "";
+        if (isset($body[0]["email"])) {
+            // For REGISTER & LOGIN
+            $email = $body[0]["email"];
+        } else if (isset($_SESSION['user']['email'])) {
+            // adds email using session: used for GET
+            $email = $_SESSION['user']['email'];
+        }
+
         //3. write a log record to the logger
         $data = [
-            //  'extra'        => $request->getQueryParams(),
-            //  'exception'    => $e->getTrace(),
+            'exception'    => $e->getMessage(),
             'method'      => $request->getMethod(),
             'ip'          => $request->getServerParams()['REMOTE_ADDR'] ?? '-',
             'url'         => (string)$request->getUri(),
-            // 'user_id' => $request->getAttribute('userId') ?? 'guest',
+            'parameters' => $request->getQueryParams(),
+            'user' => $email
         ];
-        // dd($e->getMessage());
         $logger->error($e->getMessage(), $data);
     }
 }

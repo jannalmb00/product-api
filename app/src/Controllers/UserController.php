@@ -119,7 +119,6 @@ class UserController extends BaseController
                 $key = $this->appSettings->get("jwt_key");
                 $jwt = JWT::encode($registered_claim, $key, 'HS256');
 
-
                 //? Step 7) Throw successful response payload
                 $success_response_payload = [
                     "status" => "Success",
