@@ -69,7 +69,7 @@ return function (App $app) {
             $exception->getMessage()
         );
 
-        $response->getBody()->write(json_encode($payload));
+        $response->getBody()->write(json_encode($payload, JSON_PRETTY_PRINT));
 
         return $response->withHeader('Content-Type', 'application/json');
     };
