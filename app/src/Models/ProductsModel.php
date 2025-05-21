@@ -12,18 +12,6 @@ use App\Core\PasswordTrait;
 class ProductsModel extends BaseModel
 {
 
-    // public function insertNewProduct(array $new_product): mixed
-    // {
-    //     // From base model , pass table name, array conatining key value pairs
-    //     $last_id = $this->insert('products', $new_product);
-
-    //     //for update
-    //     //$last_id = $this->update('products', $new_product, ["product_id" => ]);
-
-
-    //     return $last_id;
-    // }
-
     use PasswordTrait;
     /**
      * Retrieves the products
@@ -33,11 +21,7 @@ class ProductsModel extends BaseModel
      */
     public function getProducts(array $filters): array
     {
-
-        // $this->cryptPassword();
-
-        // //? FOR FILTERING
-
+        //array to store values for sql
         $filters_map = [];
 
         $sql = "SELECT p.* , c.category_name, b.brand_name
@@ -73,7 +57,6 @@ class ProductsModel extends BaseModel
         $approved_ordering = ['product_name', 'product_origin'];
         $sql = $this->sortAndOrder($filters, 'product_id',  $approved_ordering, $sql);
 
-        //dd($sql);
         //? PAGINATE
         return $this->paginate($sql, $filters_map);
     }
@@ -134,8 +117,7 @@ class ProductsModel extends BaseModel
      */
     function insertProduct(array $new_product): mixed
     {
-        //     dd($new_product);
-        // table name, data array
+        //insert product and return the last inserted ID
         $last_id = $this->insert("products", $new_product);
         return $last_id;
     }
@@ -148,18 +130,14 @@ class ProductsModel extends BaseModel
      */
     function updateProduct(array $update_product_data): mixed
     {
+        //extract id fom the data
         $product_id_data = $update_product_data["product_id"];
-        //      dd($product_id_data);
-        //  dd($update_product_data);
 
+        //remore id to avoid updating it
         unset($update_product_data["product_id"]);
 
-
-        // return $this->update('product', $update_product_date, ["product_id" => $product_id]);
-
-        //for update
+        //perform update and return the affected row
         $last_id = $this->update('products', $update_product_data, ["product_id" => $product_id_data]);
-        // dd($last_id);
 
         return $last_id;
     }
@@ -172,6 +150,7 @@ class ProductsModel extends BaseModel
      */
     function deleteProduct(string $product_id): int
     {
+        //Delete the product with the specified ID
         return $this->delete('products', ["product_id" => $product_id]);
     }
 }
