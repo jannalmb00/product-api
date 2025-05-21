@@ -28,10 +28,9 @@ class UserController extends BaseController
     }
 
 
-    //* ROUTE: POST /Register
     /**
-     * POST:
-     *
+     * POST: Handle the creation of users
+     * ROUTE: POST /Register
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param \Psr\Http\Message\ResponseInterface $response
      * @return Response
@@ -40,9 +39,6 @@ class UserController extends BaseController
     {
 
         //TODO: Handle case where the case where the body could be empty
-        //$request->getBody();
-        echo "6 GOES HERE";
-
         $users_data = $request->getParsedBody();
 
         if (empty($users_data)) {
@@ -55,12 +51,9 @@ class UserController extends BaseController
 
         $user_data = $users_data[0];
 
-
-
-        // dd($allergens_data);
+        // Call service to validate inputs and do create
         $result = $this->user_service->createUser($user_data);
-  
-        // dd($result->isSuccess());
+
         //* Dont forget to identify the outcome of the operations: success vs failure
         if ($result->isSuccess()) {
             echo "SUCCESS";
@@ -71,41 +64,27 @@ class UserController extends BaseController
                 'message' => $result->getMessage(),
             ];
 
-
             // Operation sucessful
             return $this->renderJson($response, $payload, 201); // We write the status code that will be injected in the payload.
         } else {
-            //   dd("QUCAK");
 
             throw new HttpBadRequestException($request, $result->getMessage(), $result->getErrors());
         }
-
-        /*
-        Write the rules ;
-        */
-        // Return a failed operation.
-        // TODO: You need to prepare (structure the response as shown in class) the bad request: 400 BAD REQUEST and return the JSON response -> YOU SET THE CODE IN CONTROLLER (PREPARED PAYLOAD IN BASE CONTROLLER)
-
-        // 400 bad request
-
-
     }
 
-    //* ROUTE: POST /login
     /**
-     * POST: logging in
-     *
+     * POST: Handles user log in
+     * ROUTE: POST /login
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param \Psr\Http\Message\ResponseInterface $response
      * @return Response
      */
     public function handleUserLogin(Request $request, Response $response): Response
     {
-
-        //? Step 1)
+        //? Step 1) Get the body
         $users_data = $request->getParsedBody();
 
-        //? Step 2)
+        //? Step 2) Handle if the body is empty
         if (empty($users_data)) {
             throw new HttpBadRequestException($request, "Data passed is empty");
         }
@@ -138,17 +117,14 @@ class UserController extends BaseController
                     "email" => $user_info['email'],
                     "id"    => $user_info['user_id'],
                     "isAdmin"  => $user_info['isAdmin'],
-                    ///'nbf' => 1357000000
                 ];
 
                 //? Step 6) Generate a token for user log in
-                //echo "quack";
                 $key = $this->appSettings->get("jwt_key");
                 $jwt = JWT::encode($registered_claim, $key, 'HS256');
 
 
                 //? Step 7) Throw successful response payload
-                // dd($jwt);
                 $success_response_payload = [
                     "status" => "Success",
                     "code" => 200,
@@ -179,7 +155,7 @@ class UserController extends BaseController
             $error_response_payload = [
                 "status" => "Sever error!",
                 "code" => 500,
-                "message" => "Login errror. Please try again."
+                "message" => "Login error. Please try again."
             ];
             //* 500 bc unable to authenticate or handle user log in
             return $this->renderJson($response, $error_response_payload, 500);

@@ -2,26 +2,16 @@
 
 namespace App\Controllers;
 
-use App\Exceptions\HttpForbiddenException;
 use App\Exceptions\HttpNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\Exception\HttpBadRequestException;
 use App\Exceptions\HttpNoContentException;
 use App\Exceptions\HttpInvalidInputException;
-use App\Validation\ValidationHelper;
 use App\Models\CompositeModel;
-use App\Models\BaseModel;
-use App\Services\UserService;
 use App\Core\AppSettings;
-use App\Models\CategoriesModel;
-use Exception;
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use App\Validation\Validator;
-use App\Core\Result;
 use App\Models\AllergensModel;
 
 class CompositeController extends BaseController
@@ -41,6 +31,7 @@ class CompositeController extends BaseController
         // Guzzle client
         $this->http_client = new Client();
     }
+
 
     public function handleGetCoffeeCategory(Request $request, Response $response): Response
     {

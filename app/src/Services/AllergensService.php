@@ -13,9 +13,7 @@ class AllergensService
      * Summary of __construct
      * @param \App\Models\AllergensModel $allergens_model
      */
-    public function __construct(private AllergensModel $allergens_model)
-    {
-    }
+    public function __construct(private AllergensModel $allergens_model) {}
 
     /**
      * Create a new allergen
@@ -57,32 +55,21 @@ class AllergensService
             ]
 
         );
-        //! RETRURN RIGHT AWAY AS SOON AS YOU DETECT ANY INVALID INPUTS
 
         //TODO: 2) Insert the resource into the DB table
         //* We can use an array and using the first 1 so we can make our lives easier
+
+        // Validate inputs
         $new_allergen = $new_allergens_info[0];
         $validator = new Validator($new_allergen, [], 'en');
         $validator->mapFieldsRules($rules);
-        //  dd($new_allergen);
-        $last_inserted_id = $this->allergens_model->insertAllergen($new_allergen); //
-        // Result pattern is implemented
-        // $last_insert_id = 29;
+
+        $last_inserted_id = $this->allergens_model->insertAllergen($new_allergen);
+
         // Return a successful result
         return Result::success("The allergen has been created successfully!", $last_inserted_id);
     }
 
-
-    //     if (!$validator->validate()) {
-
-    //         echo $validator->errorsToString();
-    //         // echo '<br>';
-    //         echo $validator->errorsToJson();
-    //         return Result::failure("error!");
-    //     }
-    //     $last_inserted_id =  $this->allergens_model->insertAllergen($new_allergen); //
-    //     return Result::success("The allergen has been created successfully!", $last_inserted_id);
-    // }
 
     /**
      * Delete an allergen
@@ -94,8 +81,7 @@ class AllergensService
         $validation_errors = []; // if array has element then there's error
         //TODO: loop through the received list of allergen IDs.
         foreach ($allergen_ids as $key => $allergen_id) {
-            //echo "QUACK!!! ". $allergen_id;
-            //dd($allergen_id);
+
             //TODO: And validate them one by one while you are looping over them.
             $validator = new Validator(['allergen_id' => $allergen_id]);
             $rules = array(
@@ -115,6 +101,8 @@ class AllergensService
                 $rowsDeleted = $this->allergens_model->deleteAllergen($allergen_id);
             }
         }
+
+        // Return fail if there's any input errors
         if (count($validation_errors) > 0) {
 
             return Result::failure("Some of the allergen IDs are not valid", $validation_errors);
@@ -160,15 +148,20 @@ class AllergensService
             ]
         );
 
+        // Validate inputs
         $validator = new Validator($update_allergen_data);
         $validator->mapFieldsRules($rules);
 
+        // Return fail if there's any input errors
         if (!$validator->validate()) {
 
             return Result::failure("Data is not valid. Error updating allergens");
         }
 
+        // Update allergen if inputs are valid
         $rowsUpdate = $this->allergens_model->updateAllergen($update_allergen_data);
+
+        // Return fail if no rows were updated (error in updating)
         if ($rowsUpdate <= 0) {
             $errorJSON =  $validator->errorsToJson();
             echo $errorJSON . "\n\n";

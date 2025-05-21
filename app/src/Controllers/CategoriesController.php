@@ -5,10 +5,8 @@ namespace App\Controllers;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Exceptions\HttpInvalidInputException;
-use App\Validation\ValidationHelper;
 use App\Exceptions\HttpNoContentException;
 use App\Models\CategoriesModel;
-use App\Models\BaseModel;
 use App\Services\CategoriesService;
 use Slim\Exception\HttpBadRequestException;
 

@@ -156,19 +156,19 @@ class CategoriesModel extends BaseModel
 
         //Provide the filters that we can accept ... I am not sure if we need filters for sub-collection resource but I will add just in case
         // //? Erase the filters if we oont need it
-        // $stringToFilter = ['brand_name', 'brand_country'];
+        $stringToFilter = ['brand_name', 'brand_country'];
 
-        // // Loop through string filters and apply them w/ prepareStringSQL
-        // foreach ($stringToFilter as $filterField) {
-        //     // Get filter SQL for this field
-        //     $filterResult = $this->prepareStringSQL($filters, $filterField, $filterField);
+        // Loop through string filters and apply them w/ prepareStringSQL
+        foreach ($stringToFilter as $filterField) {
+            // Get filter SQL for this field
+            $filterResult = $this->prepareStringSQL($filters, $filterField, $filterField);
 
-        //     //  Add to query if there's a filter provided
-        //     if (!empty($filterResult['sqlPart'])) {
-        //         $filters_map[$filterField] = $filterResult['value'];
-        //         $sql .= $filterResult['sqlPart'];
-        //     }
-        // }
+            //  Add to query if there's a filter provided
+            if (!empty($filterResult['sqlPart'])) {
+                $filters_map[$filterField] = $filterResult['value'];
+                $sql .= $filterResult['sqlPart'];
+            }
+        }
 
         //* Sorting
         $approved_ordering = ['brand_name', 'brand_country'];

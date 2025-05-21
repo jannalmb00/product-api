@@ -45,26 +45,23 @@ class UserService
             ]
 
         );
-        //! RETRURN RIGHT AWAY AS SOON AS YOU DETECT ANY INVALID INPUTS
-        //echo "2 goes HERE";
+        //! RETURN RIGHT AWAY AS SOON AS YOU DETECT ANY INVALID INPUTS
 
         //TODO: 2) Insert the resource into the DB table
+
         //* We can use an array and using the first 1 so we can make our lives easier
-        //$new_allergen = $new_user_data[0];
         $validator = new Validator($new_user_data, [], 'en');
         $validator->mapFieldsRules($rules);
 
-        //todo: check is an existing user is in there
+        //todo: check if an existing user is in there
         if ($this->user_model->userExistsByEmail($new_user_data['email'])) {
 
             return Result::failure("A user with this email already exists.");
         }
 
-
+        // Handle if validation failed
         if (!$validator->validate()) {
 
-            echo $validator->errorsToString();
-            // echo '<br>';
             echo $validator->errorsToJson();
             return Result::failure("error!");
         }
@@ -72,7 +69,6 @@ class UserService
         $new_user_data['isAdmin'] = isset($new_user_data['isAdmin']) && $new_user_data['isAdmin'] ? 1 : 0;
         //Todo: hash the password
         $new_user_data['password'] = $this->cryptPassword($new_user_data['password']);
-        // echo $new_user_data;
 
         $last_inserted_id =  $this->user_model->createUser($new_user_data); //
 

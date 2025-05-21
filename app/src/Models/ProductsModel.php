@@ -12,18 +12,6 @@ use App\Core\PasswordTrait;
 class ProductsModel extends BaseModel
 {
 
-    // public function insertNewProduct(array $new_product): mixed
-    // {
-    //     // From base model , pass table name, array conatining key value pairs
-    //     $last_id = $this->insert('products', $new_product);
-
-    //     //for update
-    //     //$last_id = $this->update('products', $new_product, ["product_id" => ]);
-
-
-    //     return $last_id;
-    // }
-
     use PasswordTrait;
     /**
      * Retrieves the products
