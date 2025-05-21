@@ -41,19 +41,19 @@ class BrandController extends BaseController
     public function handleGetProductsByBrand(Request $request, Response $response, array $uri_args): Response
     {
 
-        //* See if there is a category ID included in the URL
+        //* See if there is a brand ID included in the URL
         if (!isset($uri_args['brand_id'])) {
             throw new HttpInvalidInputException($request, "Brand ID is required in the URL");
         }
 
-        //* Get category id from request
+        //* Get brand id from request
         $brand_id = $uri_args['brand_id'];
 
         //* Get query params
         $filters = $request->getQueryParams();
         $filters['brand_id'] = $brand_id;
 
-        // REGEX - VALIDATION - EXCEPTIONS - CATEGORY ID -> THIS IS THE INPUT VALIDATION if we needed have to double check
+        // REGEX - VALIDATION - EXCEPTIONS - brand ID -> THIS IS THE INPUT VALIDATION if we needed have to double check
         $regex_id = '/^B\d{4,5}$/';
 
 
@@ -61,13 +61,13 @@ class BrandController extends BaseController
 
 
         //* Validate string parameters if they are provided
-        // $stringValidateArray = ['brand_name', 'brand_country'];
+        $stringValidateArray = ['product_name', 'product_origin', 'category_name'];
 
-        // foreach ($stringValidateArray as $validateString) {
-        //     if (!empty($filters[$validateString])) {
-        //         $this->validateString($filters, $validateString, $request);
-        //     }
-        // }
+        foreach ($stringValidateArray as $validateString) {
+            if (!empty($filters[$validateString])) {
+                $this->validateString($filters, $validateString, $request);
+            }
+        }
 
         //* Get brands by category with pagination
         $filters['brand_id'] = $brand_id;
