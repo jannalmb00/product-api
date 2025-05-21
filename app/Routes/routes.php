@@ -37,9 +37,8 @@ return static function (Slim\App $app, array $settings): void {
     $app->post("/fiber", [CalculatorController::class, 'handleCalculateFiber']);
     $app->post("/bmi", [CalculatorController::class, 'handleCalculateBMI']);
 
-    $app->get("/cocktail_category", [CompositeController::class, 'handleGetCocktailsCategories']);
 
-    $app->get('/brands/{brand_id}/products', [BrandController::class, 'handleGetProductsByBrand']);
+
 
     //*ROUTE:GET /coffee-info
     //$app->$get("/coffee_category", [CompositeController::class, 'handleGetCoffeeCategory']);
@@ -67,21 +66,16 @@ return static function (Slim\App $app, array $settings): void {
         $group->get('/allergens/{allergen_id}', [AllergensController::class, 'handleGetAllergenById']);
         $group->get('/allergens/{allergen_id}/ingredients', [AllergensController::class, 'handleGetIngredientsByAllergen']);
 
-        //? -- Shared --
-        // $group->get('/admin/products', [ProductsController::class, 'handleGetProducts']);
-        // $group->get('/admin/categories', [CategoriesController::class, 'handleGetCategories']);
-        // $group->get('/admin/allergens', [AllergensController::class, 'handleGetAllergens']);
+        //?-------------BRAND_PRODUCTS------------------------
+        $group->get('/brands/{brand_id}/products', [BrandController::class, 'handleGetProductsByBrand']);
+
 
         //? == Composite resource -- TheMealDBAPI
         $group->get('/recipes/product/{product_id}', [RecipesController::class, 'handleGetRecipesByProduct']);
-        $group->post('/cocktail', [CompositeController::class, 'handleGetCocktailByName']);
-        /**
-         * So i sesearch yung name nung cocktail then sa ingrdients use ingredient table to give more details slay!!!!!
-         */
-
+        $group->post("/cocktail_category", [CompositeController::class, 'handleGetCocktailsCategories']);
     })->add($authMiddleware);
 
-
+    //?-------------FOR ADMIN------------------------------------
     $app->group('', function (RouteCollectorProxy $group) {
         $group->post('/users', [UserController::class, 'createUser']);
 

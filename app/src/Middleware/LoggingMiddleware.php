@@ -86,7 +86,7 @@ class LoggingMiddleware implements MiddlewareInterface
         $logData = [
             'user_action' => $user_action,
             'email' => $user_id,
-            'ip_address' => $request->getServerParams()['REMOTE_ADDR'] ?? 'unknown',
+            //'ip_address' => $request->getServerParams()['REMOTE_ADDR'] ?? 'unknown',
 
         ];
 
