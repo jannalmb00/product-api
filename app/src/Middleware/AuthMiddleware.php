@@ -43,7 +43,7 @@ class AuthMiddleware implements MiddlewareInterface
 
         //valudate header format
         if (empty($authHeader) || !str_starts_with($authHeader, 'Bearer ')) {
-            throw new HttpUnauthorizedException($request, "Missing or invalid Authorization header");
+            throw new HttpUnauthorizedException($request, "Missing or invalid Authorization header / Not authenticated");
         }
         //Extract the JWT token from the authorization header
         $token = trim(str_replace('Bearer', '', $authHeader));
