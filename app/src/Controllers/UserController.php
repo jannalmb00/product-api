@@ -8,6 +8,7 @@ use Slim\Exception\HttpBadRequestException;
 use App\Models\UserModel;
 use App\Services\UserService;
 use App\Core\AppSettings;
+use App\Exceptions\HttpInvalidInputException;
 use Exception;
 use Firebase\JWT\JWT;
 
@@ -93,6 +94,11 @@ class UserController extends BaseController
 
         //? Step 4) Authenticate user
         try {
+
+            if (!isset($user_data['email']) || !isset($user_data['password'])) {
+                throw new HttpInvalidInputException($request);
+            }
+
 
             $result = $this->user_service->authenticateUser(
                 $user_data['email'],

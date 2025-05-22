@@ -54,13 +54,13 @@ class LoggingMiddleware implements MiddlewareInterface
         $statusCode = $response->getStatusCode();
 
         $message = "Status Code: " . $statusCode;
-        if ($statusCode >= 400) {
-            LogHelper::writeToErrorLog(new \Exception($message), $request);
-        } else {
+        if ($response->getStatusCode() < 400) {
             LogHelper::writeToAccessLog($request, $response);
+        } else {
+            LogHelper::writeToErrorLog(new \Exception($message), $request);
         }
 
-        LogHelper::writeToAccessLog($request, $response);
+        // LogHelper::writeToAccessLog($request, $response);
 
         // Inserts to db. get the response body and its content
         //* Register

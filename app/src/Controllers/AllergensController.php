@@ -63,8 +63,8 @@ class AllergensController extends BaseController
         //! VALIDATION
         if (empty($info["data"])) {
 
-            // throw new HttpNoContentException($request, "Request successful. No product in the record.");
-            return $response->withStatus(204);
+            throw new HttpNoContentException($request, "Request successful. No data in the record.");
+            //   return $response->withStatus(204);
         }
 
 

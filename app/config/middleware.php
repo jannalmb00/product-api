@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Middleware\HelloMiddleware;
 use App\Middleware\LoggingMiddleware;
-
+use App\Exceptions\HttpNoContentException;
 use App\Middleware\ContentNegotiationMiddleware;
 use App\Middleware\AuthMiddleware as AuthMiddleware;
 use Psr\Http\Message\ServerRequestInterface;
@@ -29,24 +29,10 @@ return function (App $app) {
     $app->add(ContentNegotiationMiddleware::class);
 
 
-
-    // //* AuthMiddleware
-    //     $app->add(\App\Middleware\AdminMiddleware::class);
-
-    //    $app->add(AuthMiddleware::class);
-
-
-
     //!NOTE: the error handling middleware MUST be added last.
     $errorMiddleware = $app->addErrorMiddleware(true, true, true);
     $errorMiddleware->getDefaultErrorHandler()->forceContentType(APP_MEDIA_TYPE_JSON);
 
-    // $errorMiddleware->setDefaultErrorHandler(
-    //     new LoggingErrorHandler(
-    //         $app->getCallableResolver(),
-    //         $app->getResponseFactory()
-    //     )
-    // );
     //!NOTE: You can add override the default error handler with your custom error handler.
     //* For more details, refer to Slim framework's documentation.
     // Custom error handler for logging errors
@@ -58,6 +44,12 @@ return function (App $app) {
         bool $logErrorDetails
     ) use ($app) {
 
+        // Check if its HttpNoContentException and log it to access.log
+        if ($exception instanceof HttpNoContentException) {
+            $response = $app->getResponseFactory()->createResponse(204);
+            LogHelper::writeToAccessLog($request, $response);
+            return $response;
+        }
         // Log to error.log
         LogHelper::writeToErrorLog($exception, $request);
 
