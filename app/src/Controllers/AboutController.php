@@ -55,6 +55,14 @@ class AboutController extends BaseController
                 ],
                 [
                     'resource_number' => 4,
+                    'uri' => '/brands/{brand_id}/products',
+                    'description' => 'Lists products under a specific brand.',
+                    'methods' => ['GET'],
+                    'filters_supported' => ['product_name', 'category_name']
+                ],
+
+                [
+                    'resource_number' => 5,
                     'uri' => '/allergens',
                     'description' => "Gets a list of allergens matching the specified filters",
                     'methods' => ['GET', 'POST', 'DELETE'],
@@ -69,20 +77,20 @@ class AboutController extends BaseController
                     ]
                 ],
                 [
-                    'resource_number' => 5,
+                    'resource_number' => 6,
                     'uri' => '/allergens/{allergen_id}',
                     'methods' => ['GET', 'PUT'],
                     'description' => "Gets details of a specific allergen",
                     'filters_supported' => "N/A"
                 ],
                 [
-                    'resource_number' => 6,
+                    'resource_number' => 7,
                     'uri' => '/allergens/{allergen_id}/ingredients',
                     'description' => "Gets a list of ingredients associated with the specified allergen",
                     'filters_supported' => ['ingredient_name', 'processing_type', 'isGMO']
                 ],
                 [
-                    'resource_number' => 7,
+                    'resource_number' => 8,
                     'uri' => '/categories',
                     'description' => "Gets a list of categories matching the specified filters",
                     'filters_supported' => ['category_name', 'category_type', 'parent_category'],
@@ -97,19 +105,75 @@ class AboutController extends BaseController
                     ]
                 ],
                 [
-                    'resource_number' => 8,
+                    'resource_number' => 9,
                     'uri' => '/categories/{category_id}',
                     'description' => "Gets details of a specific category",
                     'methods' => ['GET', 'PUT'],
                     'filters_supported' => "N/A"
                 ],
                 [
-                    'resource_number' => 9,
+                    'resource_number' => 10,
                     'uri' => '/categories/{category_id}/brands',
                     'description' => "Gets a list of brands associated with the specified category",
                     'methods' => ['GET'],
                     'filters_supported' => ['brand_name', 'brand_country']
-                ]
+                ],
+                [
+                    'resource_number' => 11,
+                    'uri' => '/calorie',
+                    'description' => 'Calculate the calorie value based on individual data.',
+                    'methods' => ['POST'],
+                    'filters_supported' => ['gender', 'weight', 'height', 'age', 'activity_per_week']
+                ],
+                [
+                    'resource_number' => 12,
+                    'uri' => '/fiber',
+                    'description' => 'Calculate fiber intake based on consumed daily caolories data.',
+                    'methods' => ['POST'],
+                    'filters_supported' => ['N/A']
+                ],
+                [
+                    'resource_number' => 13,
+                    'uri' => '/bmi',
+                    'description' => 'Calculate Body Mass Index using height and weight.',
+                    'methods' => ['POST'],
+                    'filters_supported' => ['height', 'weight']
+                ],
+                [
+                    'resource_number' => 14,
+                    'uri' => '/cocktail_category',
+                    'description' => 'Returns categories of cocktails available in the system.',
+                    'methods' => ['GET'],
+                    'filters_supported' => ['category_name']
+                ],
+                [
+                    'resource_number' => 15,
+                    'uri' => '/fruit_information/{fruit_name}',
+                    'description' => 'Fetches detailed nutritional information for a specific fruit.',
+                    'methods' => ['GET'],
+                    'filters_supported' => ['fruit_name']
+                ],
+                [
+                    'resource_number' => 16,
+                    'uri' => '/recipes/product/{product_id}',
+                    'description' => 'Fetches recipe suggestions or data related to a product.',
+                    'methods' => ['GET'],
+                    'filters_supported' => ['product_id']
+                ],
+                [
+                    'resource_number' => 17,
+                    'uri' => '/register',
+                    'description' => 'Registers a new user to the system.',
+                    'methods' => ['POST'],
+                    'filters_supported' => ['first_name', 'last_name', 'email', 'password', 'isAdmin']
+                ],
+                [
+                    'resource_number' => 18,
+                    'uri' => '/login',
+                    'description' => 'Authenticates user credentials and returns a token.',
+                    'methods' => ['POST'],
+                    'filters_supported' => ['email', 'password']
+                ],
             ]
         );
 

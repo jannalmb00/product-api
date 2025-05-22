@@ -3,15 +3,20 @@
 namespace App\Models;
 
 /**
- * Categories model handles data related to categories in the system
+ * Brand model handles data related to brands in the system
  *
  * It interacts with the database
  */
 class BrandModel extends BaseModel
 {
+    /**
+     *  Retrieves products that belong to a specific brand, with optional filtering and sorting
+     * @param array $filters
+     * @return array
+     */
     public function getProductsByBrand(array $filters): array
     {
-
+        // Extract brand ID from the filters
         $brand_id = $filters['brand_id'];
         $filters_map = ["brand_id" => $brand_id];
 
@@ -40,11 +45,8 @@ class BrandModel extends BaseModel
                 $sql .= $filterResult['sqlPart'];
             }
         }
-
-        //$approved_ordering = ['product_name', 'product_origin'];
+;
         $sql = $this->sortAndOrder($filters, 'product_id',  $stringToFilter, $sql);
-
-        //dd($sql);
 
         return $this->paginate($sql, $filters_map);
     }

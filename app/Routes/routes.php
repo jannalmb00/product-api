@@ -33,6 +33,11 @@ return static function (Slim\App $app, array $settings): void {
     $app->post('/register', [UserController::class, 'handleCreateRegister']);
     $app->post('/login', [UserController::class, 'handleUserLogin']);
     $app->get('/', [AboutController::class, 'handleAboutWebService']);
+
+
+    //? --------------------
+    //? COMPUTATION FUNCTIONALITY
+    //? --------------------
     $app->post("/calorie", [CalculatorController::class, 'handleCalculateCalories']);
     $app->post("/fiber", [CalculatorController::class, 'handleCalculateFiber']);
     $app->post("/bmi", [CalculatorController::class, 'handleCalculateBMI']);
@@ -43,6 +48,8 @@ return static function (Slim\App $app, array $settings): void {
 
     // // *ROUTE:GET /fruit-info
     // $app->get("/fruit_information/{fruit_name}", [CompositeController::class, 'handleGetFruitInformation']);
+
+    $app->get('/recipes/product/{product_id}', [CompositeController::class, 'handleGetRecipesByProduct']);
 
     //? --------- PROTECTED ROUTES ------
     //! All the GET methods
