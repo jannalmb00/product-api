@@ -42,7 +42,7 @@ return static function (Slim\App $app, array $settings): void {
     $app->post("/fiber", [CalculatorController::class, 'handleCalculateFiber']);
     $app->post("/bmi", [CalculatorController::class, 'handleCalculateBMI']);
 
-    
+
     $app->get("/cocktail_category", [CompositeController::class, 'handleGetCocktailsCategories']);
 
     $app->get('/brands/{brand_id}/products', [BrandController::class, 'handleGetProductsByBrand']);
@@ -52,6 +52,8 @@ return static function (Slim\App $app, array $settings): void {
 
     // *ROUTE:GET /fruit-info
     $app->get("/fruit_information/{fruit_name}", [CompositeController::class, 'handleGetFruitInformation']);
+
+    $app->get('/recipes/product/{product_id}', [CompositeController::class, 'handleGetRecipesByProduct']);
 
     //? --------- PROTECTED ROUTES ------
     //! All the GET methods

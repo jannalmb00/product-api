@@ -64,7 +64,7 @@ class ProductsController extends BaseController
         if ($info["data"] == false) {
             //! no matching record in the db
             // throw new HttpNoContentException($request, "Request successful. No product in the record.");
-           // return $response->withStatus(204);
+            // return $response->withStatus(204);
         }
 
         return $this->renderJson($response, $info);
@@ -100,7 +100,7 @@ class ProductsController extends BaseController
 
         if ($info["data"] == false) {
             //! no matching record in the db - does not include message body by design
-            throw new HttpNoContentException($request, "Request successful. No product in the record.");
+            throw new HttpNoContentException($request);
         }
 
         return $this->renderJson($response, $info);
