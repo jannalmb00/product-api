@@ -80,7 +80,6 @@ class AccountController extends BaseController
 
                 return $this->renderJson($response, $response_payload);
             } else {
-
                 $error_response_payload = [
                     "status" => "error",
                     "code" => 401,

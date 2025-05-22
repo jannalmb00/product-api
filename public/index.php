@@ -3,11 +3,12 @@
 declare(strict_types=1);
 
 
-
+session_unset();
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+session_destroy();
 
 
 

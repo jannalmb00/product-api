@@ -8,6 +8,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Monolog\Handler\StreamHandler;
 use App\Helpers\DateTimeHelper as Date;
+use Throwable;
 
 class LogHelper
 {
@@ -49,7 +50,7 @@ class LogHelper
         $logger->info("Access", $data);
     }
 
-    public static function writeToErrorLog(\Throwable $e, Request $request): void
+    public static function writeToErrorLog(Throwable $e, Request $request): void
     {
 
         // Writes to error.log
@@ -74,7 +75,6 @@ class LogHelper
 
         //3. write a log record to the logger
         $data = [
-            'exception'    => $e->getMessage(),
             'method'      => $request->getMethod(),
             'ip'          => $request->getServerParams()['REMOTE_ADDR'] ?? '-',
             'url'         => (string)$request->getUri(),

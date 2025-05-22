@@ -10,6 +10,8 @@ use App\Middleware\AuthMiddleware as AuthMiddleware;
 use Psr\Http\Message\ServerRequestInterface;
 use App\Helpers\LogHelper;
 use App\Handlers\LoggingErrorHandler;
+use Slim\Handlers\ErrorHandler;
+use Monolog\Logger;
 
 use Slim\App;
 
@@ -39,6 +41,12 @@ return function (App $app) {
     $errorMiddleware = $app->addErrorMiddleware(true, true, true);
     $errorMiddleware->getDefaultErrorHandler()->forceContentType(APP_MEDIA_TYPE_JSON);
 
+    // $errorMiddleware->setDefaultErrorHandler(
+    //     new LoggingErrorHandler(
+    //         $app->getCallableResolver(),
+    //         $app->getResponseFactory()
+    //     )
+    // );
     //!NOTE: You can add override the default error handler with your custom error handler.
     //* For more details, refer to Slim framework's documentation.
     // Custom error handler for logging errors
@@ -63,6 +71,7 @@ return function (App $app) {
                 'line' => $exception->getLine()
             ]
         ];
+
 
         $response = $app->getResponseFactory()->createResponse(
             $exception->getCode(),

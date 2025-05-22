@@ -11,6 +11,7 @@ use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use App\Helpers\LogHelper;
+use Throwable;
 
 /**
  *
@@ -47,8 +48,18 @@ class LoggingMiddleware implements MiddlewareInterface
         // 1.) Forward the request and get the response
         $response = $handler->handle($request);
 
+
         // TODO: make LogHelper class
         //2) Write to access.log using the LogHelper class
+        $statusCode = $response->getStatusCode();
+
+        $message = "Status Code: " . $statusCode;
+        if ($statusCode >= 400) {
+            LogHelper::writeToErrorLog(new \Exception($message), $request);
+        } else {
+            LogHelper::writeToAccessLog($request, $response);
+        }
+
         LogHelper::writeToAccessLog($request, $response);
 
         // Inserts to db. get the response body and its content
