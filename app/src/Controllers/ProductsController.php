@@ -57,14 +57,21 @@ class ProductsController extends BaseController
             }
         }
 
+        //  dd($filters);
 
         //* paginate -- function from base controller
         $info = $this->pagination($filters, $this->model, [$this->model, 'getProducts'], $request);
 
         if ($info["data"] == false) {
             //! no matching record in the db
-            // throw new HttpNoContentException($request, "Request successful. No product in the record.");
-           // return $response->withStatus(204);
+            throw new HttpNoContentException($request, "Request successful. No product in the record.");
+            // $payload = [
+            //     "status" => "Success",
+            //     "message" => "Request successful. No matching data found.",
+            //     "data" => []
+            // ];
+            // $response->getBody()->write(json_encode($payload));
+            // return $response->withStatus(200);
         }
 
         return $this->renderJson($response, $info);
@@ -100,7 +107,7 @@ class ProductsController extends BaseController
 
         if ($info["data"] == false) {
             //! no matching record in the db - does not include message body by design
-            throw new HttpNoContentException($request, "Request successful. No product in the record.");
+            throw new HttpNoContentException($request);
         }
 
         return $this->renderJson($response, $info);

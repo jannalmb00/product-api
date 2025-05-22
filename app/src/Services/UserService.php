@@ -69,7 +69,7 @@ class UserService
         if (!$validator->validate()) {
 
             echo $validator->errorsToJson();
-            return Result::failure("error!");
+            return Result::failure("Error!");
         }
 
         $new_user_data['isAdmin'] = isset($new_user_data['isAdmin']) && $new_user_data['isAdmin'] ? 1 : 0;

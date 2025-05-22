@@ -121,9 +121,9 @@ class AboutController extends BaseController
                 [
                     'resource_number' => 11,
                     'uri' => '/calorie',
-                    'description' => 'Calculate the calorie value based on the provided food inputs.',
+                    'description' => 'Calculate the calorie value based on individual data.',
                     'methods' => ['POST'],
-                    'filters_supported' => ['', '']
+                    'filters_supported' => ['gender', 'weight', 'height', 'age', 'activity_per_week']
                 ],
                 [
                     'resource_number' => 12,

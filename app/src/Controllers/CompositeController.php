@@ -225,7 +225,6 @@ class CompositeController extends BaseController
 
         $product_info = $this->pagination($filters, $this->products_model, [$this->products_model, 'getProductById'], $request);
 
-        // If the body product is empty or not found
         if (empty($product_info['data'])) {
             throw new HttpNoContentException($request, "Product not found");
         }
@@ -278,7 +277,7 @@ class CompositeController extends BaseController
     }
 
     /**
-     * Get detailed information for a specific meal from TheMealDB
+     * GET: Helper method that gets detailed information for a specific meal from TheMealDB based on the meal ID
      *
      * @param string $meal_id The meal ID to retrieve
      * @return array|null The meal details or null if not found

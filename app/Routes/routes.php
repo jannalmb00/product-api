@@ -42,13 +42,14 @@ return static function (Slim\App $app, array $settings): void {
     $app->post("/fiber", [CalculatorController::class, 'handleCalculateFiber']);
     $app->post("/bmi", [CalculatorController::class, 'handleCalculateBMI']);
 
+    // $app->get("/cocktail_category", [CompositeController::class, 'handleGetCocktailsCategories']);
 
+    // $app->get('/brands/{brand_id}/products', [BrandController::class, 'handleGetProductsByBrand']);
 
-    //*ROUTE:GET /coffee-info
-    //$app->$get("/coffee_category", [CompositeController::class, 'handleGetCoffeeCategory']);
+    // // *ROUTE:GET /fruit-info
+    // $app->get("/fruit_information/{fruit_name}", [CompositeController::class, 'handleGetFruitInformation']);
 
-    // *ROUTE:GET /fruit-info
-    $app->get("/fruit_information/{fruit_name}", [CompositeController::class, 'handleGetFruitInformation']);
+    $app->get('/recipes/product/{product_id}', [CompositeController::class, 'handleGetRecipesByProduct']);
 
     //? --------- PROTECTED ROUTES ------
     //! All the GET methods
@@ -75,8 +76,9 @@ return static function (Slim\App $app, array $settings): void {
 
 
         //? == Composite resource -- TheMealDBAPI
-        $group->get('/recipes/product/{product_id}', [CompositeController::class, 'handleGetRecipesByProduct']);
-        // $group->post('/cocktail', [CompositeController::class, 'handleGetCocktailByName']);
+        $group->get('/recipes/product/{product_id}', [RecipesController::class, 'handleGetRecipesByProduct']);
+        $group->post('/cocktail', [CompositeController::class, 'handleGetCocktailByName']);
+        $group->get("/fruit_information/{fruit_name}", [CompositeController::class, 'handleGetFruitInformation']);
         /**
          * So i sesearch yung name nung cocktail then sa ingrdients use ingredient table to give more details slay!!!!!
          */

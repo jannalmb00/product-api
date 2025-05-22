@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 use App\Middleware\HelloMiddleware;
 use App\Middleware\LoggingMiddleware;
-
+use App\Exceptions\HttpNoContentException;
 use App\Middleware\ContentNegotiationMiddleware;
 use App\Middleware\AuthMiddleware as AuthMiddleware;
-
+use Psr\Http\Message\ServerRequestInterface;
+use App\Helpers\LogHelper;
 use App\Handlers\LoggingErrorHandler;
+use Slim\Handlers\ErrorHandler;
+use Monolog\Logger;
 
 use Slim\App;
 
@@ -26,14 +29,6 @@ return function (App $app) {
     $app->add(ContentNegotiationMiddleware::class);
 
 
-
-    // //* AuthMiddleware
-    //     $app->add(\App\Middleware\AdminMiddleware::class);
-
-    //    $app->add(AuthMiddleware::class);
-
-
-
     //!NOTE: the error handling middleware MUST be added last.
     $errorMiddleware = $app->addErrorMiddleware(true, true, true);
     $errorMiddleware->getDefaultErrorHandler()->forceContentType(APP_MEDIA_TYPE_JSON);
@@ -41,10 +36,44 @@ return function (App $app) {
     //!NOTE: You can add override the default error handler with your custom error handler.
     //* For more details, refer to Slim framework's documentation.
     // Custom error handler for logging errors
-    $errorMiddleware->setDefaultErrorHandler(
-        new LoggingErrorHandler(
-            $app->getCallableResolver(),
-            $app->getResponseFactory()
-        )
-    );
+    $customErrorHandler = function (
+        ServerRequestInterface $request,
+        Throwable $exception,
+        bool $displayErrorDetails,
+        bool $logErrors,
+        bool $logErrorDetails
+    ) use ($app) {
+
+        // Check if its HttpNoContentException and log it to access.log
+        if ($exception instanceof HttpNoContentException) {
+            $response = $app->getResponseFactory()->createResponse(204);
+            LogHelper::writeToAccessLog($request, $response);
+            return $response;
+        }
+        // Log to error.log
+        LogHelper::writeToErrorLog($exception, $request);
+
+        // structure the error payload
+        $payload = [
+            'error' => true,
+            'exception' => [
+                'type' => get_class($exception),
+                'message' => $exception->getMessage(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine()
+            ]
+        ];
+
+
+        $response = $app->getResponseFactory()->createResponse(
+            $exception->getCode(),
+            $exception->getMessage()
+        );
+
+        $response->getBody()->write(json_encode($payload, JSON_PRETTY_PRINT));
+
+        return $response->withHeader('Content-Type', 'application/json');
+    };
+
+    $errorMiddleware->setDefaultErrorHandler($customErrorHandler);
 };
