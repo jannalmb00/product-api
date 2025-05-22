@@ -10,6 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use App\Exceptions\HttpUnauthorizedException;
+use PhpDocReader\PhpParser\TokenParser;
 
 /**
  * Middleware responsible for authenticating incoming request using JWT
@@ -47,11 +48,20 @@ class AuthMiddleware implements MiddlewareInterface
         //Extract the JWT token from the authorization header
         $token = trim(str_replace('Bearer', '', $authHeader));
 
+        //dd("meow");
 
 
         try {
-            //decode the token using the HS256 algoritm and provide sectret key
+            //decode the token using the HS256 algoritm and provide secret key
             $decoded = JWT::decode($token, new Key($this->jwtKey, 'HS256'));
+
+            $decodedArray = (array)$decoded;
+
+            // Store decoded info in $_SESSION
+            $_SESSION['user'] = [
+                'id' => $decodedArray['id'] ?? null,
+                'email'   => $decodedArray['email'] ?? null,
+            ];
 
             //Attach decode JWT to the request attributes
             $request = $request->withAttribute('jwt', (array)$decoded);
@@ -61,8 +71,8 @@ class AuthMiddleware implements MiddlewareInterface
         } catch (\Exception $e) {
             //unauthorized
             error_log('AuthMiddleware threw: ' . $e->getMessage());
-             throw $e;
-        //    throw new HttpUnauthorizedException($request, "Invalid or expired token");
+            throw $e;
+            //    throw new HttpUnauthorizedException($request, "Invalid or expired token");
         }
     }
 }

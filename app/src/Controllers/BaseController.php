@@ -74,19 +74,23 @@ abstract class BaseController
         // If input is non-numeric, the value is 0
         $page_data = [
             'page' => isset($filters["page"]) ? (string) $filters["page"] : '1',
-            'page_size' => isset($filters["page_size"]) ? (string) $filters["page_size"] : '10'
+            'page_size' => isset($filters["page_size"])  ? (string) $filters["page_size"] : '10'
         ];
+
 
         // Validation
         $validator = new Validator($page_data, [], 'en');;
         $validator->mapFieldsRules($rules);
 
 
+        //  dd($filters["page_size"]);
         if (!$validator->validate()) {
-
             throw new HttpInvalidInputException($request, "Invalid input. Page and page size must be an integer greater than or equal to 1.");
         } else {
 
+            if ((isset($filters["page"]) && $filters["page"] == "") || (isset($filters["page_size"]) && $filters["page_size"] == "")) {
+                throw new HttpInvalidInputException($request, "Invalid input. Page and page size must be an integer greater than or equal to 1.");
+            }
             // Apply pagination settings to the model
             $model->setPaginationOptions((int) $page_data['page'], (int) $page_data['page_size']);
 
@@ -129,7 +133,7 @@ abstract class BaseController
             // Throw exception if not valid
             if (!$validator->validate()) {
 
-                throw new HttpInvalidInputException($request, "Invalid input. Special charaters and number are not valid.");
+                throw new HttpInvalidInputException($request, "Invalid input. Special characters and number are not valid.");
             }
         }
     }

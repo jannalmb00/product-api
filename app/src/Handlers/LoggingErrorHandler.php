@@ -36,12 +36,11 @@ class LoggingErrorHandler extends ErrorHandler
      */
     protected function respond(): ResponseInterface
     {
-
         $exception = $this->exception;
 
         // Exception payload
         $payload = [
-            'error' => true,
+            'error' => false,
             'exception' => [
                 'type'    => get_class($exception),
                 'message' => $exception->getMessage(),

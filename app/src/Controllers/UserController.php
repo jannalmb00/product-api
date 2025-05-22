@@ -8,6 +8,7 @@ use Slim\Exception\HttpBadRequestException;
 use App\Models\UserModel;
 use App\Services\UserService;
 use App\Core\AppSettings;
+use App\Exceptions\HttpInvalidInputException;
 use Exception;
 use Firebase\JWT\JWT;
 
@@ -94,6 +95,11 @@ class UserController extends BaseController
         //? Step 4) Authenticate user
         try {
 
+            if (!isset($user_data['email']) || !isset($user_data['password'])) {
+                throw new HttpInvalidInputException($request);
+            }
+
+
             $result = $this->user_service->authenticateUser(
                 $user_data['email'],
                 $user_data['password']
@@ -118,7 +124,6 @@ class UserController extends BaseController
                 //? Step 6) Generate a token for user log in
                 $key = $this->appSettings->get("jwt_key");
                 $jwt = JWT::encode($registered_claim, $key, 'HS256');
-
 
                 //? Step 7) Throw successful response payload
                 $success_response_payload = [
