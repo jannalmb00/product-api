@@ -134,7 +134,7 @@ class UserController extends BaseController
                     "expires" => $eat,
                     "user_id" => $user_info['user_id'],
                     "user_email" => $user_info['email'],
-                    "isAdmin" => (int) $user_info['isAdmin'],
+                    "isAdmin" => $user_info['isAdmin'],
                     "firstname" => $user_info['first_name'],
                     "lastname" => $user_info['last_name']
                 ];

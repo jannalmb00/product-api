@@ -44,7 +44,8 @@ class UserService
                 'email'
             ],
             "password" => [
-                'required'
+                'required',
+                ['regex', '/.{8,}/']
             ],
             "isAdmin" => [
                 'required',

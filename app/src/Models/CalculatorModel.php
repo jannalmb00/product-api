@@ -115,7 +115,12 @@ class CalculatorModel extends BaseModel
             'daily_calories' => [
                 'required',
                 'numeric',
-            ]
+            ],
+            'weight_kg' => [
+                'required',
+                'numeric'
+            ],
+
         );
 
         $validator = new Validator($data, [], 'en');
@@ -130,18 +135,29 @@ class CalculatorModel extends BaseModel
         }
 
         $dailyCalories = $data['daily_calories']; // Fetch input
+        $weight = $data['weight_kg'];
 
         // Calculate
         $recommendedFiberIntake = ($dailyCalories / 1000) * 14;
 
+        $weightBasedFiber = $weight * 0.5;
+
         // Prepare result
         $result = [
             'daily_calories' => $dailyCalories,
+            'weight_kg' => $weight,
             'recommended_fiber_intake' => [
                 'value' => round($recommendedFiberIntake, 1),
                 'unit' => 'g/day'
             ],
-            'formula_used' => 'daily_calories / 1000 * 14g'
+            'weight_based' => [
+                'value' => round($weightBasedFiber, 1),
+                'unit' => 'g/day'
+            ],
+            'formula_used' => [
+                'daily_cal_formula' => 'daily_calories / 1000 * 14g',
+                'body_weight_formula' => 'body_weight_kg * 0.5 kg'
+            ]
         ];
 
         return $result;

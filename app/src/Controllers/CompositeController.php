@@ -226,7 +226,12 @@ class CompositeController extends BaseController
         $product_info = $this->pagination($filters, $this->products_model, [$this->products_model, 'getProductById'], $request);
 
         if (empty($product_info['data'])) {
-            throw new HttpNoContentException($request, "Product not found");
+            $payload = [
+                "status" => "failed",
+                "message" => "Can not find product info"
+            ];
+            return $this->renderJson($response, $payload, 404);
+            // throw new HttpNoContentException($request, "Product not found");
         }
 
         // Gets the first ingredient
@@ -260,7 +265,11 @@ class CompositeController extends BaseController
                     }
                 }
             } else {
-                throw new HttpNoContentException($request, "Error fetching the meals");
+                $payload = [
+                    "status" => "failed",
+                    "message" => "No recipes found using the product ingredient"
+                ];
+                return $this->renderJson($response, $payload, 404);
             }
 
             //* Prepare response
@@ -304,7 +313,6 @@ class CompositeController extends BaseController
     private function getIngredientFromProduct(array $product): string
     {
         // Get the product name by separating the product name as per the ingredients
-        // For this time, we use this method as we do not have product_ingredients data for now, we use based off product name!
         $product_words = explode(' ', strtolower($product['product_name']));
 
         $common_ingredients = [

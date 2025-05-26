@@ -22,7 +22,6 @@ use Slim\Routing\RouteCollectorProxy;
 
 
 return static function (Slim\App $app, array $settings): void {
-    // Create middleware instances directly in routes file
     $authMiddleware = new AuthMiddleware($settings['jwt_key']);
     $adminMiddleware = new AdminMiddleware();
 
@@ -49,8 +48,6 @@ return static function (Slim\App $app, array $settings): void {
 
     $app->get('/recipes/product/{product_id}', [CompositeController::class, 'handleGetRecipesByProduct']);
 
-    $app->post('/cocktail', [CompositeController::class, 'handleGetCocktailByName']);
-
     $app->get("/cocktail_category", [CompositeController::class, 'handleGetCocktailsCategories']);
 
     $app->get("/fruit_information/{fruit_name}", [CompositeController::class, 'handleGetFruitInformation']);
@@ -65,6 +62,7 @@ return static function (Slim\App $app, array $settings): void {
         $group->get('/products/{product_id}', [ProductsController::class, 'handleGetProductById']);
         $group->get('/products/{product_id}/nutrition', [ProductsController::class, 'handleGetProductNutrition']);
         $group->get('/brands/{brand_id}/products', [BrandController::class, 'handleGetProductsByBrand']);
+        
         //?---------CATEGORIES----------------------------------------------
         $group->get('/categories', [CategoriesController::class, 'handleGetCategories']);
         $group->get('/categories/{category_id}', [CategoriesController::class, 'handleGetCategoryById']);
@@ -82,7 +80,7 @@ return static function (Slim\App $app, array $settings): void {
 
         //? == Composite resource --
         // $group->get('/recipes/product/{product_id}', [CompositeController::class, 'handleGetRecipesByProduct']);
-        // $group->post('/cocktail', [CompositeController::class, 'handleGetCocktailByName']);
+        // $group->get("/cocktail_category", [CompositeController::class, 'handleGetCocktailsCategories']);
         // $group->get("/fruit_information/{fruit_name}", [CompositeController::class, 'handleGetFruitInformation']);
         /**
          * So i sesearch yung name nung cocktail then sa ingrdients use ingredient table to give more details slay!!!!!
